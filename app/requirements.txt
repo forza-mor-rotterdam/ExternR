@@ -27,7 +27,7 @@ debugpy
 Pillow==9.4.0
 pillow-heif==0.13.0
 sorl-thumbnail==12.8.0
-
+python-magic
 
 redis==4.5.5
 mozilla-django-oidc==3.0.0

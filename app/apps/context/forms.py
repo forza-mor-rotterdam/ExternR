@@ -65,9 +65,7 @@ class ContextAanmakenForm(ContextAanpassenForm):
         ].help_text = "De taaktypes die hier worden geselecteerd worden getoond aan gebruikers met deze rol."
         self.fields[
             "filters"
-        ].help_text = (
-            "De hier geselecteerde opties worden getoond in het Filter-menu van ExternR."
-        )
+        ].help_text = "De hier geselecteerde opties worden getoond in het Filter-menu van ExternR."
         self.fields[
             "template"
         ].help_text = "Ieder sjabloon toont andere informatie. Het ‘Standaard’ sjabloon voldoet voor de meeste afdelingen."

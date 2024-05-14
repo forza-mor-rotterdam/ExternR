@@ -41,6 +41,10 @@
                     {% csrf_token %}
                     <fieldset>
                         {{ form.omschrijving|render_rotterdam_formulier }}
+                        {{ form.externe_instantie_naam|render_rotterdam_formulier }}
+                        {{ form.externe_instantie_email|render_rotterdam_formulier }}
+                        {{ form.externe_instantie_feedback_vereist|render_rotterdam_formulier }}
+                        {{ form.externe_instantie_naam_verantwoordelijke|render_rotterdam_formulier }}
                         {{ form.volgende_taaktypes|render_rotterdam_formulier }}
                         <div class="container__checkbox--single">
                             <h3 class="label">Actief?</h3>

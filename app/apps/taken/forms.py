@@ -26,6 +26,10 @@ class TaaktypeAanpassenForm(forms.ModelForm):
         model = Taaktype
         fields = (
             "omschrijving",
+            "externe_instantie_naam",
+            "externe_instantie_email",
+            "externe_instantie_feedback_vereist",
+            "externe_instantie_naam_verantwoordelijke",
             "volgende_taaktypes",
             "actief",
         )
@@ -36,6 +40,10 @@ class TaaktypeAanmakenForm(TaaktypeAanpassenForm):
         model = Taaktype
         fields = (
             "omschrijving",
+            "externe_instantie_naam",
+            "externe_instantie_email",
+            "externe_instantie_feedback_vereist",
+            "externe_instantie_naam_verantwoordelijke",
             "volgende_taaktypes",
             "actief",
         )

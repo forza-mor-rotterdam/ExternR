@@ -56,6 +56,13 @@ class Taaktype(BasisModel):
     )
     actief = models.BooleanField(default=True)
 
+    externe_instantie_naam = models.CharField(max_length=200, blank=False, null=False)
+    externe_instantie_email = models.EmailField(unique=False, blank=False, null=False)
+    externe_instantie_feedback_vereist = models.BooleanField(default=False)
+    externe_instantie_naam_verantwoordelijke = models.CharField(
+        max_length=200, blank=True, null=True
+    )
+
     class Meta:
         ordering = ("-aangemaakt_op",)
         verbose_name = "Taaktype"

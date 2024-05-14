@@ -1,5 +1,6 @@
 import logging
 
+from apps.services.mail import MailService
 from django.contrib.gis.db import models
 from django.db import OperationalError, transaction
 from django.dispatch import Signal
@@ -43,12 +44,18 @@ class TaakManager(models.Manager):
             )
             taak.taakstatus = taakstatus
             taak.save()
+            MailService().taak_aangemaakt_email(
+                taak,
+                verzenden=True,
+                meldingalias=meldingalias,
+            )
             transaction.on_commit(
                 lambda: aangemaakt.send_robust(
                     sender=self.__class__,
                     taak=taak,
                 )
             )
+
         return taak
 
     def status_aanpassen(self, serializer, taak, db="default"):
