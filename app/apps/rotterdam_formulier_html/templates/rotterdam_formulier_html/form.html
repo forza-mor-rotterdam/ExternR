@@ -1,0 +1,9 @@
+{% if form.non_field_errors %}
+    <blockquote>
+        {% for non_field_error in form.non_field_errors %}{{ non_field_error }}{% endfor %}
+    </blockquote>
+{% endif %}
+{% for field in form.hidden_fields %}{{ field }}{% endfor %}
+{% for field in form.visible_fields %}
+    {% include "rotterdam_formulier_html/field.html" %}
+{% endfor %}

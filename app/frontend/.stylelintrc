@@ -1,0 +1,18 @@
+{
+  "extends": [
+    "stylelint-config-standard",
+    "stylelint-config-recommended-scss",
+    "stylelint-config-idiomatic-css",
+    "stylelint-config-prettier"
+  ],
+  "rules": {
+    "at-rule-no-unknown": null,
+    "import-notation": "string",
+    "indentation": 4,
+    "no-descending-specificity": null,
+    "selector-class-pattern": "[\\w-]+",
+    "scss/at-extend-no-missing-placeholder": null,
+    "scss/comment-no-empty": null,
+    "scss/no-global-function-names": null
+  }
+}

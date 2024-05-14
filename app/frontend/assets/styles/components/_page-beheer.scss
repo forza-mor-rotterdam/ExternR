@@ -1,0 +1,156 @@
+.page__beheer {
+    padding-top: 0.5rem;
+    @media (min-width: map-get($grid-breakpoints, lg)) {
+        padding-top: 2rem;
+    }
+
+    .alert {
+        margin-bottom: 2rem;
+    }
+    .btn {
+        height: 48px;
+        svg {
+            vertical-align: sub;
+        }
+    }
+
+    a.link--back {
+        margin-left: 30px;
+        min-height: 1em;
+
+        svg {
+            left: -30px;
+            path {
+                fill: $green-tint01;
+            }
+        }
+    }
+
+    .pagetitle,
+    h2 {
+        margin-bottom: 0.25em;
+
+        + .release-date {
+            margin-top: 0;
+        }
+    }
+
+    .pagetitle {
+        margin-top: 0;
+    }
+
+    .container__flex {
+        @media (min-width: map-get($grid-breakpoints, md)) {
+            display: flex;
+            justify-content: space-between;
+
+            + .alert {
+                margin-top: -32px;
+            }
+        }
+        margin: 32px 0;
+
+        > * {
+            flex: 1;
+        }
+
+        h1 {
+            margin-top: 0;
+        }
+        .btn {
+            max-width: 200px;
+            height: 48px;
+        }
+
+        &.flex--end {
+            justify-content: flex-end;
+            gap: 1rem;
+        }
+    }
+
+    ul.list--images {
+        margin: 0 -16px;
+        li {
+            img {
+                max-width: map-get($container-max-widths, lg);
+                width: 100%;
+            }
+        }
+    }
+
+    table tbody {
+        th,
+        td {
+            text-align: left;
+            padding-left: 0.5rem;
+            padding-right: 0.5rem;
+        }
+
+        .icon--close {
+            path {
+                fill: $danger;
+            }
+        }
+        .icon--checkmark {
+            width: 20px;
+            height: 20px;
+            path {
+                fill: $primary;
+            }
+        }
+    }
+
+    form {
+        max-width: map-get($container-max-widths, md);
+        margin: 0 auto;
+    }
+    .btn-row {
+        display: flex;
+        justify-content: flex-end;
+
+        .btn {
+            flex: 0 1;
+            margin-left: 1rem;
+        }
+    }
+
+    .container__userlist {
+        background-color: $gray-tint02;
+        padding: $alert-padding-x;
+
+        h2 {
+            margin-top: 0;
+        }
+    }
+
+    li {
+        &.list-item {
+            border-bottom: 1px solid $gray-tint04;
+            padding-bottom: 1rem;
+
+            &.inactive {
+                * {
+                    opacity: 0.8;
+                }
+            }
+            > .description {
+                margin-top: 0;
+                margin-bottom: 0;
+                > a {
+                    padding-top: 1rem;
+                    padding-bottom: 1rem;
+                }
+                small {
+                    a {
+                        display: block;
+                    }
+                }
+            }
+        }
+    }
+
+    .container__table {
+        width: 100%;
+        overflow-x: auto;
+    }
+}

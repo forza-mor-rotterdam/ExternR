@@ -1,0 +1,434 @@
+.container__header {
+    margin-bottom: 16px;
+
+    .row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    h1 {
+        margin: 2px 0 0;
+    }
+
+    .container__controls {
+        flex: 0 1 25%;
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-end;
+
+        .btn {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+            height: 32px;
+            font-size: 12px;
+            min-height: 0;
+            font-weight: 300;
+            line-height: 12px;
+            margin-bottom: 0;
+            margin-left: $input-padding-y;
+            max-width: 37px;
+
+            span {
+                display: inline-block;
+            }
+
+            @media (min-width: map-get($grid-breakpoints, md)) {
+                height: 48px !important;
+                max-width: 48px;
+
+                .map,
+                .list,
+                &-sort--small svg {
+                    width: 32px;
+                    height: 32px;
+                }
+            }
+        }
+
+        .showMap & {
+            .btn-sort--small {
+                display: none;
+            }
+        }
+    }
+}
+
+.container__list {
+    display: flex;
+    border-top: 1px solid $gray-tint04;
+    > .container__flex {
+        width: 100%;
+    }
+    @media (min-width: map-get($grid-breakpoints, lg)) {
+        border-top: none;
+
+        > .container__flex {
+            display: flex;
+            flex-direction: column;
+            flex: 1 1 auto;
+            max-width: 500px;
+
+            .list__incidents {
+                flex: 1 1 0;
+                border-top: 1px solid $gray-tint04;
+                overflow-y: auto;
+            }
+        }
+
+        .container__search {
+            display: none;
+        }
+    }
+}
+
+.container__sorting,
+.container__search {
+    box-sizing: content-box;
+
+    .wrapper {
+        margin: $input-padding-x;
+        display: flex;
+        justify-content: space-between;
+
+        @media (min-width: map-get($grid-breakpoints, lg)) {
+            background-color: transparent;
+            padding-left: 0;
+        }
+    }
+    form {
+        width: 100%;
+    }
+    select {
+        background-color: white;
+        border: 1px solid $gray-tint08;
+        outline: 0;
+        padding: 0 16px;
+        font-size: 18px;
+        width: 100%;
+        color: #404b4f;
+        text-align: left;
+        -webkit-appearance: none;
+        height: 48px;
+        background-image: url("data:image/svg+xml, <svg width=%2724%27 height=%2724%27 viewBox=%270 0 24 24%27 fill=%27none%27 xmlns=%27http://www.w3.org/2000/svg%27> <path fill-rule=%27evenodd%27 clip-rule=%27evenodd%27 d=%27M15.75 9.75L12 4.5L8.25 9.75H15.75ZM15.75 14.25L12 19.5L8.25 14.25H15.75Z%27 fill=%27%2365757B%27/> </svg>");
+        background-repeat: no-repeat;
+        background-position: right 10px center;
+        background-size: 24px 24px;
+    }
+}
+
+.wrapper--search {
+    display: none;
+
+    input {
+        width: 350px;
+        margin: 0;
+    }
+
+    @media (min-width: map-get($grid-breakpoints, lg)) {
+        display: block;
+    }
+}
+
+.list__incidents {
+    list-style: none;
+    padding: 0;
+    overflow: hidden;
+
+    .list__incidents__scroll-wrapper {
+        overflow: hidden;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: safe flex-end;
+        border-top: 1px solid $gray-tint04;
+    }
+    .container__pagination + .list-item {
+        border-top: 1px solid $gray-tint04;
+    }
+    &.reverse .list__incidents__scroll-wrapper {
+        flex-direction: column;
+        justify-content: safe flex-start;
+    }
+
+    .list-item {
+        position: relative;
+        box-sizing: content-box;
+        transition:
+            height 0.3s ease-in-out,
+            left 0.5s ease-out;
+        min-height: 100px;
+        touch-action: pan-y pinch-zoom;
+        scrollbar-width: none;
+        cursor: grab;
+        display: flex;
+        user-select: none;
+        border-bottom: 1px solid $gray-tint04;
+
+        &.selected a:not(.link) {
+            background-color: $gray-tint02;
+        }
+        .show-modal & {
+            cursor: initial;
+        }
+        &::-webkit-scrollbar {
+            display: none;
+        }
+        &.hide {
+            transition: all 0.5s ease-in-out 4s;
+            border-bottom: 0px solid #cad6da;
+            min-height: 0;
+            height: 0;
+            overflow: hidden;
+        }
+
+        .message {
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            bottom: 5px;
+            right: 5px;
+            background-color: #e5f1e9;
+            border: 1px solid $primary;
+            z-index: 2;
+            display: flex;
+            align-items: center;
+            padding-left: 56px;
+            overflow: hidden;
+
+            &:before {
+                content: url("../icons/checkmark-circle.svg");
+                position: absolute;
+                left: 16px;
+                top: calc(50% - 13px);
+            }
+        }
+
+        .wrapper__swipe {
+            flex: 2 0 100%;
+            background-color: $white;
+            z-index: 2;
+        }
+
+        .container__flex {
+            min-width: 300px;
+
+            a {
+                display: flex;
+                justify-items: flex-start;
+                color: inherit;
+                text-decoration: none;
+                margin: 0;
+                min-height: 100px;
+            }
+
+            .btn-icon--clean {
+                display: none;
+                position: absolute;
+                right: 0;
+                bottom: 0;
+                z-index: 200;
+                margin-bottom: 0;
+                width: auto;
+                height: auto;
+                background-color: transparent;
+                .map {
+                    width: 24px;
+                    height: 24px;
+                    path {
+                        fill: $primary;
+                    }
+                }
+            }
+
+            @media (min-width: map-get($grid-breakpoints, lg)) {
+                .btn-icon--clean {
+                    display: inline-block;
+                }
+            }
+        }
+
+        .container__image {
+            margin: $input-padding-y 16px 14px 0;
+
+            .background-image {
+                width: calc(78px + 2vw);
+                height: calc(56px + 1vw);
+                background-color: $gray-tint02;
+                text-align: center;
+                display: flex;
+                justify-content: center;
+
+                @media (min-width: map-get($grid-breakpoints, md)) {
+                    width: calc(173px + 2vw);
+                    height: calc(130px + 1vw);
+                }
+                @media (min-width: map-get($grid-breakpoints, lg)) {
+                    width: calc(94px + 2vw);
+                    height: calc(70px + 1vw);
+                }
+            }
+
+            img {
+                max-width: 100%;
+                max-height: 100%;
+            }
+        }
+
+        .container__info {
+            flex: 1;
+            padding-top: $input-padding-y;
+            font-size: 0.889em;
+            position: relative;
+
+            a {
+                color: inherit;
+                text-decoration: none !important;
+            }
+
+            h2 {
+                margin: 0 0 4px;
+                text-decoration: none;
+                padding-right: 90px;
+
+                .badge {
+                    position: absolute;
+                    top: $input-padding-y;
+                    right: 0;
+                }
+            }
+
+            .incident__category,
+            .incident__distance,
+            .incident__moment {
+                color: $gray-tint09;
+                margin-bottom: 2px;
+            }
+
+            .incident__distance {
+                margin: 0.25rem 0;
+            }
+            .incident__category {
+                color: $gray-tint11;
+            }
+
+            .incident__category {
+                display: inline-block;
+            }
+
+            .incident__moment {
+                display: flex;
+                justify-content: space-between;
+                span {
+                    flex: 1;
+                }
+            }
+
+            @media (min-width: map-get($grid-breakpoints, md)) and (max-width: 1023px) {
+                h2 {
+                    font-size: 1.5rem;
+                }
+            }
+        }
+
+        .container__actions {
+            display: block;
+            box-sizing: content-box;
+            // flex: 1 0 100%;
+            text-align: center;
+            line-height: 60px;
+            color: $white;
+            background-color: $primary;
+            margin-right: 1px;
+            cursor: pointer;
+            border: none;
+            position: absolute;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            padding: 0;
+
+            > div {
+                margin-top: 20px;
+                padding-top: 48px;
+                line-height: 18px;
+            }
+
+            &.handle--success {
+                background-color: $primary;
+                right: calc(-100% - 1px);
+                text-align: left;
+
+                > div {
+                    margin-left: 20px;
+                    background: url("../icons/checkmark.svg") left top no-repeat;
+                }
+            }
+
+            &.handle--no-success {
+                background-color: #ce4c3b;
+                left: -100%;
+                text-align: right;
+
+                > div {
+                    margin-right: 20px;
+                    background: url("data:image/svg+xml,%3csvg width=%2732%27 height=%2732%27 viewBox=%270 0 32 32%27 fill=%27black%27 xmlns=%27http://www.w3.org/2000/svg%27%3e%3cpath fill-rule=%27evenodd%27 clip-rule=%27evenodd%27 d=%27M26.6077 6.80752L25.1935 5.39331L16.0011 14.5857L6.80875 5.39331L5.39453 6.80752L14.5869 15.9999L5.39453 25.1923L6.80874 26.6065L16.0011 17.4141L25.1935 26.6065L26.6077 25.1923L17.4153 15.9999L26.6077 6.80752Z%27 fill=%27white%27/%3e%3c/svg%3e")
+                        right top no-repeat;
+                    background-size: contain;
+                    background-position: calc(100% + 10px) -10px;
+                }
+            }
+        }
+    }
+
+    details {
+        &:first-child {
+            summary {
+                border-top: 0;
+            }
+        }
+
+        &[open] {
+            summary {
+                border-bottom: 1px solid $gray-tint04;
+            }
+        }
+    }
+    summary {
+        flex-direction: row;
+    }
+
+    @media (min-width: map-get($grid-breakpoints, lg)) {
+        margin: 0 16px 0 0;
+    }
+}
+
+.page-incidents {
+    .icon--warning {
+        margin: $input-padding-y 0 0;
+    }
+}
+@media (min-width: map-get($grid-breakpoints, lg)) {
+    .container__header {
+        .container__controls {
+            .btn-sort--small {
+                display: none;
+            }
+        }
+    }
+}
+@media (min-width: map-get($grid-breakpoints, lg)) {
+    .container__header {
+        .container__controls {
+            .btn-navigate--small.toggle-view {
+                display: none;
+            }
+        }
+    }
+    .showMap {
+        .container__flex {
+            display: block !important;
+        }
+    }
+}

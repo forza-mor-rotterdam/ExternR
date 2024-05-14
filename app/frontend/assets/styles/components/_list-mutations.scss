@@ -1,0 +1,182 @@
+.list__mutations {
+    @include list-clean;
+    > li {
+        margin: 0 calc(-1 * (map-get($container-margin, md)));
+        padding: 0 map-get($container-margin, md);
+        position: relative;
+
+        p {
+            margin: $input-padding-y 0 0;
+        }
+
+        &:last-child {
+            details {
+                &::before {
+                    height: 0;
+                }
+            }
+        }
+        &:first-child {
+            summary {
+                &::before {
+                    display: none;
+                }
+            }
+        }
+
+        &:first-child {
+            details {
+                .line {
+                    &.line-melding {
+                        width: 0;
+                        background-color: transparent;
+                        border-left: 2px dashed $primary;
+                    }
+                    &.line-taak {
+                        width: 0;
+                        background-color: transparent;
+                        border-left: 2px dashed $action;
+                    }
+                }
+            }
+        }
+    }
+    .line {
+        width: 2px;
+        height: 100%;
+        position: absolute;
+        left: 6px;
+        top: 23px;
+        background-color: $gray-tint11;
+    }
+    details {
+        .line {
+            content: "";
+            width: 2px;
+            height: calc(100% + 20px);
+            position: absolute;
+            left: 6px;
+            top: 23px;
+            background-color: $gray-tint11;
+            transform: translateX(-32px);
+            &.line-melding {
+                background-color: $primary;
+            }
+            &.line-taak {
+                background-color: $action;
+            }
+        }
+
+        .event {
+            &.event-melding {
+                background-color: $primary;
+            }
+            &.event-taak {
+                background-color: $action;
+            }
+        }
+
+        position: relative;
+
+        summary {
+            padding: 12px 18px 12px 74px;
+            border: 0;
+            text-align: right;
+
+            &::before {
+                // display: none;
+                right: 0;
+                left: auto;
+                top: calc(50% - $input-padding-y);
+            }
+            .line {
+                width: 2px;
+                height: 100%;
+                position: absolute;
+                left: 6px;
+                top: 23px;
+                background-color: $gray-tint11;
+                transform: translateX(-32px);
+            }
+            .event {
+                position: absolute;
+                display: block;
+                top: 13px;
+                left: 0;
+                width: 14px;
+                height: 14px;
+                border-radius: 50%;
+                background-color: $gray-tint11;
+                transform: translateX(-32px);
+            }
+        }
+        .content {
+            position: relative;
+            margin-bottom: 20px;
+            margin-left: 5px;
+            font-size: 0.889em;
+            text-align: right;
+            display: flex;
+            align-items: flex-end;
+            flex-direction: column;
+
+            .wrapper {
+                background-color: $gray-tint02;
+                dl {
+                    padding: 12px 12px 12px 20px;
+                    margin: 0;
+                }
+            }
+        }
+
+        .link--phone {
+            line-height: 2rem;
+
+            svg {
+                position: absolute;
+                top: 6px;
+                left: -27px;
+            }
+        }
+
+        &[open] {
+            > summary {
+                &::before {
+                    right: 0;
+                    left: auto;
+                }
+            }
+        }
+    }
+
+    dl {
+        margin: 12px;
+        dt,
+        dd {
+            display: block;
+            margin: 0;
+        }
+
+        dt {
+            font-weight: 700;
+        }
+
+        dd {
+            margin-bottom: 0.5rem;
+        }
+    }
+
+    .container__thumbs {
+        padding: 0 12px 10px 0;
+        .container__image {
+            opacity: 1;
+            cursor: initial;
+
+            .image {
+                background-size: contain;
+                background-position: 100% 50%;
+                background-repeat: no-repeat;
+            }
+        }
+    }
+}

@@ -1,0 +1,37 @@
+{% if SESSION_EXPIRY_TIMESTAMP != 0 and SESSION_EXPIRY_MAX_TIMESTAMP != 0 %}
+    <div data-controller="sessionTimer"
+         data-sessionTimer-session_expiry_max_timestamp-value="{{ SESSION_EXPIRY_MAX_TIMESTAMP }}"
+         data-sessionTimer-session_expiry_timestamp-value="{{ SESSION_EXPIRY_TIMESTAMP }}"
+         data-sessionTimer-session_check_interval-value="{{ SESSION_CHECK_INTERVAL_SECONDS }}">
+        <div class="modal" data-sessionTimer-target="modal">
+            <div class="modal-backdrop modal-exit"
+                 data-sessionTimer-target="modalBackdrop"
+                 data-action="click->sessionTimer#closeModal"></div>
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1>
+                            <span>Je bent uitgelogd</span>
+                        </h1>
+                        <button type="button"
+                                class="btn-close"
+                                aria-label="Sluit"
+                                data-action="sessionTimer#closeModal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <section class="section--seperated">
+                            <div class="container__details">
+                                <p>Door de pagina opnieuw te laden, wordt je doorverwezen naar de login pagina.</p>
+                                <button type="button"
+                                        class="btn btn-action"
+                                        data-action="sessionTimer#closeModal">
+                                    <span>Herlaad pagina</span>
+                                </button>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endif %}

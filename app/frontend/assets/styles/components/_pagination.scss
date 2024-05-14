@@ -1,0 +1,83 @@
+.container__pagination {
+    display: flex;
+    justify-content: flex-end;
+    margin: 1rem 0;
+
+    .wrapper-horizontal {
+        ul {
+            display: flex;
+            li {
+                margin: 0 2px;
+                height: 32px;
+                text-align: center;
+                line-height: 32px;
+                position: relative;
+
+                &:not(.has-text) {
+                    width: 32px;
+                    label,
+                    span,
+                    a {
+                        width: 32px;
+                    }
+                }
+
+                label,
+                span,
+                a {
+                    font-weight: 400;
+                    font-size: 16px;
+                    display: block;
+                }
+
+                svg {
+                    width: 10px;
+                    height: 18px;
+                    margin-top: -2px;
+                }
+
+                span,
+                a {
+                    text-decoration: none;
+                    color: $gray-tint11;
+                    &.btn--next {
+                        path {
+                            fill: $gray-tint11;
+                        }
+                    }
+                    &.btn--previous {
+                        svg {
+                            transform: rotate(180deg);
+                            fill: $gray-tint11;
+                        }
+                    }
+                }
+                span,
+                a:hover {
+                    border: 0;
+                    box-shadow: none;
+                    color: $primary;
+                    background-color: #e0eee2;
+                }
+
+                &.has-text {
+                    a {
+                        padding-left: 6px;
+                        padding-right: 6px;
+                        display: flex;
+                        align-items: center;
+                    }
+
+                    svg {
+                        &:last-child {
+                            margin-left: 6px;
+                        }
+                        &:first-child {
+                            margin-right: 6px;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

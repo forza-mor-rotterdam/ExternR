@@ -1,0 +1,13 @@
+{% load webpack_static from webpack_loader %}
+{% load json_encode from main_tags %}
+{% load context_template from context_tags %}
+<turbo-frame id="taken_lijst">
+<div class="list__incidents__scroll-wrapper"
+     data-incidentlist-target="taakItemLijst"
+     data-taken-count="{{ page_obj.paginator.count }}">
+    {% for taak in taken %}
+        {% include "taken/taak_lijst_item.html" %}
+    {% endfor %}
+</div>
+{% include "snippets/paginator.html" with page_obj=page_obj %}
+</turbo-frame>

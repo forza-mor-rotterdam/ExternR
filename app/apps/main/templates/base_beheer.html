@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}
+    Beheer | ExternR
+{% endblock title %}
+{% block pageheader %}
+    {% with page_title="ExternR" %}{{ block.super }}{% endwith %}
+{% endblock pageheader %}
+{% block body_class %}
+{% endblock body_class %}
+{% block main %}
+    <main data-controller="main">
+        <div class="{% block container_class %}container container--wide{% endblock container_class %}">
+            <turbo-frame id="beheer" data-turbo-action="advance">
+            {% block body %}
+            {% endblock body %}
+            </turbo-frame>
+        </div>
+    </main>
+{% endblock main %}

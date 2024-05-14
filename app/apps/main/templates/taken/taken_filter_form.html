@@ -1,0 +1,89 @@
+{% load json_encode from main_tags %}
+<turbo-frame id="taken_filter">
+<form action="{% url 'taken_filter' %}"
+      method="post"
+      data-controller="filter"
+      data-filter-request-type-value="{{ request_type }}"
+      data-filter-active-filter-count-value="{{ filter_manager.active_filter_count }}"
+      id="incidentFilterAllForm"
+      data-testid="incidentFilterAllForm">
+    {% csrf_token %}
+    <details class="filter filter--active"
+             data-action="filter#toggleActiveFilter"
+             id="foldout_active-filters"
+             {% if "foldout_active-filters" in foldout_states %}open{% endif %}>
+        <input data-filter-target="foldoutStatesField"
+               type="hidden"
+               value="{{ foldout_states }}"
+               name="foldout_states">
+        <summary>
+            <span>Actieve filters</span>
+            <span class="count count--filter">{{ filter_manager.active_filter_count }}</span>
+        </summary>
+        <fieldset>
+            <ul class="list-clean">
+                {% for filter in filter_manager.filters %}
+                    {% if filter.active %}
+                        <li>
+                            {% if filter.groups %}
+                                <h3 class="h5">{{ filter.group_label }}</h3>
+                                {% for group in filter.groups %}
+                                    {% include "filters/selected_options.html" with filter=group %}
+                                {% endfor %}
+                            {% else %}
+                                <h3 class="h5">{{ filter.name|capfirst }}</h3>
+                                {% include "filters/selected_options.html" with filter=filter %}
+                            {% endif %}
+                        </li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+            <button class="btn-textlink btn-with-icon margin-vertical"
+                    data-action="filter#removeAllFilters">
+                <svg width="18"
+                     height="18"
+                     viewBox="0 0 18 18"
+                     fill="none"
+                     xmlns="http://www.w3.org/2000/svg">
+                    <path d="M6.75 14.25V6.75H8.25V14.25H6.75Z" fill="#00811F" />
+                    <path d="M9.75 14.25V6.75H11.25V14.25H9.75Z" fill="#00811F" />
+                    <path fill-rule="evenodd" clip-rule="evenodd" d="M12 0H6V3H0.75V4.5H3V18H15V4.5H17.25V3H12V0ZM4.5 16.5V4.5H13.5V16.5H4.5ZM10.5 1.5H7.5V3H10.5V1.5Z" fill="#00811F" />
+                </svg>
+                <span>Verwijder alle filters</span>
+            </button>
+        </fieldset>
+    </details>
+    {% for filter in filter_manager.filters %}
+        {% if filter.groups %}
+            <details class="filter"
+                     data-action="filter#toggleActiveFilter"
+                     id="foldout_{{ filter.group_key }}"
+                     {% if filter.folded %}open{% endif %}>
+                <summary>
+                    <span>{{ filter.group_label }}</span>
+                    <span>({{ filter.active|length }})</span>
+                </summary>
+                <ul class="list-clean">
+                    {% for group in filter.groups %}
+                        <li>{% include "filters/options.html" with filter=group %}</li>
+                    {% endfor %}
+                </ul>
+            </details>
+        {% else %}
+            {% include "filters/options.html" with filter=filter %}
+        {% endif %}
+    {% endfor %}
+    <div class="full-page-view__footer">
+        {% if incident_count == 0 %}
+            <button type="button"
+                    class="btn btn-action"
+                    data-action="main#hideFilters"
+                    disabled="disabled">Er zijn geen meldingen, pas filter aan</button>
+        {% elif incident_count == 1 %}
+            <button type="button" class="btn btn-action" data-action="main#hideFilters">Toon 1 taak</button>
+        {% else %}
+            <button type="button" class="btn btn-action" data-action="main#hideFilters">Toon {{ taken_aantal }} taken</button>
+        {% endif %}
+    </div>
+</form>
+</turbo-frame>

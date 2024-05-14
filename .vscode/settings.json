@@ -1,0 +1,14 @@
+{
+    "[python]": {
+      "editor.defaultFormatter": "ms-python.black-formatter"
+    },
+    "python.formatting.provider": "none",
+    "[django-html][html]": {
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "monosans.djlint"
+      },
+    "files.associations": {
+      "**/app/apps/**/templates/**/*.html": "django-html",
+      "*.tpl": "django-html"
+    }
+  }

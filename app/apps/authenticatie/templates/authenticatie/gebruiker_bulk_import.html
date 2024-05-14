@@ -1,0 +1,206 @@
+{% extends "base_beheer.html" %}
+{% load rotterdam_formulier_html %}
+{% load json_encode from main_tags %}
+{% block title %}
+    Gebruiker bulk import | Beheer | ExternR
+{% endblock title %}
+{% block body %}
+    <div class="page__beheer" data-controller="row-search">
+        <div>
+            <a href="{% url 'gebruiker_lijst' %}"
+               class="link--back"
+               data-turbo-action="advance">
+                <svg width="25"
+                     height="16"
+                     viewBox="0 0 25 16"
+                     fill="none"
+                     xmlns="http://www.w3.org/2000/svg">
+                    <path d="M9.15173 1.73256L7.73753 0.318359L1.44704 6.60885L1.4142 6.576L0 7.9902L1.4115 9.4017L1.37867 9.43453L7.67186 15.7277L9.08606 14.3135L3.7726 9.00006H24.0098V7.00006H3.88423L9.15173 1.73256Z" fill="#404B4F" />
+                </svg>
+                Gebruikerslijst
+            </a>
+        </div>
+        <div class="container__flex">
+            <h1>Bulk import gebruikers</h1>
+        </div>
+        {% if form %}
+            <form method="post"
+                  action="{% url 'gebruiker_bulk_import' %}"
+                  enctype="multipart/form-data"
+                  novalidate>
+                {% csrf_token %}
+                <fieldset>
+                    {% if not form.errors and form.cleaned_data.csv_file.all_rows %}
+                        <div>
+                            <h2 class="h3">Validatie resultaat</h2>
+                        </div>
+                        {% if not form.errors and form.cleaned_data.csv_file.valid_rows %}
+                            <p>
+                                {{ form.cleaned_data.csv_file.valid_rows|length }} van de {{ form.cleaned_data.csv_file.all_rows|length }}
+                                {% if form.cleaned_data.csv_file.all_rows|length > 1 %}
+                                    gebruikers
+                                {% else %}
+                                    gebruiker
+                                {% endif %}
+                                ,
+                                {% if form.cleaned_data.csv_file.valid_rows|length > 1 %}
+                                    kunnen
+                                {% else %}
+                                    kan
+                                {% endif %}
+                                worden aangemaakt.
+                            </p>
+                            <p>Onderstaande gebruikers kunnen worden geïmporteerd:</p>
+                            <table>
+                                <thead>
+                                    <th>email</th>
+                                    <th>voornaam</th>
+                                    <th>achternaam</th>
+                                    <th>telefoonnummer</th>
+                                    <th>Wordt geïmporteerd</th>
+                                </thead>
+                                <tbody>
+                                    {% for row in form.cleaned_data.csv_file.valid_rows %}
+                                        <tr>
+                                            {% for cell in row %}
+                                                <td>
+                                                    {% if forloop.last %}
+                                                        {% if cell %}
+                                                            {% include "icons/close.svg" %}
+                                                            {{ cell }}
+                                                        {% else %}
+                                                            {% include "icons/checkmark.svg" %}
+                                                        {% endif %}
+                                                    {% else %}
+                                                        {% if cell %}
+                                                            {{ cell }}
+                                                        {% else %}
+                                                            -
+                                                        {% endif %}
+                                                    {% endif %}
+                                                </td>
+                                            {% endfor %}
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                            <div class="form-row container__button">
+                                <div class="form-row btn-row">
+                                    <button type="submit" name="aanmaken" value="ja" class="btn btn-action">
+                                        <span class="nowrap">
+                                            {% if form.cleaned_data.csv_file.valid_rows|length != form.cleaned_data.csv_file.all_rows|length %}
+                                                Alleen deze
+                                                {% if form.cleaned_data.csv_file.valid_rows|length > 1 %}
+                                                    gebruikers
+                                                {% else %}
+                                                    gebruiker
+                                                {% endif %}
+                                                aanmaken
+                                            {% else %}
+                                                {% if form.cleaned_data.csv_file.valid_rows|length > 1 %}
+                                                    Gebruikers
+                                                {% else %}
+                                                    Gebruiker
+                                                {% endif %}
+                                                aanmaken
+                                            {% endif %}
+                                        </span>
+                                    </button>
+                                </div>
+                            </div>
+                        {% elif not form.errors %}
+                            <p>Er kunnen geen gebruikers worden aangemaakt met deze csv data</p>
+                        {% endif %}
+                        {% if not form.errors and form.cleaned_data.csv_file.valid_rows|length != form.cleaned_data.csv_file.all_rows|length %}
+                            <p>
+                                Onderstaande gebruikers kunnen <strong>niet</strong> worden geïmporteerd:
+                            </p>
+                            <table>
+                                <thead>
+                                    <th>email</th>
+                                    <th>voornaam</th>
+                                    <th>achternaam</th>
+                                    <th>telefoonnummer</th>
+                                    <th>Wordt geïmporteerd</th>
+                                </thead>
+                                <tbody>
+                                    {% for row in form.cleaned_data.csv_file.all_rows %}
+                                        {% if row.4 %}
+                                            <tr>
+                                                {% for cell in row %}
+                                                    <td>
+                                                        {% if forloop.last %}
+                                                            {% if cell %}
+                                                                {% include "icons/close.svg" %}
+                                                                {{ cell }}
+                                                            {% else %}
+                                                                {% include "icons/checkmark.svg" %}
+                                                            {% endif %}
+                                                        {% else %}
+                                                            {% if cell %}
+                                                                {{ cell }}
+                                                            {% else %}
+                                                                -
+                                                            {% endif %}
+                                                        {% endif %}
+                                                    </td>
+                                                {% endfor %}
+                                            </tr>
+                                        {% endif %}
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        {% endif %}
+                    {% endif %}
+                    <div class="form-control__with-helptext" data-controller="bijlagen">
+                        {{ form.csv_file|render_rotterdam_formulier }}
+                    </div>
+                    <div class="form-control__with-helptext">{{ form.context|render_rotterdam_formulier }}</div>
+                    <div class="form-control__with-helptext">{{ form.group|render_rotterdam_formulier }}</div>
+                </fieldset>
+                <div class="form-row container__button">
+                    <div class="form-row btn-row">
+                        <button type="reset"
+                                class="btn btn-tertiary"
+                                data-controller="utils"
+                                data-action="utils#goToUrl"
+                                data-utils-url-param="{% url 'gebruiker_lijst' %}">
+                            <span>Annuleren</span>
+                        </button>
+                        <button type="submit"class="btn btn-action">
+                            <span>Valideren</span>
+                        </button>
+                    </div>
+                </div>
+            </form>
+        {% else %}
+            <div>
+                <h2>Gelukt!</h2>
+                <p>
+                    Onderstaande
+                    {% if aangemaakte_gebruikers|length > 1 %}
+                        gebruikers
+                    {% else %}
+                        gebruiker
+                    {% endif %}
+                    {% if aangemaakte_gebruikers|length > 1 %}
+                        zijn
+                    {% else %}
+                        is
+                    {% endif %}
+                    aangemaakt
+                </p>
+            </div>
+            <ul>
+                {% for gebruiker in aangemaakte_gebruikers %}
+                    <li>
+                        <a href="{% url 'gebruiker_aanpassen' gebruiker.id %}">{{ gebruiker }}</a>
+                    </li>
+                {% endfor %}
+            </ul>
+            <a href="{% url 'gebruiker_bulk_import' %}">Nog meer gebruikers aanmaken</a>
+            <br>
+            <a href="{% url 'beheer' %}">Beheer</a>
+        {% endif %}
+    </div>
+{% endblock body %}

@@ -1,0 +1,124 @@
+.container__table {
+    @media (max-width: map-get($grid-breakpoints, lg)) {
+        overflow-x: scroll;
+    }
+}
+
+.sorting {
+    white-space: nowrap;
+
+    label {
+        cursor: pointer;
+    }
+    &::after {
+        content: "";
+        display: inline-block;
+        background-image: url(../icons/dropdown.svg);
+        background-size: 19px 26px;
+        width: 16px;
+        height: 19px;
+    }
+
+    &.sorting--up {
+        &::after {
+            background-image: url(../icons/arrow-long.svg);
+            background-size: 16px 12px;
+            width: 16px;
+            height: 13px;
+            transform: rotate(-90deg);
+        }
+    }
+
+    &.sorting--down {
+        &::after {
+            background-image: url(../icons/arrow-long.svg);
+            background-size: 16px 12px;
+            width: 16px;
+            height: 13px;
+            transform: rotate(90deg);
+        }
+    }
+    input {
+        @extend .visually-hidden;
+    }
+}
+
+.table--overview {
+    margin: 10px 0 60px;
+    position: relative;
+    border-collapse: separate;
+    border-spacing: 0;
+
+    .container__thumbnail {
+        background-color: $gray-tint01;
+        background-size: cover;
+        background-position: 50% 50%;
+        height: 48px;
+        width: 64px;
+        margin: 0 $input-padding-y 4px 0;
+
+        .thumbnail {
+            height: 48px;
+            display: block;
+            margin: 0 auto;
+        }
+    }
+
+    .background-image {
+        background-color: $gray-tint01;
+        background-image: url(../icons/noimage.svg);
+        background-size: 40%;
+        height: 48px;
+        width: 64px;
+        background-repeat: no-repeat;
+        background-position: center;
+    }
+
+    tbody tr {
+        &:hover {
+            cursor: pointer;
+            background-color: $gray-tint02;
+        }
+    }
+
+    th {
+        position: sticky;
+        top: 0;
+        background: $white;
+        border-bottom: 2px solid $gray-tint11;
+        vertical-align: bottom;
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+    }
+
+    .btn-textlink {
+        display: flex;
+        padding: 6px 0;
+
+        svg {
+            padding: 0 8px;
+        }
+
+        &:hover {
+            background-color: $white;
+        }
+    }
+}
+
+.overview--validate {
+    .checkmark {
+        width: 20px;
+        height: 20px;
+        path {
+            fill: $green-tint01;
+        }
+    }
+    .close {
+        path {
+            fill: $red;
+        }
+    }
+}

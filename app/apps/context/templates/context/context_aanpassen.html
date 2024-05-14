@@ -1,0 +1,71 @@
+{% extends "base_beheer.html" %}
+{% load rotterdam_formulier_html %}
+{% load json_encode from main_tags %}
+{% block title %}
+    UI groep {{ object.naam }} | Beheer | ExternR
+{% endblock title %}
+{% block body %}
+    <div class="page__beheer">
+        <div>
+            <a href="{% url 'context_lijst' %}"
+               data-turbo-action='advance'
+               class="link--back">
+                <svg width="25"
+                     height="16"
+                     viewBox="0 0 25 16"
+                     fill="none"
+                     xmlns="http://www.w3.org/2000/svg">
+                    <path d="M9.15173 1.73256L7.73753 0.318359L1.44704 6.60885L1.4142 6.576L0 7.9902L1.4115 9.4017L1.37867 9.43453L7.67186 15.7277L9.08606 14.3135L3.7726 9.00006H24.0098V7.00006H3.88423L9.15173 1.73256Z" fill="#404B4F" />
+                </svg>
+                UI groepenlijst
+            </a>
+        </div>
+        <h1>UI groep {{ object.naam }}</h1>
+        <div class="grid-container">
+            <div class="grid-item">
+                <form action="." method="post" class="form--beheer">
+                    {% csrf_token %}
+                    <fieldset>
+                        {{ form.naam|render_rotterdam_formulier }}
+                        {{ form.taaktypes|render_rotterdam_formulier }}
+                        {{ form.filters|render_rotterdam_formulier }}
+                        {{ form.template|render_rotterdam_formulier }}
+                    </fieldset>
+                    <div class="form-row container__button">
+                        <div class="form-row btn-row">
+                            <button type="reset"
+                                    class="btn btn-tertiary"
+                                    data-controller="utils"
+                                    data-action="utils#goToUrl"
+                                    data-utils-url-param="{% url 'context_lijst' %}">
+                                <span>Annnnuleren</span>
+                            </button>
+                            <button type="submit" class="btn btn-action">
+                                <span>Aanpassen</span>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div>
+                {% if object.profielen_voor_context.all %}
+                    <div class="container__userlist">
+                        <h2 class="h3">Gebruikers met deze rol</h2>
+                        <ul class="list--clean">
+                            {% for profiel in object.profielen_voor_context.all %}
+                                <li>
+                                    <strong>{{ profiel.gebruiker.email }}</strong>
+                                    {% if profiel.gebruiker.first_name or profiel.gebruiker.last_name %}
+                                        ({{ profiel.gebruiker.first_name }}
+                                        {% if profiel.gebruiker.last_name %}{{ profiel.gebruiker.last_name }}{% endif %}
+                                        )
+                                    {% endif %}
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock body %}

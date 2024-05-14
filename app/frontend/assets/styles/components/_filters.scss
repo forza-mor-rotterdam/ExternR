@@ -1,0 +1,294 @@
+// @use './../base' as base;
+
+.count {
+    color: $white;
+    background-color: $primary;
+    font-size: 12px;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    padding: 0 !important;
+    display: inline-block;
+    text-align: center;
+    line-height: 24px;
+    margin: 0 3px;
+
+    button & {
+        font-size: 10px;
+        width: 15px;
+        height: 15px;
+        line-height: 15px;
+        color: $black;
+        background-color: $white;
+    }
+}
+
+.btn-filter {
+    &--small {
+        padding-left: 4px;
+        padding-right: 4px;
+        min-width: 77px;
+
+        @media (min-width: map-get($grid-breakpoints, md)) {
+            height: 48px !important;
+            padding-left: 6px;
+            padding-right: 6px;
+            min-width: 81px;
+        }
+    }
+}
+
+.full-page-view__filters {
+    form {
+        padding-bottom: 8rem;
+    }
+
+    fieldset {
+        margin: 0 $input-padding-x;
+    }
+
+    .show-filters & {
+        .full-page-view__main {
+            // opacity: 1;
+            transform: translateZ(0);
+        }
+    }
+
+    .full-page-view__footer {
+        position: fixed;
+        width: calc(100% - 2 * ($input-padding-x));
+        bottom: 0;
+        padding: $input-padding-x;
+        background: white;
+        left: 0;
+        display: flex;
+        justify-content: center;
+
+        .btn {
+            width: 100%;
+            margin-bottom: $input-padding-x;
+            &:last-child {
+                margin-bottom: 0;
+            }
+        }
+    }
+
+    details {
+        &.filter {
+            &--active {
+                background-color: $gray-tint01;
+                border: 0;
+                margin-bottom: $input-padding-x;
+
+                ul {
+                    margin: 0;
+                }
+
+                h3 {
+                    margin-bottom: 0.5em;
+                }
+            }
+        }
+
+        summary {
+            display: flex;
+            justify-content: space-between;
+            flex-direction: row;
+            padding: 24px 16px 24px 40px;
+            position: relative;
+            cursor: pointer;
+            border-top: 1px solid $gray-tint04;
+
+            &::-webkit-details-marker {
+                display: none;
+            }
+            &::before {
+                content: url("../icons/arrow-right.svg");
+                position: absolute;
+                top: calc(50% - 10px);
+                left: 16px;
+                transform: rotate(90deg);
+            }
+        }
+
+        &.filter:not([open]) {
+            &:last-of-type {
+                > summary {
+                    border-bottom: 1px solid $gray-tint04;
+                }
+            }
+        }
+
+        &[open] {
+            > summary {
+                &::before {
+                    transform: rotate(-90deg);
+                    left: 19px;
+                }
+            }
+        }
+
+        ul {
+            @include list-clean();
+            margin: 0 $input-padding-x;
+
+            &.list-filters--active {
+                li {
+                    display: inline-block;
+                    margin-right: $input-padding-y;
+                }
+            }
+
+            .container__check {
+                margin: 0 -16px;
+            }
+        }
+
+        details:not(.timeline) {
+            summary {
+                background-color: $gray-tint01;
+                margin: 0 -16px;
+                padding: 24px 32px 24px 80px;
+
+                &::before {
+                    left: 57px;
+                }
+            }
+
+            ul {
+                margin: 0;
+            }
+
+            .form-check {
+                margin-left: -4px;
+            }
+
+            &[open] {
+                > summary {
+                    &::before {
+                        left: 60px;
+                    }
+                }
+            }
+        }
+        .container__list--header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            > div {
+                flex: 1;
+                text-align: right;
+            }
+            .btn {
+                flex: 0 1 25%;
+                white-space: nowrap;
+                display: inline;
+                width: auto;
+            }
+        }
+    }
+
+    .filter {
+        &:first-of-type {
+            > summary {
+                border-top: 0;
+            }
+        }
+    }
+}
+
+.container__list--districts,
+.container__list--subjects {
+    background-color: transparent;
+    margin: 0 0 16px -8px;
+    padding: 0 0 16px 48px;
+
+    > *:first-child {
+        margin-top: 0;
+    }
+}
+
+details {
+    summary {
+        display: flex;
+        justify-content: space-between;
+        flex-direction: column;
+        padding: 24px 16px 24px 40px;
+        position: relative;
+        cursor: pointer;
+        border-top: 1px solid $gray-tint04;
+
+        &::-webkit-details-marker {
+            display: none;
+        }
+        &::before {
+            content: url("../icons/arrow-right.svg");
+            position: absolute;
+            top: calc(50% - 10px);
+            left: 16px;
+            transform: rotate(90deg);
+        }
+    }
+
+    &.filter:not([open]) {
+        &:last-of-type {
+            > summary {
+                border-bottom: 1px solid $gray-tint04;
+            }
+        }
+    }
+
+    &[open] {
+        > summary {
+            &::before {
+                transform: rotate(-90deg);
+                left: 19px;
+            }
+        }
+    }
+
+    ul {
+        @include list-clean();
+        margin: 0 $input-padding-x;
+
+        &.list-filters--active {
+            li {
+                display: inline-block;
+                margin-right: $input-padding-y;
+            }
+        }
+
+        .container__check {
+            margin: 0 -16px;
+        }
+    }
+
+    details:not(.timeline) {
+        summary {
+            background-color: $gray-tint01;
+            margin: 0 -16px;
+            padding: 24px 32px 24px 80px;
+
+            &::before {
+                left: 57px;
+            }
+        }
+
+        ul {
+            margin: 0;
+        }
+
+        .form-check {
+            margin-left: -4px;
+        }
+
+        &[open] {
+            > summary {
+                &::before {
+                    left: 60px;
+                }
+            }
+        }
+    }
+}

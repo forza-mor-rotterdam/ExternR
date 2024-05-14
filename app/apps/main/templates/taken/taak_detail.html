@@ -1,0 +1,75 @@
+{% extends "base_modal_context.html" %}
+{% load webpack_static from webpack_loader %}
+{% load multiply previous next from list_tags %}
+{% load taakopdracht render_onderwerp get_bijlagen from melding_tags %}
+{% load replace_comma_by_dot vind_in_dict from main_tags %}
+{% load json_encode from main_tags %}
+{% load mor_core_url mor_core_protected_url from main_tags %}
+{% load get_gebruiker_object_middels_email get_taakgebeurtenis_voor_taakstatus from gebruikers_tags %}
+{% block title %}
+    {% with melding=taak.melding.response_json %}
+        {% if taak.taak_zoek_data.locatie_type == "graf" %}
+            {% if taak.taak_zoek_data.grafnummer %}Graf {{ taak.taak_zoek_data.grafnummer }}{% endif %}
+            {% if taak.taak_zoek_data.vak %}, Vak {{ taak.taak_zoek_data.vak }}{% endif %}
+            {% vind_in_dict melding.signalen_voor_melding.0.meta_uitgebreid.begraafplaats.choices taak.taak_zoek_data.begraafplaats as signaal_begraafplaats_naam %}
+            {% if signaal_begraafplaats_naam == taak.taak_zoek_data.begraafplaats %}
+                {% vind_in_dict melding.meta_uitgebreid.begraafplaats.choices taak.taak_zoek_data.begraafplaats %}
+            {% else %}
+                {{ signaal_begraafplaats_naam }}
+            {% endif %}
+        {% else %}
+            {{ taak.adres }}
+        {% endif %}
+    {% endwith %}
+    | ExternR
+{% endblock title %}
+{% block before_modal_content %}
+    <turbo-frame id="taak_basis">
+    {% with melding=taak.melding.response_json %}
+        {% with taak_zoek_data=taak.taak_zoek_data %}
+            {% with geometrie=taak_zoek_data.geometrie %}
+                <div data-controller="modal">
+                    <div>
+                        <div>
+                            <a href="{% url 'taken' %}"
+                               data-turbo-action="advance"
+                               class="link--back"
+                               aria-label="Terug">
+                                <svg width="25"
+                                     height="16"
+                                     viewBox="0 0 25 16"
+                                     fill="none"
+                                     xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M9.15173 1.73256L7.73753 0.318359L1.44704 6.60885L1.4142 6.576L0 7.9902L1.4115 9.4017L1.37867 9.43453L7.67186 15.7277L9.08606 14.3135L3.7726 9.00006H24.0098V7.00006H3.88423L9.15173 1.73256Z" fill="#404B4F" />
+                                </svg>
+                            </a>
+                        </div>
+                        {% get_bijlagen melding as bijlagen %}
+                        <div data-controller="detail"
+                             data-detail-afbeeldingen-value="{{ bijlagen|json_encode }}"
+                             data-detail-url-prefix-value="{{ MOR_CORE_PROTECTED_URL_PREFIX }}"
+                             data-detail-taak-object-value="{{ taak }}"
+                             data-detail-incident-y-value="{{ geometrie.x|replace_comma_by_dot }}"
+                             data-detail-incident-x-value="{{ geometrie.y|replace_comma_by_dot }}"
+                             data-detail-mercure-public-url-value="{{ APP_MERCURE_PUBLIC_URL }}"
+                             {% if not DEBUG %}data-detail-mercure-subscriber-token-value="{{ MERCURE_SUBSCRIBER_TOKEN }}"{% endif %}
+                             {% if taak.magAfhandelen %}class="has-sticky-footer"{% endif %}>
+                            <div class="taak-detail">
+                                <div class="container__header-taaknavigatie">
+                                    {% include "taken/taak_detail_header.html" %}
+                                    {% include "taken/taak_detail_images.html" %}
+                                    {% include "taken/taak_detail_foldouts.html" %}
+                                    {% include "taken/taak_detail_buttons.html" %}
+                                </div>
+                            </div>
+                            {% include "snippets/modal_images.html" %}
+                        </div>
+                    </div>
+                {% endwith %}
+            {% endwith %}
+        {% endwith %}
+    {% endblock before_modal_content %}
+    {% block after_modal_content %}
+    </div>
+    </turbo-frame>
+{% endblock after_modal_content %}

@@ -1,0 +1,244 @@
+{% extends "base_modal_context.html" %}
+{% load humanize %}
+{% load webpack_static from webpack_loader %}
+{% load multiply previous next from list_tags %}
+{% load taakopdracht render_onderwerp get_bijlagen from melding_tags %}
+{% load replace_comma_by_dot vind_in_dict from main_tags %}
+{% load json_encode from main_tags %}
+{% load mor_core_url mor_core_protected_url from main_tags %}
+{% load context_template from context_tags %}
+{% load get_gebruiker_object_middels_email get_taakgebeurtenis_voor_taakstatus get_field_from_gebruiker_middels_email from gebruikers_tags %}
+{% block title %}
+    Taak: {{ taak.titel }}, {{ taak.adres }}
+    | ExternR
+{% endblock title %}
+{% block extra_head %}
+    {% if link_actief %}
+        {% with melding=taak.melding.response_json %}
+            <meta property="og:title"
+                  content="Taak: {{ taak.titel }}, {{ taak.adres }}" />
+            <meta property="og:type" content="website" />
+            <meta property="og:url"
+                  content="{{ ABSOLUTE_ROOT }}{% url 'taak_detail_preview' taak.id signed_data %}" />
+            <meta property="og:description"
+                  content="Deze link verloopt over {{ taak_gedeeld.actief.1|naturaltime }}, gedeeld door: {{ gebruiker_email }}" />
+            {% get_bijlagen melding as bijlagen %}
+            {% if bijlagen %}
+                <meta property="og:image"
+                      content="{{ ABSOLUTE_ROOT }}{{ bijlagen.0.afbeelding_relative_url|mor_core_url:signed_data }}" />
+                <meta property="og:image:width" content="600" />
+                <meta property="og:image:height" content="600" />
+            {% endif %}
+        {% endwith %}
+    {% endif %}
+{% endblock extra_head %}
+{% block pageheader %}
+{% endblock pageheader %}
+{% block before_modal_content %}
+    <turbo-frame id="taak_basis">
+    {% if not link_actief %}
+        <p>
+            Deze link is verlopen.
+            <br>
+            <a href="{% url 'taak_detail' taak.id %}" data-turbo-action="replace">Terug naar de taak</a>
+        </p>
+    {% else %}
+        {% with melding=taak.melding.response_json %}
+            {% with geometrie=taak.taak_zoek_data.geometrie %}
+                <div data-controller="modal">
+                    {% get_bijlagen melding as bijlagen %}
+                    <div data-controller="detail"
+                         data-detail-afbeeldingen-value="{{ bijlagen|json_encode }}"
+                         data-detail-url-prefix-value="{{ MOR_CORE_URL_PREFIX }}"
+                         data-detail-signed-data-value="{{ signed_data }}"
+                         data-detail-taak-object-value="{{ taak }}"
+                         data-detail-incident-y-value="{{ geometrie.0|replace_comma_by_dot }}"
+                         data-detail-incident-x-value="{{ geometrie.1|replace_comma_by_dot }}"
+                         data-detail-mercure-public-url-value="{{ APP_MERCURE_PUBLIC_URL }}"
+                         {% if not DEBUG %}data-detail-mercure-subscriber-token-value="{{ MERCURE_SUBSCRIBER_TOKEN }}"{% endif %}
+                         {% if taak.magAfhandelen %}class="has-sticky-footer"{% endif %}>
+                        <div class="taak-detail taak-detail--preview">
+                            <div class="container__header-taaknavigatie">
+                                <span>Deze link verloopt over {{ taak_gedeeld.actief.1|naturaltime }}</span>
+                                <h1 class="h3">
+                                    {{ taak.adres }}
+                                    <span class="badge {% if taak.taakstatus.naam == 'nieuw' %}badge--darkblue {% elif taak.taakstatus.naam == 'toegewezen' %}badge--yellow {% else %}badge--green{% endif %}">{{ taak.taakstatus.naam|lower|capfirst }}
+                                        {% if taak.additionele_informatie.uitvoerder %}aan {{ taak.additionele_informatie.uitvoerder }}{% endif %}
+                                    </span>
+                                </h1>
+                                <div class="container__flex padding-bottom">
+                                    <div>
+                                        <span>{{ taak.titel }}</span>
+                                        <br>
+                                        <span class="lighter">
+                                            <span data-detail-target="taakAfstand"
+                                                  data-latitude="{{ geometrie.1|replace_comma_by_dot }}"
+                                                  data-longitude="{{ geometrie.0|replace_comma_by_dot }}"></span> meter afstand
+                                        </span>
+                                    </div>
+                                    {% if taak.taak_zoek_data.locatie_type == "adres" %}
+                                        {% if geometrie %}
+                                            <div class="textalign--right">
+                                                <a class="link link--navigate"
+                                                   href="#"
+                                                   data-modal-title-param="Navigeren"
+                                                   data-modal-url-param="{% url 'navigeer' geometrie.1|replace_comma_by_dot geometrie.0|replace_comma_by_dot %}"
+                                                   data-modal-id-param="navigeer"
+                                                   data-action="modal#openModal">
+                                                    {% include "icons/navigate.svg" %}
+                                                    Navigeren
+                                                </a>
+                                            </div>
+                                        {% endif %}
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <section class="section--seperated section--imageslider"
+                                     data-testid="detailPhotoviewer"
+                                     {% if bijlagen|length < 2 %}style="border: 0;"{% endif %}>
+                                <div class="full-width">
+                                    {% if bijlagen %}
+                                        <div class="container__imageslider"
+                                             data-detail-target="imageSliderContainer"
+                                             data-action="scroll->detail#onScrollSlider">
+                                            <ul class="list-clean imageslider"
+                                                style="width: calc(100% * {{ bijlagen|length }})">
+                                                {% for foto in bijlagen %}
+                                                    <li class="container__image"
+                                                        id="{{ foto.afbeelding_relative_url|mor_core_url:signed_data }}"
+                                                        data-action="click->detail#showImageInModal"
+                                                        data-detail-image-index-param="{{ forloop.counter|add:'-1' }}">
+                                                        <img src="{{ foto.afbeelding_relative_url|mor_core_url:signed_data }}"
+                                                             class="image"
+                                                             alt="" />
+                                                    </li>
+                                                {% endfor %}
+                                            </ul>
+                                        </div>
+                                        {% if bijlagen|length > 1 %}
+                                            <div class="container__thumbs">
+                                                <ul data-detail-target="thumbList">
+                                                    {% for foto in bijlagen %}
+                                                        <li data-action="click->detail#selectImage"
+                                                            data-detail-image-index-param="{{ forloop.counter }}">
+                                                            <div class="container__image">
+                                                                <img src="{{ foto.afbeelding_verkleind_relative_url|mor_core_url:signed_data }}"
+                                                                     alt="" />
+                                                            </div>
+                                                        </li>
+                                                    {% endfor %}
+                                                </ul>
+                                            </div>
+                                        {% endif %}
+                                    {% else %}
+                                        <div class="no-image"
+                                             style="background-image: url('{% webpack_static 'icons/noimage.svg' %}')">
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                {% include "icons/expand.svg" %}
+                            </section>
+                            <section class="padding-bottom-2x">
+                                <h2>
+                                    <svg width="20"
+                                         height="26"
+                                         viewBox="0 0 20 26"
+                                         fill="none"
+                                         xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M17.6349 3.61281C16.709 2.48342 15.544 1.57355 14.224 0.948802C12.9039 0.324055 11.4617 0 10.0013 0C8.54084 0 7.09861 0.324055 5.77856 0.948802C4.4585 1.57355 3.29352 2.48342 2.3676 3.61281C0.837677 5.46838 0.000976563 7.79842 0.000976562 10.2034C0.000976563 12.6083 0.837677 14.9384 2.3676 16.7939L10.0013 26.0002L17.6361 16.7939C19.1652 14.938 20.0013 12.608 20.0011 10.2032C20.0009 7.79839 19.1644 5.46853 17.6349 3.61281ZM10.0001 13.9988C9.11016 13.9988 8.24017 13.7348 7.50017 13.2404C6.76018 12.746 6.18343 12.0432 5.84285 11.2209C5.50227 10.3987 5.41316 9.49394 5.58678 8.62106C5.76041 7.74818 6.18898 6.94639 6.81829 6.31708C7.4476 5.68777 8.24939 5.2592 9.12227 5.08557C9.99515 4.91195 10.8999 5.00106 11.7222 5.34164C12.5444 5.68222 13.2472 6.25897 13.7416 6.99897C14.2361 7.73896 14.5 8.60895 14.5 9.49893C14.5 10.6925 14.0259 11.8371 13.1821 12.6812C12.3382 13.5252 11.1937 13.9996 10.0001 13.9999V13.9988Z" fill="#00811F" />
+                                    </svg>
+                                    Locatie
+                                </h2>
+                                {% if taak.taak_zoek_data.locatie_type == "adres" %}
+                                    <div class="container__details taak">
+                                        <h3 class="h5">Ter hoogte van</h3>
+                                        <p>{{ taak.adres }}</p>
+                                    </div>
+                                    <div class="container__details taak">
+                                        {% if taak.taak_zoek_data.wijknaam %}
+                                            <div>
+                                                <h3 class="h5">Wijk</h3>
+                                                <p>{{ taak.taak_zoek_data.wijknaam }}</p>
+                                            </div>
+                                        {% endif %}
+                                        {% if taak.taak_zoek_data.buurtnaam %}
+                                            <div>
+                                                <h3 class="h5">Buurt</h3>
+                                                <p>{{ taak.taak_zoek_data.buurtnaam }}</p>
+                                            </div>
+                                        {% endif %}
+                                        {% if taak.locatie.subbuurt %}
+                                            <div>
+                                                <dt>Subbuurt:</dt>
+                                                <dd>
+                                                    {{ taak.locatie.subbuurt }}
+                                                </dd>
+                                            </div>
+                                        {% endif %}
+                                        {% if taak.locatie.plaatsbepaling %}
+                                            <div>
+                                                <dt>Plaatsbepaling:</dt>
+                                                <dd>
+                                                    {{ taak.locatie.plaatsbepaling }}
+                                                </dd>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                    <div class="container__map full-width">
+                                        <div class="map map--single"
+                                             id="incidentMap"
+                                             data-action="touchstart->detail#onTwoFingerDrag touchend->detail#onTwoFingerDrag">
+                                            <div class="map__overlay">
+                                                <span>Gebruik twee vingers om de kaart te verplaatsen</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% else %}
+                                    <div class="container__details taak">
+                                        <h3 class="h5">Begraafplaats</h3>
+                                        <p>
+                                            {% vind_in_dict melding.signalen_voor_melding.0.meta_uitgebreid.begraafplaats.choices taak.taak_zoek_data.begraafplaats as signaal_begraafplaats_naam %}
+                                            {% if signaal_begraafplaats_naam == taak.taak_zoek_data.begraafplaats %}
+                                                {% vind_in_dict melding.meta_uitgebreid.begraafplaats.choices taak.taak_zoek_data.begraafplaats %}
+                                            {% else %}
+                                                {{ signaal_begraafplaats_naam }}
+                                            {% endif %}
+                                        </p>
+                                        {% if taak.taak_zoek_data.grafnummer %}
+                                            <h3 class="h5">Grafnummer</h3>
+                                            <p>{{ taak.taak_zoek_data.grafnummer }}</p>
+                                        {% endif %}
+                                        {% if taak.taak_zoek_data.vak %}
+                                            <h3 class="h5">Vak</h3>
+                                            <p>{{ taak.taak_zoek_data.vak }}</p>
+                                        {% endif %}
+                                        {% if melding.signalen_voor_melding.0.meta.naam_overledene %}
+                                            <h3 class="h5">Naam overledene</h3>
+                                            <p>{{ melding.signalen_voor_melding.0.meta.naam_overledene }}</p>
+                                        {% elif melding.meta.naam_overledene %}
+                                            <h3 class="h5">Naam overledene</h3>
+                                            <p>{{ melding.meta.naam_overledene }}</p>
+                                        {% endif %}
+                                    </div>
+                                {% endif %}
+                            </section>
+                            <section class="padding-bottom-2x">
+                                <p>
+                                    Deze link is gedeeld door <a href="mailto:{{ gebruiker_email }}">{{ gebruiker_email }}</a>
+                                </p>
+                                {% include "incident/part_gebruiker_telefoon.html" with gebruiker=gebruiker_email|get_gebruiker_object_middels_email %}
+                                <p>
+                                    <a href="{% url 'taak_detail' taak.id %}" data-turbo-action="replace">Naar orginele taak</a>
+                                </p>
+                            </section>
+                        </div>
+                        {% include "snippets/modal_images.html" %}
+                    </div>
+                {% endwith %}
+            {% endwith %}
+        {% endif %}
+    {% endblock before_modal_content %}
+    {% block after_modal_content %}
+    </div>
+    </turbo-frame>
+{% endblock after_modal_content %}

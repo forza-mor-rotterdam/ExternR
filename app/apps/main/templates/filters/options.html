@@ -1,0 +1,39 @@
+<details class="filter"
+         data-action="filter#toggleActiveFilter"
+         id="foldout_{% if group %}{{ filter.group_key }}{% else %}{{ filter.key }}{% endif %}"
+         {% if filter.folded %}open{% endif %}>
+    <summary>
+        <span>{{ filter.name|capfirst }}</span>
+        <span>({{ filter.active|length }})</span>
+    </summary>
+    <div class="container__list--districts foldout">
+        {% if group %}
+            <div class="container__list--header">
+                <h3 class="h5">{{ group.label }}</h3>
+                <div>
+                    <button class="btn btn-textlink"
+                            data-action="filter#selectAll"
+                            data-filter-filter-type-param="all">Selecteer alles</button>
+                    <button class="btn btn-textlink" data-action="filter#selectAll">/ niets</button>
+                </div>
+            </div>
+        {% endif %}
+        <ul class="list-clean" data-test-id="incidentFilter{{ f.naam|capfirst }}">
+            {% for option in filter.options %}
+                <li class="container__check-department">
+                    <div class="form-check">
+                        <input class="form-check-input filter--taken"
+                               type="checkbox"
+                               value="{{ option.value }}"
+                               {% if option.checked %}checked{% endif %}
+                               name="{{ filter.key }}"
+                               id="{{ filter.key }}_{{ option.id }}"
+                               data-action="filter#onChangeFilter"
+                               data-filter-target="filterInput">
+                        <label class="form-check-label" for="{{ filter.key }}_{{ option.id }}">{{ option.label }}</label>
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+</details>

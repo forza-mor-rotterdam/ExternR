@@ -1,0 +1,94 @@
+{% load webpack_static from webpack_loader %}
+{% load gebruikersnaam from gebruikers_tags %}
+<header class="pageheader"
+        data-testid="pageHeader"
+        data-controller="pageHeader modal">
+    <div class="container">
+        <div class="container__logo">
+            <a href="{% url 'root' %}">
+                <img src="{% webpack_static 'images/logo-organisatie.svg' %}"
+                     alt="Logo organisatie"
+                     class="logo logo--large" />
+                <img src="{% webpack_static 'images/logo-organisatie-klein.svg' %}"
+                     alt="Logo organisatie"
+                     class="logo logo--small" />
+            </a>
+            {% if page_title %}<h1 class="pagetitle h2">{{ page_title }}</h1>{% endif %}
+        </div>
+        {% if request.user.is_authenticated %}
+            <div data-controller="message"
+                 data-message-mercure-public-url-value="{{ APP_MERCURE_PUBLIC_URL }}"></div>
+            <button class="btn btn-togglemenu"
+                    data-action="modal#openModal"
+                    data-modal-type-param="navigation"
+                    aria-expanded="false"
+                    aria-label="Open menu">
+                <svg fill="#404B4F"
+                     height="32"
+                     viewBox="0 0 32 32"
+                     width="32"
+                     xmlns="http://www.w3.org/2000/svg"
+                     aria-hidden="true"
+                     aria-label="Open menu">
+                    <g>
+                    <path d="m4 6h24v2h-24z"></path>
+                    <path d="m4 15h24v2h-24z"></path>
+                    <path d="m4 24h24v2h-24z"></path>
+                    </g>
+                </svg>
+                {% if UNWATCHED_COUNT > 0 %}
+                    <span class="badge--unread-count">
+                        {% if UNWATCHED_COUNT < 101 %}
+                            {{ UNWATCHED_COUNT }}
+                        {% else %}
+                            +99
+                        {% endif %}
+                    </span>
+                {% endif %}
+            </button>
+        {% endif %}
+    </div>
+    {% if request.user.is_authenticated %}
+        <div class="modal modal-navigation">
+            <div class="modal-dialog">
+                <div class="modal-backdrop modal-exit"
+                     data-action="click->modal#closeModal"></div>
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button"
+                                class="btn-close"
+                                aria-label="Sluit"
+                                data-action="modal#closeModal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <ul class="list-clean list-nav--tertiary">
+                            {% comment %}
+                        Disabled until new homepage design has been made
+                        <li class="wrapper-horizontal">
+                            <a href="{% url 'home' %}">Homepagina</a>
+                        </li>
+                            {% endcomment %}
+                            <li class="wrapper-horizontal">
+                                <a href="{% url 'taken' %}">Taken</a>
+                            </li>
+                            <li class="wrapper-horizontal">
+                                <a href="{% url 'release_note_lijst_public' %}">Nieuw in ExternR
+                                    {% if UNWATCHED_COUNT > 0 %}
+                                        <span class="badge--unread-count">
+                                            {% if UNWATCHED_COUNT < 101 %}
+                                                {{ UNWATCHED_COUNT }}
+                                            {% else %}
+                                                +99
+                                            {% endif %}
+                                        </span>
+                                    {% endif %}
+                                </a>
+                            </li>
+                        </ul>
+                        {% include "snippets/form_pageheader.html" %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+</header>

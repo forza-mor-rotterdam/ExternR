@@ -1,0 +1,22 @@
+{% load rotterdam_formulier_html %}
+<turbo-frame id="taak_toewijzing_intrekken">
+{% if not form %}
+    <div data-modal-target="closeModalElement"
+         data-turbo-frame-id="taak_basis"
+         data-turbo-frame-id="taak_basis"
+         data-turbo-frame-src="{% url 'taak_detail' taak.id %}"></div>
+{% else %}
+    <p>Taak id: {{ taak.id }}</p>
+    <form action="{% url 'taak_toewijzing_intrekken' taak.id %}"
+          data-controller="form"
+          method="post">
+        {% csrf_token %}
+        <div class="form-row">
+            <button type="submit" class="btn btn-action">Toewijzing intrekken</button>
+            <button type="reset" class="btn btn-tertiary" data-action="modal#closeModal">
+                <span>Annuleren</span>
+            </button>
+        </div>
+    </form>
+{% endif %}
+</turbo-frame>

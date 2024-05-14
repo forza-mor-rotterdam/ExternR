@@ -1,0 +1,36 @@
+{% extends "base_beheer.html" %}
+{% load rotterdam_formulier_html %}
+{% block title %}
+    Nieuw in ExternR | ExternR
+{% endblock title %}
+{% block body %}
+    <turbo-frame id="release_notes" data-turbo-action="advance">
+    <div class="page__beheer" data-controller="row-search">
+        <div>
+            <h1 class="pagetitle">Nieuw in ExternR</h1>
+            <ul class="list-clean border-top">
+                {% for release_note in release_notes %}
+                    <li class="list-item{% if not release_note.is_unwatched %} inactive{% endif %}">
+                        <a class="no--link"
+                           href="{% url 'release_note_detail' release_note.pk %}">
+                            <h2>{{ release_note.titel|capfirst }}</h2>
+                            {% if release_note.publicatie_datum %}<p class="release-date">{{ release_note.publicatie_datum }}</p>{% endif %}
+                            <p class="description">
+                                {% autoescape off %}
+                                    {{ release_note.beschrijving|striptags|safe|truncate_text:200 }}
+                                {% endautoescape %}
+                                <br />
+                                <small><a href="{% url 'release_note_detail' release_note.pk %}"
+   data-turbo-frame="_top">Lees meer</a></small>
+                            </p>
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+            {% comment %} <div class="container">
+                <a href="{% url 'taken' %}" class="btn btn-action">Bekijk mijn taken</a>
+            </div> {% endcomment %}
+        </div>
+    </div>
+    </turbo-frame>
+{% endblock body %}

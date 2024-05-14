@@ -1,0 +1,102 @@
+{% load render_bundle from webpack_loader %}
+{% load webpack_static from webpack_loader %}
+<!DOCTYPE html>
+<html lang="nl">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport"
+              content="user-scalable=no, width=device-width, initial-scale=1.0">
+        <meta name="description"
+              content="Applicatie voor de uitvoering van taken voor MOR in de gemeente Rotterdam">
+        <meta name="keywords"
+              content="MOR, Meldingen openbare ruimte, gemeente Rotterdam, ExternR">
+        <title>
+            {% block title %}
+                ExternR
+            {% endblock title %}
+        </title>
+        <link rel="apple-touch-icon"
+              sizes="180x180"
+              href="{{ base_url }}{% webpack_static 'images/apple-touch-icon.png' %}" />
+        <link rel="icon"
+              type="image/png"
+              sizes="32x32"
+              href="{{ base_url }}{% webpack_static 'images/favicon-32x32.png' %}" />
+        <link rel="icon"
+              type="image/png"
+              sizes="16x16"
+              href="{{ base_url }}{% webpack_static 'images/favicon-16x16.png' %}" />
+        <link rel="mask-icon"
+              href="{{ base_url }}{% webpack_static 'images/safari-pinned-tab.svg' %}"
+              color="#00811f" />
+        <link rel="manifest"
+              href="{{ base_url }}{% webpack_static 'manifest.json' %}" />
+        <link rel="shortcut icon"
+              href="{{ base_url }}{% webpack_static 'images/favicon.ico' %}" />
+        <link rel="icon"
+              href="{{ base_url }}{% webpack_static 'images/favicon.ico' %}" />
+        {% comment %} disable page caching {% endcomment %}
+        <meta name="turbo-cache-control" content="no-cache">
+        {% comment %} disable prefetching onhover {% endcomment %}
+        <meta name="turbo-prefetch" content="false">
+        {% block extra_head %}
+        {% endblock extra_head %}
+        {% block stylesheets %}
+            <link rel="stylesheet"
+                  href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+                  integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+                  crossorigin="" />
+            {% render_bundle 'app' 'css' %}
+        {% endblock stylesheets %}
+        {% if DEBUG %}
+            <script>
+            const chatSocket = new WebSocket(
+                "ws://localhost:"
+                + {{DEV_SOCKET_PORT}}
+            );
+
+            chatSocket.onmessage = function(e) {
+                if (e.data === "reload"){
+                    location.reload()
+                }
+            };
+
+            chatSocket.onclose = function(e) {
+                console.error("socket closed unexpectedly");
+            };
+            </script>
+        {% endif %}
+        {% block javascripts %}
+            {% render_bundle 'app' 'js' %}
+        {% endblock javascripts %}
+        <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+                integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+                crossorigin=""></script>
+        <script src="//unpkg.com/leaflet-gesture-handling"></script>
+    </head>
+    <body class="{% block body_class %}app {% endblock body_class %} {% if user.profiel.ui_instellingen.fontsize %}{{ user.profiel.ui_instellingen.fontsize }}{% endif %}">
+        {% block pageheader %}
+            {% with page_title="ExternR" %}
+                {% include "snippets/pageheader.html" %}
+            {% endwith %}
+        {% endblock pageheader %}
+        {% block main %}
+            <main data-controller="main" data-main-taken-outlet="#taken">
+                <div class="{% block container_class %}container container--unlimited{% endblock container_class %}">
+                    {% block body %}
+                    {% endblock body %}
+                </div>
+            </main>
+        {% endblock main %}
+        <div class="modal-backdrop"></div>
+        <div class="spinner"></div>
+        {% include "auth/session_timer.html" %}
+        {% if APP_ENV != "productie" %}
+            <div class="container--env">
+                <div class="container">
+                    <span class="badge badge--red">{{ APP_ENV }}</span>
+                </div>
+            </div>
+        {% endif %}
+    </body>
+</html>

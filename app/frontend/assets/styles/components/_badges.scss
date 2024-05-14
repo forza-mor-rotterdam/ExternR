@@ -1,0 +1,72 @@
+.badge {
+    display: inline-block;
+    padding: 0 4px;
+    color: $white;
+    font-weight: 700;
+    font-size: 0.667em;
+    line-height: 1.5em;
+    margin-right: 4px;
+
+    h1 & {
+        padding: 2px $input-padding-y;
+        position: absolute;
+        top: 0;
+        right: 0;
+    }
+
+    &--lightblue {
+        background-color: $blue-light;
+    }
+
+    &--darkblue {
+        background-color: $blue-dark;
+    }
+
+    &--green {
+        background-color: $greenblue;
+    }
+
+    &--red {
+        background-color: $red-tint02;
+    }
+
+    &--yellow {
+        background-color: $warning;
+        color: $black;
+    }
+}
+
+.badge--unread-count {
+    display: inline-block;
+    height: 25px;
+    width: 25px;
+    font-size: 12px;
+    text-align: center;
+    line-height: 25px;
+    font-weight: 700;
+    border-radius: 50%;
+    color: $white;
+    background-color: $red-tint02;
+    transform: translateY(-50%);
+}
+
+.container--env {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    pointer-events: none;
+    z-index: 200;
+
+    .badge {
+        height: 22px;
+        line-height: 22px;
+        font-size: 14px;
+
+        @media (min-width: map-get($grid-breakpoints, md)) {
+            height: 42px;
+            line-height: 42px;
+            font-size: 18px;
+        }
+    }
+}

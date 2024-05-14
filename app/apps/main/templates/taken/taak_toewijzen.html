@@ -1,0 +1,24 @@
+{% load rotterdam_formulier_html %}
+<turbo-frame id="taak_toewijzen">
+{% if not form %}
+    <div data-modal-target="closeModalElement"
+         data-turbo-frame-id="taak_basis"
+         data-turbo-frame-src="{% url 'taak_detail' taak.id %}"></div>
+{% else %}
+    <p>Taak id: {{ taak.id }}</p>
+    <form action="{% url 'taak_toewijzen' taak.id %}"
+          data-controller="form"
+          method="post">
+        {% csrf_token %}
+        {{ form.omschrijving_intern|render_rotterdam_formulier }}
+        {% comment %} {{ form.uitvoerder_zoeken|render_rotterdam_formulier }} {% endcomment %}
+        {% comment %} {{ form.uitvoerder|render_rotterdam_formulier }} {% endcomment %}
+        <div class="form-row">
+            <button type="submit" class="btn btn-action">Toewijzen</button>
+            <button type="reset" class="btn btn-tertiary" data-action="modal#closeModal">
+                <span>Annuleren</span>
+            </button>
+        </div>
+    </form>
+{% endif %}
+</turbo-frame>

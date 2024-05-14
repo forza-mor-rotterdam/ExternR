@@ -1,0 +1,123 @@
+.errorpage,
+.errorpage .page__detail,
+.errorpage turbo-frame {
+    height: 100%;
+}
+
+.errorpage {
+    .btn-togglemenu {
+        display: none;
+    }
+
+    main {
+        padding-bottom: 0;
+        height: calc(100% - 80px);
+
+        .container,
+        .container__details {
+            height: 100%;
+        }
+    }
+    .container__details {
+        max-width: map-get($container-max-widths, md);
+        margin: 0 auto;
+        display: grid;
+        grid-template-rows: auto 1fr auto;
+
+        h1,
+        .h1 {
+            display: block;
+            padding: 8px 12px;
+            color: $white;
+            background-color: $gray-tint11;
+            margin-top: 0;
+        }
+
+        img {
+            display: block;
+            width: 100%;
+            max-width: 100%;
+        }
+
+        .full-width {
+            margin: auto -16px 0;
+            padding-top: 20px;
+        }
+    }
+
+    .link--whatsapp {
+        vertical-align: unset;
+    }
+}
+
+figure.question {
+    margin-left: 0;
+    margin-right: 0;
+    q {
+        font-size: $h1-font-size;
+        display: block;
+        margin: 1rem;
+        font-weight: 700;
+    }
+    figcaption {
+        font-weight: 700;
+        color: $green-tint01;
+    }
+}
+
+.container__answers {
+    margin-bottom: 2em;
+    .btn {
+        padding-left: 1em;
+        padding-right: 3em;
+        text-align: left;
+        color: $green-tint01;
+        max-width: 360px;
+        position: relative;
+        cursor: default;
+
+        &.wrong-answer {
+            background-color: $red !important;
+            color: $white;
+
+            &::after {
+                content: url("data:image/svg+xml,%3csvg width=%2732%27 height=%2732%27 viewBox=%270 0 32 32%27 fill=%27black%27 xmlns=%27http://www.w3.org/2000/svg%27%3e%3cpath fill-rule=%27evenodd%27 clip-rule=%27evenodd%27 d=%27M26.6077 6.80752L25.1935 5.39331L16.0011 14.5857L6.80875 5.39331L5.39453 6.80752L14.5869 15.9999L5.39453 25.1923L6.80874 26.6065L16.0011 17.4141L25.1935 26.6065L26.6077 25.1923L17.4153 15.9999L26.6077 6.80752Z%27 fill=%27white%27/%3e%3c/svg%3e");
+                position: absolute;
+                top: 8px;
+                right: 8px;
+            }
+        }
+
+        &.right-answer {
+            background-color: $green-tint01;
+            color: $white;
+
+            &::after {
+                content: url("data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjYiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCA1NSA0MyIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiBjbGFzcz0iaWNvbi0tY2hlY2ttYXJrIj4KPHBhdGggZD0iTTQ5LjY0MzkgMC4wNDI3MjQ2TDIzLjA0NjggMzMuMjg0NUw0Ljk2Mzk3IDExLjI4NDRMMC4zMTczODMgMTUuMDc5OEwyMy4wOTY1IDQyLjgyNjFMNTQuMzI4OCAzLjc5Mjk1TDQ5LjY0MzkgMC4wNDI3MjQ2WiIgZmlsbD0iI0ZGRiIvPgo8L3N2Zz4K");
+                position: absolute;
+                top: 13px;
+                right: 10px;
+            }
+        }
+    }
+}
+
+.container__answers:not(.right-answer-given) {
+    .btn {
+        &:hover,
+        &:focus {
+            background-color: $green-tint01;
+            color: $white;
+            cursor: pointer;
+        }
+    }
+}
+
+#confetti {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}

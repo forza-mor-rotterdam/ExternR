@@ -1,0 +1,33 @@
+{% extends "base_beheer.html" %}
+{% block title %}
+    Beheer | ExternR
+{% endblock title %}
+{% block body %}
+    <h1>Beheer</h1>
+    <ul class="list--blocks-horizontal">
+        <li>
+            <a href="{% url 'gebruiker_lijst' %}">Gebruikers</a>
+        </li>
+        <li>
+            <a href="{% url 'context_lijst' %}">Rollen</a>
+        </li>
+        <li>
+            <a href="{% url 'taaktype_lijst' %}">Taaktypes</a>
+        </li>
+        <li>
+            <a href="{% url 'rechtengroep_lijst' %}">Rechtengroepen</a>
+        </li>
+        <li>
+            <a href="{% url 'release_note_lijst' %}">Release notes</a>
+        </li>
+    </ul>
+    <h2>Andere Forzamor beheer productie omgevingen</h2>
+    <ul class="list--blocks-horizontal">
+        <li>
+            <a href="https://planr.forzamor.nl/beheer">PlanR</a>
+        </li>
+        <li>
+            <a href="https://onderwerpen.forzamor.nl/beheer">Onderwerpen</a>
+        </li>
+    </ul>
+{% endblock body %}
