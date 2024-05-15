@@ -6,11 +6,11 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width,initial-scale=1">
-        <meta name="description" content="Email Serviceverzoek Begraven & Cremeren">
+        <meta name="description" content="Email taak aanvraag externe instantie">
         <meta name="keywords"
-              content="MOR, Meldingen openbare ruimte, gemeente Rotterdam, Serviceverzoek Begraven & Cremeren">
+              content="MOR, Meldingen openbare ruimte, gemeente Rotterdam, Taak aanvraag externe instantie, ExternR">
         <meta name="x-apple-disable-message-reformatting">
-        <title>Serviceverzoek</title>
+        <title>Taak aanvraag</title>
         <!--[if mso]>
         <noscript>
         <xml>
@@ -71,183 +71,142 @@
             </tr>
             <tr>
                 <td align="left" class="p-0-20">
-                    <h1>Serviceverzoek {{ begraafplaats.naam }}</h1>
+                    <h1>Beste {{ taaktype.externe_instantie_verantwoordelijke }},</h1>
                 </td>
             </tr>
             <tr>
                 <td align="left" class="p-0-20">
-                    <p>Beste {{ signaal.formulier_data.meta.naam_melder }},</p>
-                    <p>We ontvingen van jou het volgende serviceverzoek:</p>
+                    <p>
+                        Via MeldR heeft de gemeente Rotterdam een melding binnengekregen, waarvan 1 of meer taken onder de verantwoordelijkheid van {{ taaktype.externe_instantie }} vallen.
+                    </p>
                 </td>
             </tr>
             <tr>
                 <td align="left" class="p-0-20">
                     <table class="email-table">
-                        <tr>
-                            <td class="p-4-16" colspan="2">
-                                <h2 class="no-margin-bottom">Uw gegevens</h2>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="p-4-16 va-top">
-                                <dl>
-                                    {% if signaal.formulier_data.meta.naam_melder %}
-                                        <dt>
-                                            <strong>Naam</strong>
-                                        </dt>
-                                        <dd class="p-0-0-12">
-                                            {{ signaal.formulier_data.meta.naam_melder }}
-                                        </dd>
-                                    {% endif %}
-                                    {% if signaal.formulier_data.meta.telefoon_melder %}
-                                        <dt>
-                                            <strong>Telefoon</strong>
-                                        </dt>
-                                        <dd class="p-0-0-12">
-                                            {{ signaal.formulier_data.meta.telefoon_melder }}
-                                        </dd>
-                                    {% endif %}
-                                    {% if signaal.formulier_data.meta.telefoon_melder %}
-                                        <dt>
-                                            <strong>E-mailadres</strong>
-                                        </dt>
-                                        <dd class="p-0-0-12">
-                                            {{ signaal.formulier_data.meta.email_melder }}
-                                        </dd>
-                                    {% endif %}
-                                </dl>
-                            </td>
-                            <td class="p-4-16 va-top">
-                                <dl>
-                                    <dt>
-                                        <strong>Ben je de rechthebbende/
-                                            <br />
-                                        belanghebbende?</strong>
-                                    </dt>
-                                    <dd class="p-0-0-12">
-                                        {{ signaal.formulier_data.meta.rechthebbende }}
-                                    </dd>
-                                    <dt>
-                                        <strong>Is terugkoppeling gewenst?</strong>
-                                    </dt>
-                                    <dd class="p-0-0-12">
-                                        {{ signaal.formulier_data.meta.terugkoppeling_gewenst }}
-                                    </dd>
-                                </dl>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="p-4-16" colspan="2">
-                                <h2 class="no-margin-bottom">Melding</h2>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="p-4-16 va-top">
-                                <dl>
-                                    <dt>
-                                        <strong>Meldingnummer</strong>
-                                    </dt>
-                                    <dd class="p-0-0-12">
-                                        {{ melding.id }}
-                                    </dd>
-                                    <dt>
-                                        <strong>Datum en tijd</strong>
-                                    </dt>
-                                    <dd class="p-0-0-12">
-                                        {{ melding.aangemaakt_op|to_datetime|date:'d-m-Y H:m' }}
-                                    </dd>
-                                    {% if signaal.formulier_data.meta.aannemer %}
-                                        <dt>
-                                            <strong>Aangenomen door</strong>
-                                        </dt>
-                                        <dd class="p-0-0-12">
-                                            {{ signaal.formulier_data.meta.aannemer }}
-                                        </dd>
-                                    {% endif %}
-                                </dl>
-                            </td>
-                            <td class="p-4-16 va-top">
-                                <dl>
-                                    <dt>
-                                        <strong>Categorie</strong>
-                                    </dt>
-                                    <dd class="p-0-0-12">
-                                        {{ onderwerpen }}
-                                    </dd>
-                                    {% if signaal.formulier_data.meta.toelichting %}
-                                        <dt>
-                                            <strong>Toelichting</strong>
-                                        </dt>
-                                        <dd class="p-0-0-12">
-                                            {{ signaal.formulier_data.meta.toelichting }}
-                                        </dd>
-                                    {% endif %}
-                                </dl>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="p-4-16" colspan="2">
-                                <h2 class="no-margin-bottom">Locatie</h2>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="p-4-16 va-top">
-                                <dl>
-                                    <dt>
-                                        <strong>Begraafplaats</strong>
-                                    </dt>
-                                    <dd class="p-0-0-12">
-                                        {{ begraafplaats.naam }}
-                                    </dd>
-                                    {% if signaal.formulier_data.meta.naam_overledene %}
-                                        <dt>
-                                            <strong>Naam overledene</strong>
-                                        </dt>
-                                        <dd class="p-0-0-12">
-                                            {{ signaal.formulier_data.meta.naam_overledene }}
-                                        </dd>
-                                    {% endif %}
-                                </dl>
-                            </td>
-                            <td class="p-4-16 va-top">
-                                <dl>
-                                    {% if signaal.formulier_data.meta.grafnummer %}
-                                        <dt>
-                                            <strong>Grafnummer</strong>
-                                        </dt>
-                                        <dd class="p-0-0-12">
-                                            {{ signaal.formulier_data.meta.grafnummer }}
-                                        </dd>
-                                    {% endif %}
-                                    {% if signaal.formulier_data.meta.vak %}
-                                        <dt>
-                                            <strong>Vak</strong>
-                                        </dt>
-                                        <dd class="p-0-0-12">
-                                            {{ signaal.formulier_data.meta.vak }}
-                                        </dd>
-                                    {% endif %}
-                                </dl>
-                            </td>
-                        </tr>
-                        {% if bijlagen %}
+                        {% with melding=taak.melding.response_json %}
                             <tr>
                                 <td class="p-4-16" colspan="2">
-                                    <h2 class="no-margin-bottom">Bijlage(n)</h2>
+                                    <h2 class="no-margin-bottom">Taak gegevens</h2>
                                 </td>
                             </tr>
                             <tr>
-                                <td class="p-4-16 va-top" colspan="2">
-                                    {% for bijlage in bijlagen %}<img src="cid:{{ bijlage }}" width="300" alt="bijlage" />{% endfor %}
+                                <td class="p-4-16 va-top">
+                                    <dl>
+                                        {% if taak.aangemaakt_op %}
+                                            <dt>
+                                                <strong>Datum ingediend</strong>
+                                            </dt>
+                                            <dd class="p-0-0-12">
+                                                {{ taak.aangemaakt_op|to_datetime }}
+                                            </dd>
+                                        {% endif %}
+                                        {% if taak.bericht %}
+                                            <dt>
+                                                <strong>Taaktype Omschrijving</strong>
+                                            </dt>
+                                            <dd class="p-0-0-12">
+                                                {{ taak.taaktype.omschrijving }}
+                                            </dd>
+                                        {% endif %}
+                                        {% if taak.taaktype.aanvullende_informatie %}
+                                            <dt>
+                                                <strong>Taaktype Aanvullende informatie</strong>
+                                            </dt>
+                                            <dd class="p-0-0-12">
+                                                {{ taak.taaktype.aanvullende_informatie }}
+                                            </dd>
+                                        {% endif %}
+                                        {% if melding.signalen_voor_melding.0.bron_signaal_id != None %}
+                                            <dt>
+                                                <strong>MeldR nummer</strong>
+                                            </dt>
+                                            <dd class="p-0-0-12">
+                                                {{ melding.signalen_voor_melding.0.bron_signaal_id }}
+                                            </dd>
+                                        {% endif %}
+                                    </dl>
+                                </td>
+                                <td class="p-4-16 va-top">
+                                    <dl>
+                                        {% if taak.adres %}
+                                            <dt>
+                                                <strong>Locatie ter hoogte van</strong>
+                                            </dt>
+                                            <dd class="p-0-0-12">
+                                                {{ taak.adres }}
+                                            </dd>
+                                        {% endif %}
+                                        {% if melding.signalen_voor_melding|length > 0 %}
+                                            {% for signaal in melding.signalen_voor_melding %}
+                                                <dt>
+                                                    <strong>Melder gegevens</strong>
+                                                </dt>
+                                                <div class="margin-bottom">
+                                                    {% if signaal.melder.naam %}
+                                                        <dd class="p-0-0-12">
+                                                            {{ signaal.melder.naam }}
+                                                        </dd>
+                                                    {% else %}
+                                                        <dd class="p-0-0-12">
+                                                            Geen naam opgegeven
+                                                        </dd>
+                                                    {% endif %}
+                                                    {% if signaal.melder.telefoonnummer and signaal.melder.telefoonnummer != "Anoniem" %}
+                                                        <dd class="p-0-0-12">
+                                                            <a href="tel:{{ signaal.melder.telefoonnummer }}"
+                                                               target="_blank"
+                                                               class="link link--phone">
+                                                                {% include "icons/phone.svg" %}
+                                                                {{ signaal.melder.telefoonnummer }}
+                                                            </a>
+                                                        </dd>
+                                                    {% else %}
+                                                        <dd class="p-0-0-12">
+                                                            <small>Geen telefoonnummer opgegeven</small>
+                                                        </dd>
+                                                    {% endif %}
+                                                    {% if signaal.melder.email %}
+                                                        <dd class="p-0-0-12">
+                                                            <a href="mailto:{{ signaal.melder.email }}"
+                                                               target="_blank"
+                                                               class="link link--email">
+                                                                {% include "icons/email.svg" with width="20" height="16" %}
+                                                                {{ signaal.melder.email }}
+                                                            </a>
+                                                        </dd>
+                                                    {% else %}
+                                                        <dd class="p-0-0-12">
+                                                            <small>Geen e-mailadres opgegeven</small>
+                                                        </dd>
+                                                    {% endif %}
+                                                </div>
+                                            {% endfor %}
+                                        {% else %}
+                                            <dd class="p-0-0-12">
+                                                <small>Geen gegevens bekend</small>
+                                            </dd>
+                                        {% endif %}
+                                        {% if taak.bericht %}
+                                            <dt>
+                                                <strong>Interne opmerking gemeente</strong>
+                                            </dt>
+                                            <dd class="p-0-0-12">
+                                                {{ taak.bericht }}
+                                            </dd>
+                                        {% endif %}
+                                    </dl>
                                 </td>
                             </tr>
-                        {% endif %}
+                        {% endwith %}
                     </table>
                 </td>
             </tr>
             <tr>
                 <td align="left" class="p-50-20">
-                    <p>We streven ernaar om je melding binnen twee weken in behandeling te nemen.</p>
+                    <p>
+                        De gemeente heeft de melding in haar systemen afgesloten en de melder op de hoogte gesteld dat [externe instantie] de melder op de hoogte stelt van de afhandeling hiervan.
+                    </p>
                     <p>Met vriendelijke groet,</p>
                     <p>Gemeente Rotterdam</p>
                 </td>

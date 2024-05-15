@@ -6,7 +6,7 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width,initial-scale=1">
-        <meta name="description" content="Email taak aanvraag externe instantie">
+        <meta name="description" content="Taak aanvraag externe instantie">
         <meta name="keywords"
               content="MOR, Meldingen openbare ruimte, gemeente Rotterdam, Taak aanvraag externe instantie, ExternR">
         <meta name="x-apple-disable-message-reformatting">
@@ -71,13 +71,21 @@
             </tr>
             <tr>
                 <td align="left" class="p-0-20">
-                    <h1>Beste {{ taaktype.externe_instantie_verantwoordelijke }},</h1>
+                    <h1>Taak aanvraag: {{ taaktype.omschrijving }}</h1>
                 </td>
             </tr>
             <tr>
                 <td align="left" class="p-0-20">
                     <p>
-                        Via MeldR heeft de gemeente Rotterdam een melding binnengekregen, waarvan 1 of meer taken onder de verantwoordelijkheid van {{ taaktype.externe_instantie }} vallen.
+                        Beste
+                        {% if taaktype.externe_instantie_naam_verantwoordelijke %}
+                            {{ taaktype.externe_instantie_naam_verantwoordelijke }},
+                        {% else %}
+                            {{ taaktype.externe_instantie_naam }}
+                        {% endif %}
+                    </p>
+                    <p>
+                        Via MeldR heeft de gemeente Rotterdam een melding binnengekregen, waarvan 1 of meer taken onder de verantwoordelijkheid van {{ taaktype.externe_instantie_naam }} vallen.
                     </p>
                 </td>
             </tr>
