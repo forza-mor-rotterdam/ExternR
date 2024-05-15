@@ -17,6 +17,8 @@ SECRET_KEY = os.environ.get(
     "DJANGO_SECRET_KEY", os.environ.get("SECRET_KEY", os.environ.get("APP_SECRET"))
 )
 
+SECRET_HASH_KEY = os.getenv("SECRET_HASH_KEY", "hashkeyforzamorfeedback")
+
 GIT_SHA = os.getenv("GIT_SHA")
 DEPLOY_DATE = os.getenv("DEPLOY_DATE", "")
 ENVIRONMENT = os.getenv("ENVIRONMENT")

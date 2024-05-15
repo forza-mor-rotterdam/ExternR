@@ -56,3 +56,26 @@ class TaaktypeAanmakenForm(TaaktypeAanpassenForm):
         self.fields[
             "volgende_taaktypes"
         ].help_text = "Dit zijn taken die mogelijk uitgevoerd moeten worden nadat de taak is afgerond."
+
+
+class TaakFeedbackHandleForm(forms.Form):
+    REDEN_CHOICES = (
+        ("1", "De taak valt niet onder onze verantwoordelijkheid."),
+        ("2", "We konden de locatie niet bereiken."),
+        ("3", "Andere reden."),
+    )
+    omschrijving_intern_opties = forms.ChoiceField(
+        label="Reden", widget=forms.RadioSelect, choices=REDEN_CHOICES, required=True
+    )
+
+    omschrijving_intern = forms.CharField(
+        label="Toelichting",
+        widget=forms.Textarea(
+            attrs={
+                "class": "form-control",
+                "data-testid": "information",
+                "rows": "4",
+            }
+        ),
+        required=True,
+    )

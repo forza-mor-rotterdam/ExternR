@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% load rotterdam_formulier_html %}
+{% block title %}
+    ExternR
+{% endblock title %}
+{% block body %}
+    <h1>
+        <span class="green">Bedankt</span> voor het doorgeven!
+    </h1>
+    <h2>Kunt u aangeven waarom u de taak niet heeft kunnen afhandelen?</h2>
+    <form action="." method="post" class="form--beheer">
+        {% csrf_token %}
+        <fieldset>
+            {{ form.omschrijving_intern_opties|render_rotterdam_formulier }}
+            {{ form.omschrijving_intern|render_rotterdam_formulier }}
+        </fieldset>
+        <div class="form-row container__button">
+            <div class="form-row btn-row">
+                <button type="submit" class="btn btn-action">
+                    <span>Versturen</span>
+                </button>
+            </div>
+        </div>
+    </form>
+{% endblock body %}

@@ -74,3 +74,27 @@ def compare_and_update_status(self, taak_id):
             "taak.id": taak_id,
             "get_taakopdracht_response.error_code": get_taakopdracht_response.status_code,
         }
+
+
+@shared_task(bind=True, base=BaseTaskWithRetry)
+def taak_afsluiten_zonder_feedback(self, taak_id):
+    try:
+        taak = Taak.objects.get(id=taak_id)
+        taak_status_aanpassen_response = MeldingenService().taak_status_aanpassen(
+            taakopdracht_url=taak.taakopdracht,
+            status="voltooid",
+            resolutie="opgelost",
+            gebruiker=taak.taaktype.externe_instantie_email,
+        )
+        if taak_status_aanpassen_response.status_code != 200:
+            logger.error(
+                f"close_task_no_feedback_required: status_code={taak_status_aanpassen_response.status_code}, taak_id={taak_id}, repsonse_text={taak_status_aanpassen_response.text}"
+            )
+            # Raise an exception to trigger retry
+            raise Exception(
+                f"Task status code is not 200: {taak_status_aanpassen_response.status_code}"
+            )
+    except Exception as e:
+        logger.error(f"Error in close_task_no_feedback_required: {e}")
+        # Raise an exception to trigger retry
+        raise e

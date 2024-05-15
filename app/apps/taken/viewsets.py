@@ -1,9 +1,11 @@
+from apps.services.mail import MailService
 from apps.taken.models import Taak, Taaktype
 from apps.taken.serializers import (
     TaakgebeurtenisStatusSerializer,
     TaakSerializer,
     TaaktypeSerializer,
 )
+from apps.taken.tasks import taak_afsluiten_zonder_feedback
 from drf_spectacular.utils import extend_schema
 from rest_framework import mixins, status, viewsets
 from rest_framework.decorators import action
@@ -68,12 +70,20 @@ class TaakViewSet(
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         taak = Taak.acties.aanmaken(serializer)
+        MailService().taak_aangemaakt_email(
+            taak,
+            verzenden=True,
+            request=request,
+        )
+        # Immediately close taak if externe instantie doesnt need to provide feedback
+        if not taak.taaktype.externe_instantie_feedback_vereist:
+            taak_afsluiten_zonder_feedback.delay(taak.id)
 
         serializer = self.get_serializer(taak, context={"request": request})
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     @extend_schema(
-        description="Verander de status van een melding",
+        description="Verander de status van een taak",
         request=TaakgebeurtenisStatusSerializer,
         responses={status.HTTP_200_OK: TaakSerializer},
         parameters=None,

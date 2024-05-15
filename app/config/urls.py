@@ -58,6 +58,7 @@ from apps.taken.views import (
     TaaktypeAanmakenView,
     TaaktypeAanpassenView,
     TaaktypeLijstView,
+    taak_feedback_handle,
 )
 from apps.taken.viewsets import TaaktypeViewSet, TaakViewSet
 from django.conf import settings
@@ -115,6 +116,12 @@ urlpatterns = [
         "taken/lijst/",
         taken_lijst,
         name="taken_lijst",
+    ),
+    # URL pattern for https://externr.forzamor.nl/taak-feedback-externe-instantie/{taak_id}/{email_hash}/1
+    path(
+        "taak-feedback-externe-instantie/<int:taak_id>/<str:email_hash>/<int:email_feedback_type>/",
+        taak_feedback_handle,
+        name="feedback",
     ),
     path("sorteer-filter/", sorteer_filter, name="sorteer_filter"),
     path("taak-zoeken/", taak_zoeken, name="taak_zoeken"),

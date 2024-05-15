@@ -1,3 +1,4 @@
+import hashlib
 import logging
 import os.path
 import re
@@ -7,6 +8,7 @@ from django.conf import settings
 from django.core.files.storage import default_storage
 from django.core.mail import EmailMultiAlternatives, SafeMIMEMultipart
 from django.template.loader import get_template
+from django.urls import reverse
 
 logger = logging.getLogger(__name__)
 
@@ -92,6 +94,7 @@ class MailService:
         template_stijl="html",
         verzenden=False,
         bestanden=[],
+        request=None,
     ):
         send_to = []
         taaktype = taak.taaktype
@@ -102,11 +105,45 @@ class MailService:
             "taaktype": taaktype,
             "bijlagen": bestanden,
         }
+
+        if taaktype.externe_instantie_feedback_vereist:
+            taak_id_hash = hashlib.sha256(
+                (str(taak.id) + settings.SECRET_HASH_KEY).encode()
+            ).hexdigest()
+
+            # Construct the feedback URLs
+            opgelost_url = request.build_absolute_uri(
+                reverse(
+                    "feedback",
+                    kwargs={
+                        "taak_id": taak.id,
+                        "email_hash": taak_id_hash,
+                        "email_feedback_type": 1,
+                    },
+                )
+            )
+            niet_opgelost_url = request.build_absolute_uri(
+                reverse(
+                    "feedback",
+                    kwargs={
+                        "taak_id": taak.id,
+                        "email_hash": taak_id_hash,
+                        "email_feedback_type": 0,
+                    },
+                )
+            )
+            email_context.update(
+                {
+                    "opgelost_url": opgelost_url,
+                    "niet_opgelost_url": niet_opgelost_url,
+                }
+            )
+
         if taak.taaktype.externe_instantie_email:
             send_to.append(taak.taaktype.externe_instantie_email)
 
-        text_template = get_template("email/email_taak_aangemaakt_geen_feedback.txt")
-        html_template = get_template("email/email_taak_aangemaakt_geen_feedback.html")
+        text_template = get_template("email/email_taak_aangemaakt_geen_feedback_2.txt")
+        html_template = get_template("email/email_taak_aangemaakt_geen_feedback_2.html")
         text_content = text_template.render(email_context)
         html_content = html_template.render(email_context)
         subject = f"Taaktype: {taaktype} - taak aangemaakt"
@@ -122,73 +159,9 @@ class MailService:
         if send_to and not settings.DEBUG and verzenden:
             msg.send()
         if template_stijl == "html":
+            with open(
+                os.path.join(settings.BASE_DIR, "test_template.html"), "w"
+            ) as file:
+                file.write(html_content)
             return html_content
         return text_content
-
-    # def melding_afgesloten_email(
-    #     self, signaal, melding=None, template_stijl="html", verzenden=False
-    # ):
-    #     if not melding:
-    #         melding = MeldingenService().melding_ophalen_met_signaal_url(
-    #             signaal.meldingen_signaal_url
-    #         )
-    #     bijlagen = get_bijlagen(melding)
-    #     send_to = []
-    #     begraafplaats_id = melding.get("locaties_voor_melding", [])[0].get(
-    #         "begraafplaats"
-    #     )
-    #     begraafplaats = Begraafplaats.objects.get(pk=begraafplaats_id)
-
-    #     bijlagen_flat = [
-    #         url
-    #         for url in reversed(
-    #             [b.get("afbeelding") for b in bijlagen if b.get("afbeelding")]
-    #         )
-    #     ]
-    #     logger.info(f"Signaal: {signaal}")
-    #     logger.info(f"Bijlage urls: {bijlagen_flat}")
-    #     logger.info(f"Melding data: {json.dumps(melding, indent=4)}")
-    #     email_context = {
-    #         "melding": melding,
-    #         "begraafplaats": begraafplaats,
-    #         "signaal": signaal,
-    #         "onderwerpen": ", ".join(
-    #             [
-    #                 OnderwerpenService().get_onderwerp(o).get("name")
-    #                 for o in melding.get("onderwerpen", [])
-    #             ]
-    #         ),
-    #         "bijlagen": [b.split("/")[-1].replace(" ", "_") for b in bijlagen_flat],
-    #     }
-    #     if begraafplaats.email:
-    #         send_to.append(begraafplaats.email)
-    #     if signaal.formulier_data.get("melder", {}).get("email"):
-    #         send_to.append(signaal.formulier_data.get("melder", {}).get("email"))
-
-    #     text_template = get_template("email/melding_behandeld.txt")
-    #     html_template = get_template("email/melding_behandeld.html")
-    #     text_content = text_template.render(email_context)
-    #     html_content = html_template.render(email_context)
-    #     subject = f"Begraafplaats {begraafplaats.naam} - melding behandeld"
-    #     msg = EmailMultiRelated(
-    #         subject, text_content, settings.DEFAULT_FROM_EMAIL, send_to
-    #     )
-    #     msg.attach_alternative(html_content, "text/html")
-
-    #     for bijlage in bijlagen_flat:
-    #         filename = bijlage.split("/")[-1].replace(
-    #             " ", "_"
-    #         )  # be careful with file names
-    #         file_path = os.path.join("/media/", filename)
-    #         bijlage_response = MeldingenService().afbeelding_ophalen(
-    #             bijlage, stream=True
-    #         )
-    #         with open(file_path, "wb") as f:
-    #             f.write(bijlage_response.content)
-    #         msg.attach_related_file(file_path)
-
-    #     if send_to and not settings.DEBUG and verzenden:
-    #         msg.send()
-    #     if template_stijl == "html":
-    #         return html_content
-    #     return text_content

@@ -98,8 +98,8 @@
                                 Is de taak afgehandeld? Dan kunt u dit zelf aangeven. Hieronder vindt u alle informatie over de melding zoals deze door de melder is ingediend. Ook vindt u alle taak gegevens.
                             </p>
                             <div>
-                                <button class="btn btn-action">De taak is opgelost</button>
-                                <button class="btn btn-secondary">De taak is niet opgelost</button>
+                                <a href="{{ opgelost_url }}" class="btn btn-action">De taak is opgelost</a>
+                                <a href="{{ niet_opgelost_url }}" class="btn btn-secondary">De taak is niet opgelost</a>
                             </div>
                         {% endif %}
                     </td>
