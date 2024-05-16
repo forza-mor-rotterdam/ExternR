@@ -68,12 +68,6 @@
                 <h3 class="h5">Resolutie</h3>
                 <p>{{ taak.resolutie }}</p>
             {% endif %}
-            <h3 class="h5">Gedeeld</h3>
-            <p>
-                Gedeeld via WhatsApp: {{ taakdeellinks|length }}
-                <br>
-                Bezocht via WhatsApp: {{ taakdeellinks_bezoekers|length }}
-            </p>
         </details>
         <details data-action="toggle->detail#toggleDetailLocatie">
             <summary>

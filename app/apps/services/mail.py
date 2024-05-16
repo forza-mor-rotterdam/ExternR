@@ -142,8 +142,8 @@ class MailService:
         if taak.taaktype.externe_instantie_email:
             send_to.append(taak.taaktype.externe_instantie_email)
 
-        text_template = get_template("email/email_taak_aangemaakt_geen_feedback_2.txt")
-        html_template = get_template("email/email_taak_aangemaakt_geen_feedback_2.html")
+        text_template = get_template("email/email_taak_aangemaakt.txt")
+        html_template = get_template("email/email_taak_aangemaakt.html")
         text_content = text_template.render(email_context)
         html_content = html_template.render(email_context)
         subject = f"Taaktype: {taaktype} - taak aangemaakt"

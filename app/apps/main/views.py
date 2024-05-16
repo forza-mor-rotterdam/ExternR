@@ -2,15 +2,8 @@ import json
 import logging
 
 import requests
-from apps.authenticatie.models import Gebruiker
 from apps.context.filters import FilterManager
-from apps.main.forms import (
-    KaartModusForm,
-    SorteerFilterForm,
-    TaakBehandelForm,
-    TaakToewijzenForm,
-    TaakToewijzingIntrekkenForm,
-)
+from apps.main.forms import KaartModusForm, SorteerFilterForm, TaakBehandelForm
 from apps.main.utils import (
     get_actieve_filters,
     get_filters,
@@ -23,9 +16,8 @@ from apps.main.utils import (
     to_base64,
 )
 from apps.meldingen.service import MeldingenService
-from apps.release_notes.models import ReleaseNote
 from apps.services.onderwerpen import render_onderwerp
-from apps.taken.models import Taak, TaakDeellink, Taakstatus, Taaktype
+from apps.taken.models import Taak, Taakstatus, Taaktype
 from device_detector import DeviceDetector
 from django.conf import settings
 from django.contrib.auth.decorators import (
@@ -33,7 +25,6 @@ from django.contrib.auth.decorators import (
     permission_required,
     user_passes_test,
 )
-from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.contrib.gis.db.models.functions import Distance
 from django.contrib.gis.geos import Point
 from django.core import signing
@@ -43,15 +34,9 @@ from django.core.paginator import Paginator
 from django.db import models
 from django.db.models import Q, Value
 from django.db.models.functions import Concat
-from django.http import (
-    HttpResponse,
-    HttpResponsePermanentRedirect,
-    JsonResponse,
-    StreamingHttpResponse,
-)
+from django.http import HttpResponse, JsonResponse, StreamingHttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
-from django.views.generic import View
 from rest_framework.reverse import reverse as drf_reverse
 
 logger = logging.getLogger(__name__)
@@ -86,31 +71,8 @@ def informatie(request):
     )
 
 
-def navigeer(request, lat, long):
-    ua = request.META.get("HTTP_USER_AGENT")
-    device = DeviceDetector(ua).parse()
-    return render(
-        request,
-        "taken/navigeer.html",
-        {
-            "lat": lat,
-            "long": long,
-            "device_os": device.os_name().lower(),
-        },
-    )
-
-
-# def serve_protected_media(request):
-#     if request.user.is_authenticated or settings.ALLOW_UNAUTHORIZED_MEDIA_ACCESS:
-#         url = request.path.replace("media", "media-protected")
-#         response = HttpResponse("")
-#         response["X-Accel-Redirect"] = url
-#         response["Content-Type"] = ""
-#         return response
-#     return HttpResponseForbidden()
-
-
 # Verander hier de instellingen voor de nieuwe homepagina.
+# @TODO @Jorrit Root aanpassen naar andere pagina
 @login_required
 def root(request):
     if request.user.has_perms(["authorisatie.taken_lijst_bekijken"]):
@@ -337,7 +299,6 @@ def taak_detail(request, id):
     tijdlijn_data = melding_naar_tijdlijn(taak.melding.response_json)
     ua = request.META.get("HTTP_USER_AGENT")
     device = DeviceDetector(ua).parse()
-    taakdeellinks = TaakDeellink.objects.filter(taak=taak)
     return render(
         request,
         "taken/taak_detail.html",
@@ -346,98 +307,6 @@ def taak_detail(request, id):
             "taak": taak,
             "tijdlijn_data": tijdlijn_data,
             "device_os": device.os_name().lower(),
-            "taakdeellinks": taakdeellinks,
-            "taakdeellinks_bezoekers": [
-                b for link in taakdeellinks for b in link.bezoekers
-            ],
-        },
-    )
-
-
-class WhatsappSchemeRedirect(HttpResponsePermanentRedirect):
-    allowed_schemes = ["whatsapp", "https"]
-
-
-@permission_required("authorisatie.taak_delen", raise_exception=True)
-def taak_delen(request, id):
-    taak = get_object_or_404(Taak, pk=id)
-    gebruiker_email = request.user.email
-    """
-    Standaard worden links die gedeeld worden alleen in ExternR opgeslagen
-    Met de code hieronder kan ook MOR-Core deze info opslaan in context met de melding
-
-    response = MeldingenService().taak_gebeurtenis_toevoegen(
-        taakopdracht_url=taak.taakopdracht,
-        gebeurtenis_type="gedeeld",
-        gebruiker=gebruiker_email,
-    )
-    if response.status_code not in [200]:
-        return JsonResponse({})
-    """
-
-    ua = request.META.get("HTTP_USER_AGENT")
-    device = DeviceDetector(ua).parse()
-    whatsapp_url = "whatsapp://" if device.is_mobile() else settings.WHATSAPP_URL
-
-    taak_gedeeld = TaakDeellink.objects.create(
-        taak=taak,
-        gedeeld_door=gebruiker_email,
-        signed_data=TaakDeellink.get_signed_data(gebruiker_email),
-    )
-
-    return WhatsappSchemeRedirect(
-        f"{whatsapp_url}send?text={taak_gedeeld.get_absolute_url(request)}",
-    )
-
-
-def taak_detail_preview(request, id, signed_data):
-    taak = get_object_or_404(Taak, pk=id)
-    gebruiker_email = None
-    link_actief = False
-
-    taak_gedeeld = TaakDeellink.objects.filter(
-        taak=taak,
-        signed_data=signed_data,
-    ).first()
-    if taak_gedeeld:
-        link_actief = taak_gedeeld.actief()
-
-    # links die gedeeld zijn voor dat het TaakDeellink object geimplementeerd was
-    else:
-        try:
-            gebruiker_email = signing.loads(
-                signed_data, max_age=settings.SIGNED_DATA_MAX_AGE_SECONDS
-            )
-            link_actief = True
-        except signing.BadSignature:
-            ...
-
-    # redirect ingelogde gebruikers
-    if request.user.has_perms(["authorisatie.taak_bekijken"]):
-        return redirect(reverse("taak_detail", args=[taak.id]))
-
-    # sla alle gebruikers op in het taakdeellink object
-    if taak_gedeeld and link_actief:
-        taak_gedeeld.bezoekers.append(
-            request.user.email if request.user.is_authenticated else None
-        )
-        taak_gedeeld.save()
-
-    ua = request.META.get("HTTP_USER_AGENT")
-    device = DeviceDetector(ua).parse()
-    return render(
-        request,
-        "taken/taak_detail_preview.html",
-        {
-            "id": id,
-            "taak": taak,
-            "device_os": device.os_name().lower(),
-            "signed_data": signed_data,
-            "gebruiker_email": (
-                taak_gedeeld.gedeeld_door if taak_gedeeld else gebruiker_email
-            ),
-            "link_actief": link_actief,
-            "taak_gedeeld": taak_gedeeld,
         },
     )
 
@@ -463,81 +332,6 @@ def onderwerp(request):
 def clear_melding_token_from_cache(request):
     cache.delete("meldingen_token")
     return HttpResponse("melding_token removed from cache")
-
-
-@login_required
-@permission_required("authorisatie.taak_toewijzen", raise_exception=True)
-def taak_toewijzen(request, id):
-    taak = get_object_or_404(Taak, pk=id)
-    valide_gebruikers = Gebruiker.objects.taak_toewijzen_gebruikers()
-    form = TaakToewijzenForm(gebruikers=valide_gebruikers)
-    if request.POST:
-        form = TaakToewijzenForm(request.POST, gebruikers=valide_gebruikers)
-        if form.is_valid():
-            taak_status_aanpassen_response = MeldingenService().taak_status_aanpassen(
-                taakopdracht_url=taak.taakopdracht,
-                status="toegewezen",
-                omschrijving_intern=form.cleaned_data.get("omschrijving_intern"),
-                gebruiker=request.user.email,
-                uitvoerder=form.cleaned_data.get("uitvoerder"),
-            )
-            if taak_status_aanpassen_response.status_code != 200:
-                logger.error(
-                    f"taak_toewijzen taak_status_aanpassen: status_code={taak_status_aanpassen_response.status_code}, taak_id={id}, repsonse_text={taak_status_aanpassen_response.text}"
-                )
-            if taak_status_aanpassen_response.status_code == 200:
-                return render(
-                    request,
-                    "taken/taak_toewijzen.html",
-                    {
-                        "taak": taak,
-                    },
-                )
-
-    return render(
-        request,
-        "taken/taak_toewijzen.html",
-        {
-            "form": form,
-            "taak": taak,
-        },
-    )
-
-
-@login_required
-@permission_required("authorisatie.taak_toewijzing_intrekken", raise_exception=True)
-def taak_toewijzing_intrekken(request, id):
-    taak = get_object_or_404(Taak, pk=id)
-    form = TaakToewijzingIntrekkenForm()
-    if request.POST:
-        form = TaakToewijzingIntrekkenForm(request.POST)
-        if form.is_valid():
-            taak_status_aanpassen_response = MeldingenService().taak_status_aanpassen(
-                taakopdracht_url=taak.taakopdracht,
-                status="openstaand",
-                gebruiker=request.user.email,
-            )
-            if taak_status_aanpassen_response.status_code != 200:
-                logger.error(
-                    f"taak_toewijzing_intrekken taak_status_aanpassen: status_code={taak_status_aanpassen_response.status_code}, taak_id={id}, repsonse_text={taak_status_aanpassen_response.text}"
-                )
-            if taak_status_aanpassen_response.status_code == 200:
-                return render(
-                    request,
-                    "taken/taak_toewijzing_intrekken.html",
-                    {
-                        "taak": taak,
-                    },
-                )
-
-    return render(
-        request,
-        "taken/taak_toewijzing_intrekken.html",
-        {
-            "form": form,
-            "taak": taak,
-        },
-    )
 
 
 @login_required
@@ -696,27 +490,3 @@ def meldingen_bestand(request):
 def meldingen_bestand_protected(request):
     modified_path = request.path.replace(settings.MOR_CORE_PROTECTED_URL_PREFIX, "")
     return _meldingen_bestand(request, modified_path)
-
-
-class HomepageView(PermissionRequiredMixin, View):
-    # Might change to LoginRequiredMixin
-    permission_required = "authorisatie.homepage_bekijken"
-    template_name = "homepage_nieuw.html"
-
-    def get(self, request, *args, **kwargs):
-        request.session["origine"] = "home"
-        release_notes = self.get_release_notes()
-        context = {
-            "release_notes": release_notes,
-        }
-        return render(request, self.template_name, context)
-
-    # Get release notes published within 5 weeks and not in future
-    def get_release_notes(self):
-        release_notes = [
-            release_note
-            for release_note in ReleaseNote.objects.all().order_by("-publicatie_datum")
-            if release_note.is_published()
-        ][:6]
-
-        return release_notes

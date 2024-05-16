@@ -71,19 +71,6 @@
                             <li class="wrapper-horizontal">
                                 <a href="{% url 'taken' %}">Taken</a>
                             </li>
-                            <li class="wrapper-horizontal">
-                                <a href="{% url 'release_note_lijst_public' %}">Nieuw in ExternR
-                                    {% if UNWATCHED_COUNT > 0 %}
-                                        <span class="badge--unread-count">
-                                            {% if UNWATCHED_COUNT < 101 %}
-                                                {{ UNWATCHED_COUNT }}
-                                            {% else %}
-                                                +99
-                                            {% endif %}
-                                        </span>
-                                    {% endif %}
-                                </a>
-                            </li>
                         </ul>
                         {% include "snippets/form_pageheader.html" %}
                     </div>

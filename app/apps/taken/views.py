@@ -68,54 +68,6 @@ class TaaktypeAanmakenView(TaaktypeAanmakenAanpassenView, CreateView):
     form_class = TaaktypeAanmakenForm
 
 
-# class TaakFeedbackView(View):
-#     template = "feedback/bedankt.html"
-
-#     def get(
-#         self,
-#         request,
-#         taak_id: int,
-#         email_hash: str,
-#         email_feedback_type: int,
-#     ):
-#         try:
-#             # Vergelijk hashes
-#             verwachte_hash = hashlib.sha256(
-#                 (taak_id + settings.SECRET_HASH_KEY).encode()
-#             ).hexdigest()
-#             if verwachte_hash != email_hash:
-#                 logger.error("Feedback hashes don't match")
-#                 return HttpResponseServerError(
-#                     "De hash komt niet overeen met de verwachte waarde.",
-#                     status=500,
-#                 )
-
-#             # Bepaal feedback_type op basis van URL parameter
-#             if email_feedback_type == 1:
-#                 feedback_type = "opgelost"
-#             elif email_feedback_type == 0:
-#                 feedback_type = "niet_opgelost"
-#             else:
-#                 logger.error(
-#                     f"Incorrect value for email_feedback_type: {email_feedback_type}"
-#                 )
-#                 return HttpResponseServerError(
-#                     f"Ongeldige waarde voor email_feedback_type: {email_feedback_type}.",
-#                     status=500,
-#                 )
-
-#             context = {"taak", "taak"}
-#             return render(request, self.template, context)
-
-#         except Exception as e:
-#             # Afhandelen onverwachte errors
-#             logger.error(f"An error occurred: {str(e)}")
-#             return HttpResponseServerError(
-#                 "Er is een fout opgetreden bij het verwerken van uw verzoek.",
-#                 status=500,
-#             )
-
-
 def taak_feedback_handle(
     request, taak_id: int, email_hash: str, email_feedback_type: int
 ):

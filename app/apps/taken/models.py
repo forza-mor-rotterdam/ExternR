@@ -1,16 +1,9 @@
-from datetime import timedelta
-
 from apps.aliassen.models import MeldingAlias
 from apps.taken.managers import TaakManager
 from apps.taken.querysets import TaakQuerySet
-from django.conf import settings
 from django.contrib.gis.db import models
 from django.contrib.postgres.fields import ArrayField
-from django.core import signing
 from django.core.exceptions import ValidationError
-from django.urls import reverse
-from django.utils import timezone
-from utils.diversen import absolute
 from utils.models import BasisModel
 
 
@@ -289,50 +282,3 @@ class Taak(BasisModel):
         ordering = ("-aangemaakt_op",)
         verbose_name = "Taak"
         verbose_name_plural = "Taken"
-
-
-class TaakDeellink(BasisModel):
-    taak = models.ForeignKey(
-        to="taken.Taak",
-        related_name="taakdeellinks_voor_taak",
-        on_delete=models.CASCADE,
-    )
-    gedeeld_door = models.CharField(max_length=200)
-    signed_data = models.CharField(unique=True, max_length=500)
-    bezoekers = ArrayField(
-        base_field=models.EmailField(
-            blank=True,
-            null=True,
-        ),
-        default=list,
-    )
-
-    def get_signed_data(gebruiker_email):
-        return signing.dumps(gebruiker_email, salt=settings.SECRET_KEY)
-
-    def actief(self):
-        try:
-            signing.loads(
-                self.signed_data,
-                max_age=settings.SIGNED_DATA_MAX_AGE_SECONDS,
-                salt=settings.SECRET_KEY,
-            )
-            return (
-                (
-                    self.aangemaakt_op
-                    + timedelta(seconds=settings.SIGNED_DATA_MAX_AGE_SECONDS)
-                )
-                - timezone.now(),
-                self.aangemaakt_op
-                + timedelta(seconds=settings.SIGNED_DATA_MAX_AGE_SECONDS),
-            )
-        except signing.BadSignature:
-            ...
-
-    def get_absolute_url(self, request):
-        url_basis = absolute(request).get("ABSOLUTE_ROOT")
-        pad = reverse(
-            "taak_detail_preview",
-            kwargs={"id": self.taak.id, "signed_data": self.signed_data},
-        )
-        return f"{url_basis}{pad}"

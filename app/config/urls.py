@@ -20,7 +20,6 @@ from apps.context.views import (
     ContextVerwijderenView,
 )
 from apps.main.views import (
-    HomepageView,
     clear_melding_token_from_cache,
     config,
     http_403,
@@ -31,28 +30,15 @@ from apps.main.views import (
     kaart_modus,
     meldingen_bestand,
     meldingen_bestand_protected,
-    navigeer,
     onderwerp,
     root,
     sorteer_filter,
-    taak_delen,
     taak_detail,
-    taak_detail_preview,
-    taak_toewijzen,
-    taak_toewijzing_intrekken,
     taak_zoeken,
     taken,
     taken_filter,
     taken_lijst,
     ui_settings_handler,
-)
-from apps.release_notes.views import (
-    ReleaseNoteAanmakenView,
-    ReleaseNoteAanpassenView,
-    ReleaseNoteDetailView,
-    ReleaseNoteListView,
-    ReleaseNoteListViewPublic,
-    ReleaseNoteVerwijderenView,
 )
 from apps.taken.views import (
     TaaktypeAanmakenView,
@@ -80,12 +66,6 @@ router.register(r"taaktype", TaaktypeViewSet, basename="taaktype")
 
 urlpatterns = [
     path("", root, name="root"),
-    # Tijdelijke url voor nieuwe homepage
-    path(
-        "home/",
-        HomepageView.as_view(),
-        name="home",
-    ),
     path("informatie/", informatie, name="informatie"),
     path("api/v1/", include((router.urls, "app"), namespace="v1")),
     path(
@@ -127,22 +107,6 @@ urlpatterns = [
     path("taak-zoeken/", taak_zoeken, name="taak_zoeken"),
     path("kaart-modus/", kaart_modus, name="kaart_modus"),
     path("taak/<int:id>/", taak_detail, name="taak_detail"),
-    path(
-        "taak/<int:id>/delen/<str:signed_data>/",
-        taak_detail_preview,
-        name="taak_detail_preview",
-    ),
-    path(
-        "taak/<int:id>/delen/",
-        taak_delen,
-        name="taak_delen",
-    ),
-    path("taak-toewijzen/<int:id>/", taak_toewijzen, name="taak_toewijzen"),
-    path(
-        "taak-toewijzing-intrekken/<int:id>/",
-        taak_toewijzing_intrekken,
-        name="taak_toewijzing_intrekken",
-    ),
     # Gebruikers
     path(
         "gebruiker/profiel/",
@@ -153,7 +117,6 @@ urlpatterns = [
     # START partials
     path("part/pageheader-form/", ui_settings_handler, name="pageheader_form_part"),
     path("onderwerp/", onderwerp, name="onderwerp"),
-    path("navigeer/<str:lat>/<str:long>/", navigeer, name="navigeer"),
     path(
         "part/taak-modal-handle/<int:id>/",
         incident_modal_handle,
@@ -224,37 +187,6 @@ urlpatterns = [
         "beheer/rechtengroep/<int:pk>/verwijderen/",
         RechtengroepVerwijderenView.as_view(),
         name="rechtengroep_verwijderen",
-    ),
-    # Release notes
-    path(
-        "release-notes/",
-        ReleaseNoteListViewPublic.as_view(),
-        name="release_note_lijst_public",
-    ),
-    path(
-        "release-notes/<int:pk>/",
-        ReleaseNoteDetailView.as_view(),
-        name="release_note_detail",
-    ),
-    path(
-        "beheer/release-notes/",
-        ReleaseNoteListView.as_view(),
-        name="release_note_lijst",
-    ),
-    path(
-        "beheer/release-notes/aanmaken/",
-        ReleaseNoteAanmakenView.as_view(),
-        name="release_note_aanmaken",
-    ),
-    path(
-        "beheer/release-notes/<int:pk>/aanpassen/",
-        ReleaseNoteAanpassenView.as_view(),
-        name="release_note_aanpassen",
-    ),
-    path(
-        "beheer/release-notes/<int:pk>/verwijderen/",
-        ReleaseNoteVerwijderenView.as_view(),
-        name="release_note_verwijderen",
     ),
     # END beheer
     path("api/schema/", SpectacularAPIView.as_view(api_version="v1"), name="schema"),

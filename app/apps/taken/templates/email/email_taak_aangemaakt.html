@@ -101,6 +101,9 @@
                                 <a href="{{ opgelost_url }}" class="btn btn-action">De taak is opgelost</a>
                                 <a href="{{ niet_opgelost_url }}" class="btn btn-secondary">De taak is niet opgelost</a>
                             </div>
+                        {% elif not taaktype_externe_instantie_feedback_vereist %}
+                            {% comment %} @Remco @TODO Onderstaande tekst moet nog aangepast worden. {% endcomment %}
+                            <p>De taak is automatisch afgehandeleld in onze systemen.</p>
                         {% endif %}
                     </td>
                 </tr>
