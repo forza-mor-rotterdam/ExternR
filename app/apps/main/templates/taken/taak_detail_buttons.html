@@ -14,22 +14,6 @@
                             data-modal-sub-title-param="{% include subtitel_template with subtitel=taak.titel %}">
                         Taak afhandelen
                     </button>
-                    {% if taak.taakstatus.naam == "openstaand" or taak.taakstatus.naam == "nieuw" and perms.authorisatie.taak_toewijzen %}
-                        <button class="btn btn-tertiary"
-                                data-modal-title-param="Toewijzen"
-                                data-modal-sub-title-param="{% include subtitel_template with subtitel=taak.titel %}"
-                                data-modal-url-param="{% url 'taak_toewijzen' taak.id %}"
-                                data-modal-id-param="taak_toewijzen"
-                                data-action="modal#openModal">Toewijzen</button>
-                    {% elif taak.taakstatus.naam == "toegewezen" and perms.authorisatie.taak_toewijzing_intrekken %}
-                        <button class="btn btn-tertiary"
-                                data-id="{{ taak.id }}"
-                                data-modal-title-param="Toewijzing intrekken"
-                                data-modal-sub-title-param="{% include subtitel_template with subtitel=taak.titel %}"
-                                data-modal-url-param="{% url 'taak_toewijzing_intrekken' taak.id %}"
-                                data-modal-id-param="taak_toewijzing_intrekken"
-                                data-action="modal#openModal">Toewijzing intrekken</button>
-                    {% endif %}
                 </div>
             </div>
         {% endif %}

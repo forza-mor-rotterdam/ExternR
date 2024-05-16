@@ -1,6 +1,5 @@
 from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.hashers import make_password
-from django.contrib.auth.models import Permission
 from django.utils.translation import ugettext_lazy as _
 
 
@@ -43,12 +42,3 @@ class GebruikerManager(BaseUserManager):
         if extra_fields.get("is_superuser") is not True:
             raise ValueError(_("Superuser must have is_superuser=True."))
         return self._create_user(email, password, **extra_fields)
-
-    def taak_toewijzen_gebruikers(self):
-        permissies = Permission.objects.filter(codename="taak_afronden")
-        return self.filter(
-            is_superuser=False,
-            is_staff=False,
-            is_active=True,
-            groups__permissions__in=permissies,
-        ).order_by("first_name", "email")
