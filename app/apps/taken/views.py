@@ -90,6 +90,14 @@ def taak_feedback_handle(
             "Er is een fout opgetreden bij het verwerken van uw verzoek.",
             status=500,
         )
+    # Geen valide feedback_type (opgelost of niet_opgelost)
+    if email_feedback_type not in [0, 1]:
+        logger.error(f"Incorrect value for email_feedback_type: {email_feedback_type}")
+        return HttpResponseServerError(
+            f"Ongeldige waarde voor email_feedback_type: {email_feedback_type}.",
+            status=500,
+        )
+    # Taak is reeds voltooid
     if taak.taakstatus.naam == "voltooid":
         return render(
             request,
@@ -98,7 +106,8 @@ def taak_feedback_handle(
                 "taak": taak,
             },
         )
-    if email_feedback_type == 1:
+    # Feedback niet opgelost
+    if email_feedback_type == 0:
         form = TaakFeedbackHandleForm()
         if request.POST:
             form = TaakFeedbackHandleForm(request.POST)
@@ -134,8 +143,8 @@ def taak_feedback_handle(
                 "taak": taak,
             },
         )
-
-    elif email_feedback_type == 0:
+    # Feedback opgelost
+    elif email_feedback_type == 1:
         taak_status_aanpassen_response = MeldingenService().taak_status_aanpassen(
             taakopdracht_url=taak.taakopdracht,
             status="voltooid",
@@ -155,10 +164,10 @@ def taak_feedback_handle(
                 },
             )
 
-        return render(
-            request,
-            "taken/taak_externe_instantie_bedankt.html",
-            {
-                "taak": taak,
-            },
-        )
+    return render(
+        request,
+        "taken/taak_externe_instantie_bedankt.html",
+        {
+            "taak": taak,
+        },
+    )
