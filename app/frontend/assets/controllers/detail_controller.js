@@ -34,7 +34,6 @@ export default class extends Controller {
     'thumbList',
     'imageSliderContainer',
     'taakAfstand',
-    'navigeerLink',
     'modalImages',
     'navigateImagesLeft',
     'navigateImagesRight',
@@ -249,32 +248,6 @@ export default class extends Controller {
       const afstand = Math.round(markerLocation.distanceTo(currentPosition))
       elem.textContent = afstand
     }
-    if (self.hasNavigeerLinkTarget) {
-      const linkList = document.querySelectorAll('[data-detail-target="navigeerLink"]')
-
-      for (const link of linkList) {
-        const href = link.getAttribute('href')
-        const rx = new RegExp('saddr=[\\d\\D]*?&', 'g')
-        const newHref = href.replace(rx, `saddr=${currentPosition}&`)
-        link.setAttribute('href', newHref)
-      }
-    }
-  }
-
-  makeRoute(event) {
-    let routeUrl = 'https://www.google.com/maps/dir/?api=1&destination='
-    if (event.params.map === 'waze') {
-      routeUrl = 'https://www.waze.com/ul?ll='
-    }
-
-    function getRoute(event) {
-      let lat = event.params.lat
-      let long = event.params.long
-      routeUrl += `${lat},${long}&navigate=yes`
-      window.open(routeUrl, '_blank')
-    }
-
-    getRoute(event)
   }
 
   isValidHttpUrl(string) {

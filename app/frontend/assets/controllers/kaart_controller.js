@@ -169,17 +169,6 @@ export default class MapController extends Controller {
     checkbox.classList.toggle('active', isChecked)
   }
 
-  makeRoute = (e) => {
-    e.preventDefault()
-    const event = new CustomEvent('openModalFromMap', {
-      bubbles: true,
-      cancelable: false,
-      detail: { e },
-    })
-    this.map.closePopup()
-    this.element.dispatchEvent(event)
-  }
-
   clearMarkers = () => {
     this.markerList = []
     this.markers.clearLayers()
@@ -207,13 +196,9 @@ export default class MapController extends Controller {
 
         const paragraphDistance = `<p>Afstand: <span data-incidentlist-target="taakAfstand" data-latitude="${lat}" data-longitude="${long}"></span> meter</p>`
 
-        const anchorDetail = `<a href="/taak/${taakId}" target="_top" aria-label="Bekijk taak ${taakId}">Details</a>`
-        const anchorNavigeer = `<a href="#" data-kaart-title-param="Navigeren" data-kaart-url-param="/navigeer/${lat}/${long}" data-kaart-id-param="navigeer" data-action="kaart#makeRoute">Navigeren</a>`
-        const divDetailNavigeer = `<div class="display-flex gap">${anchorDetail} | ${anchorNavigeer}</div>`
-
         const popupContent = afbeelding
-          ? `<div class="container__image"><img src=${afbeelding}></div><div class="container__content"><h5 class="no-margin">${adres}</h5><p>${titel}</p>${paragraphDistance}${divDetailNavigeer}</div>`
-          : `<div></div><div class="container__content"><h5 class="no-margin">${adres}</h5><p>${titel}</p>${paragraphDistance}${divDetailNavigeer}</div>`
+          ? `<div class="container__image"><img src=${afbeelding}></div><div class="container__content"><h5 class="no-margin">${adres}</h5><p>${titel}</p>${paragraphDistance}</div>`
+          : `<div></div><div class="container__content"><h5 class="no-margin">${adres}</h5><p>${titel}</p>${paragraphDistance}</div>`
 
         marker.bindPopup(popupContent, { maxWidth: 460 })
 

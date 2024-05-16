@@ -111,17 +111,6 @@
                 <div>
                     <h3 class="h5">Ter hoogte van</h3>
                     <p>{{ taak.adres }}</p>
-                    {% if geometrie %}
-                        <a class="link link--navigate"
-                           href="#"
-                           data-modal-title-param="Navigeren"
-                           data-modal-url-param="{% url 'navigeer' geometrie.1|replace_comma_by_dot geometrie.0|replace_comma_by_dot %}"
-                           data-modal-id-param="navigeer"
-                           data-action="modal#openModal">
-                            {% include "icons/navigate.svg" %}
-                            Navigeren
-                        </a>
-                    {% endif %}
                 </div>
                 <div>
                     {% if taak_zoek_data.wijknaam %}

@@ -58,9 +58,7 @@ class TaaktypeSerializer(serializers.ModelSerializer):
             "additionele_informatie",
             "actief",
             "externe_instantie_naam",
-            "externe_instantie_naam_verantwoordelijke",
-            "externe_instantie_email",
-            "externe_instantie_feedback_vereist",
+            # "externe_instantie_naam_verantwoordelijke",
         )
         read_only_fields = ("_links",)
 
