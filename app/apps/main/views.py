@@ -72,13 +72,17 @@ def informatie(request):
 
 
 # Verander hier de instellingen voor de nieuwe homepagina.
-# @TODO @Jorrit Root aanpassen naar andere pagina
-@login_required
 def root(request):
-    if request.user.has_perms(["authorisatie.taken_lijst_bekijken"]):
-        return redirect(reverse("taken"), False)
-    if request.user.has_perms(["authorisatie.beheer_bekijken"]):
-        return redirect(reverse("beheer"), False)
+    if request.user.is_authenticated:
+        if request.user.has_perms(["authorisatie.taken_lijst_bekijken"]):
+            return redirect(reverse("taken"), False)
+        if request.user.has_perms(["authorisatie.beheer_bekijken"]):
+            return redirect(reverse("beheer"), False)
+        return render(
+            request,
+            "home_ingelogd.html",
+            {},
+        )
     return render(
         request,
         "home.html",

@@ -260,10 +260,6 @@ class Taak(BasisModel):
                 "De taak is afgerond",
             ),
             (
-                Taak.ResolutieOpties.NIET_GEVONDEN,
-                "Niets aangetroffen",
-            ),
-            (
                 Taak.ResolutieOpties.NIET_OPGELOST,
                 "Kan niet worden uitgevoerd",
             ),

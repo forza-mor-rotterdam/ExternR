@@ -34,6 +34,18 @@
                 <h3 class="h5">Interne opmerking</h3>
                 <p>{{ taak.bericht }}</p>
             {% endif %}
+            {% if taak.taaktype.externe_instantie_naam %}
+                <h3 class="h5">Externe instantie</h3>
+                <p>{{ taak.taaktype.externe_instantie_naam }}</p>
+            {% endif %}
+            {% if taak.taaktype.externe_instantie_email %}
+                <h3 class="h5">Externe instantie email</h3>
+                <p>{{ taak.taaktype.externe_instantie_email }}</p>
+            {% endif %}
+            {% if taak.taaktype.externe_instantie_verwantwoordelijke %}
+                <h3 class="h5">Externe instantie verwantwoordelijke</h3>
+                <p>{{ taak.taaktype.externe_instantie_verwantwoordelijke }}</p>
+            {% endif %}
             {% if taak.aangemaakt_op %}
                 <h3 class="h5">Aangemaakt</h3>
                 <p>
