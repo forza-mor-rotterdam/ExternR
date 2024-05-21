@@ -1,6 +1,5 @@
 import logging
 
-from apps.services.mercure import MercureService
 from django.conf import settings
 from django.urls import reverse
 from django.utils import timezone
@@ -18,16 +17,6 @@ def general_settings(context):
         session_expiry_timestamp += settings.SESSION_EXPIRE_SECONDS
 
     getattr(context, "user", None)
-
-    mercure_service = None
-    subscriber_token = None
-    try:
-        mercure_service = MercureService()
-    except MercureService.ConfigException:
-        ...
-
-    if mercure_service:
-        subscriber_token = mercure_service.get_subscriber_token()
 
     deploy_date_formatted = None
     if settings.DEPLOY_DATE:
@@ -52,9 +41,7 @@ def general_settings(context):
         "LOGIN_URL": f"{reverse('oidc_authentication_init')}?next={absolute(context).get('FULL_URL')}"
         if settings.OIDC_ENABLED
         else "/admin/login/",
-        "APP_MERCURE_PUBLIC_URL": settings.APP_MERCURE_PUBLIC_URL,
         "GIT_SHA": settings.GIT_SHA,
-        "MERCURE_SUBSCRIBER_TOKEN": subscriber_token,
         "APP_ENV": settings.APP_ENV,
         "DEPLOY_DATE": deploy_date_formatted,
         "MOR_CORE_URL_PREFIX": settings.MOR_CORE_URL_PREFIX,

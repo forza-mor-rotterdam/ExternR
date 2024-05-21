@@ -1,9 +1,7 @@
 import { Controller } from '@hotwired/stimulus'
 
 export default class extends Controller {
-  static values = {
-    mercurePublicUrl: String,
-  }
+  static values = {}
   initialize() {
     let self = this
     self.initMessages()
@@ -19,17 +17,7 @@ export default class extends Controller {
 
     return url.protocol === 'http:' || url.protocol === 'https:'
   }
-  initMessages() {
-    let self = this
-    if (self.hasMercurePublicUrlValue && self.isValidHttpUrl(self.mercurePublicUrlValue)) {
-      // const url = new URL(self.mercurePublicUrlValue)
-      // subscribe with a topic like below
-      // url.searchParams.append('topic', [messages topic]);
-      // self.eventSource = new EventSource(url);
-      // self.eventSource.onmessage = e => self.onMessage(e)
-      // self.eventSource.onerror = (e) => self.onMessageError(e)
-    }
-  }
+  initMessages() {}
   // onMessage(e) {
   //   let data = JSON.parse(e.data)
   // }
