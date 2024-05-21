@@ -15,7 +15,7 @@ services:
       - externr_network
 
   database:
-    image: postgis/postgis:11-3.3
+    image: postgres:16
     shm_size: '1024m'
     ports:
       - "5432"
