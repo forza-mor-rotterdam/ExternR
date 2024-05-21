@@ -21,12 +21,106 @@
         </noscript>
         <![endif]-->
         <style>
-            table, td, div, h1, p {font-family: Arial, sans-serif;}
-            {% comment %} table, td {border:2px solid #000000 !important;} {% endcomment %}
+            table, td, div, h1, p {
+                font-family: Arial, sans-serif;
+                color: #404B4F;
+            }
+            table.maintable {
+                max-width: 800px;
+                margin: 0 auto;
+            }
+            /*table, td {border:2px solid #000000 !important;}*/
+            h2 {
+                font-size: 1.25rem;
+                margin-bottom: 0;
+            }
+            h2 img {
+                vertical-align: middle;
+            }
+            h3 {
+                margin-top: 2rem;
+                margin-bottom: 0.5rem;
+            }
+            p {
+                margin-top: 0.5rem;
+            }
+            dd {
+                margin-left: 0;
+            }
+            .btn {
+                border: 1px solid #7C8B90;
+                display: inline-block;
+                padding: 11px 16px 13px 16px;
+                line-height: 24px;
+                font-size: 1em;
+                font-weight: 700;
+                margin-bottom: 0.5em;
+                text-decoration: none;
+                color: #404B4F;
+            }
+            .btn-action {
+                background-color: #C93675;
+                color: #ffffff;
+                border-color: transparent;
+            }
+            a {
+                color: #00811f;
+            }
+            a img {
+                margin-right: 8px;
+                vertical-align: middle;
+            }
+            .p-20 {
+                padding: 20px;
+            }
+
+            .p-0-0-12 {
+                padding: 0 0 12px;
+            }
+
+            .p-0-20 {
+                padding: 0 20px;
+            }
+
+            .p-20-0 {
+                padding: 20px 0;
+            }
+            .p-20-0-0 {
+                padding: 20px 0 0;
+            }
+            .p-50-0-0 {
+                padding: 50px 0 0;
+            }
+            .p-8-0-4 {
+                padding: 8px 0 4px;
+            }
+
+            .p-4-16 {
+                padding: 4px 16px;
+            }
+
+            .p-50-20 {
+                padding: 50px 20px;
+            }
+
+            .p-50-20-20 {
+                padding: 50px 20px 20px;
+            }
+
+            .p-20-20-40 {
+                padding: 20px 20px 40px;
+            }
+
+            .p-40-0-20 {
+                padding: 40px 0 20px;
+            }
+            .va-top {
+                vertical-align: top;
+            }
         </style>
     </head>
     <body class="no-margin no-padding">
-        <table role="presentation" class="email-presentation-table">
+        <table role="presentation" class="maintable">
             <tr>
                 <td align="left" class="p-40-0-20">
                     <?xml version="1.0" standalone="no"?>
@@ -86,12 +180,12 @@
                     <table class="email-table">
                         {% with melding=taak.melding.response_json %}
                             <tr>
-                                <td class="p-4-16" colspan="2">
-                                    <h2 class="no-margin-bottom">Taak gegevens</h2>
+                                <td class="p-50-0-0" colspan="2">
+                                    <h2>Taak gegevens</h2>
                                 </td>
                             </tr>
                             <tr>
-                                <td class="p-4-16 va-top">
+                                <td class="va-top">
                                     <dl>
                                         {% if taak.aangemaakt_op %}
                                             <dt>
@@ -149,7 +243,7 @@
                                                         </dd>
                                                     {% else %}
                                                         <dd class="p-0-0-12">
-                                                            Geen naam opgegeven
+                                                            <small>Geen naam opgegeven</small>
                                                         </dd>
                                                     {% endif %}
                                                     {% if signaal.melder.telefoonnummer and signaal.melder.telefoonnummer != "Anoniem" %}
@@ -157,8 +251,7 @@
                                                             <a href="tel:{{ signaal.melder.telefoonnummer }}"
                                                                target="_blank"
                                                                class="link link--phone">
-                                                                {% include "icons/phone.svg" %}
-                                                                {{ signaal.melder.telefoonnummer }}
+                                                                <img alt="" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTQiIGhlaWdodD0iMjIiIHZpZXdCb3g9IjAgMCAxNCAyMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xLjQzOTM0IDAuNUgxMi41NjA3TDEzLjc1IDEuNjg5MzRWMjAuMzEwN0wxMi41NjA3IDIxLjVIMS40MzkzNEwwLjI1IDIwLjMxMDdWMS42ODkzNEwxLjQzOTM0IDAuNVpNMi4wNjA2NiAyTDEuNzUgMi4zMTA2NlYxOS42ODkzTDIuMDYwNjYgMjBIMTEuOTM5M0wxMi4yNSAxOS42ODkzVjIuMzEwNjZMMTEuOTM5MyAySDEwTDkuMjUgMy41SDQuNzVMNCAySDIuMDYwNjZaTTcgMTYuMjVDNi4xNzE1NyAxNi4yNSA1LjUgMTYuOTIxNiA1LjUgMTcuNzVDNS41IDE4LjU3ODQgNi4xNzE1NyAxOS4yNSA3IDE5LjI1QzcuODI4NDMgMTkuMjUgOC41IDE4LjU3ODQgOC41IDE3Ljc1QzguNSAxNi45MjE2IDcuODI4NDMgMTYuMjUgNyAxNi4yNVoiIGZpbGw9IiMwMDgxMUYiLz4KPC9zdmc+Cg==" />{{ signaal.melder.telefoonnummer }}{{ signaal.melder.telefoonnummer }}
                                                             </a>
                                                         </dd>
                                                     {% else %}
@@ -171,8 +264,7 @@
                                                             <a href="mailto:{{ signaal.melder.email }}"
                                                                target="_blank"
                                                                class="link link--email">
-                                                                {% include "icons/email.svg" with width="20" height="16" %}
-                                                                {{ signaal.melder.email }}
+                                                                <img alt="" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMTYiIHZpZXdCb3g9IjAgMCAyMCAxNiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xOS43NSAwLjVIMC4yNVYxNS41SDE5Ljc1VjAuNVpNMS43NSA0LjVWMkgxOC4yNVY0LjVMMTAgNy45Mzc1TDEuNzUgNC41Wk0xLjc1IDYuMTI1VjE0SDE4LjI1VjYuMTI1TDEwIDkuNTYyNUwxLjc1IDYuMTI1WiIgZmlsbD0iIzAwODExRiIvPgo8L3N2Zz4K" />{{ signaal.melder.email }}{{ signaal.melder.email }}
                                                             </a>
                                                         </dd>
                                                     {% else %}
