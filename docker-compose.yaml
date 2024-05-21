@@ -34,7 +34,7 @@ services:
     restart: always
 
   database:
-    image: postgres:16
+    image: postgis/postgis:13-3.1
     shm_size: '1024m'
     ports:
       - "5432"

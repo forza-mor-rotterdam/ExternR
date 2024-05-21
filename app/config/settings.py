@@ -139,7 +139,7 @@ DATABASE_HOST = os.getenv("DATABASE_HOST_OVERRIDE")
 DATABASE_PORT = os.getenv("DATABASE_PORT_OVERRIDE")
 
 DEFAULT_DATABASE = {
-    "ENGINE": "django.db.backends.postgresql",
+    "ENGINE": "django.contrib.gis.db.backends.postgis",
     "NAME": DATABASE_NAME,  # noqa:
     "USER": DATABASE_USER,  # noqa
     "PASSWORD": DATABASE_PASSWORD,  # noqa
