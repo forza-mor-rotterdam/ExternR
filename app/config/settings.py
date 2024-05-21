@@ -72,8 +72,6 @@ INSTALLED_APPS = (
     "django_filters",
     "webpack_loader",
     "corsheaders",
-    "ckeditor",
-    "ckeditor_uploader",
     "debug_toolbar",
     "mozilla_django_oidc",
     "health_check",
@@ -305,16 +303,12 @@ CSP_STYLE_SRC = (
     "cdn.jsdelivr.net",
 )
 CSP_CONNECT_SRC = (
-    (
-        "'self'",
-        "cke4.ckeditor.com",
-    )
+    ("'self'",)
     if not DEBUG
     else (
         "'self'",
         "ws:",
         "localhost:7001",
-        "cke4.ckeditor.com",
     )
 )
 CSP_FONT_SRC = ("'self'", "https://fonts.gstatic.com")
@@ -482,40 +476,6 @@ if OPENID_CONFIG and OIDC_RP_CLIENT_ID:
     LOGIN_REDIRECT_URL_FAILURE = "/"
     LOGOUT_REDIRECT_URL = OIDC_OP_LOGOUT_ENDPOINT
     LOGIN_URL = "/oidc/authenticate/"
-
-CKEDITOR_CONFIGS = {
-    "default": {
-        "toolbar": "Custom",  # change to Custom if you want the below settings
-        # create custom config here: https://ckeditor.com/latest/samples/toolbarconfigurator/index.html#advanced
-        "toolbar_Custom": [
-            {"name": "basicstyles", "items": ["Bold", "Italic", "Underline", "Strike"]},
-            {
-                "name": "paragraph",
-                "items": [
-                    "NumberedList",
-                    "BulletedList",
-                    "-",
-                    "Outdent",
-                    "Indent",
-                    "-",
-                    "-",
-                    "JustifyLeft",
-                    "JustifyCenter",
-                    "JustifyRight",
-                    "JustifyBlock",
-                    "-",
-                ],
-            },
-            "/",
-            {"name": "styles", "items": ["Format", "FontSize"]},
-            {"name": "links", "items": ["Link", "Unlink"]},
-            {"name": "format", "items": ["CopyFormatting", "RemoveFormat"]},
-        ],
-        "height": 300,
-    },
-}
-
-CKEDITOR_UPLOAD_PATH = "uploads/"
 
 EMAIL_BEHEER = os.getenv("EMAIL_BEHEER", "ForzaMOR@rotterdam.nl")
 

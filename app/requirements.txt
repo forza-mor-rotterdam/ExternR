@@ -9,7 +9,6 @@ django-db-schema-renderer==0.1.2
 celery==5.4.0
 django-celery-beat==2.5.0
 django-celery-results==2.5.1
-django-ckeditor
 django-session-timeout-joinup==1.0.0
 djangorestframework==3.13.1
 djangorestframework-csv==2.1.1
