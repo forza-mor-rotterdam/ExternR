@@ -21,12 +21,93 @@
         </noscript>
         <![endif]-->
         <style>
-            table, td, div, h1, p {font-family: Arial, sans-serif;}
-            {% comment %} table, td {border:2px solid #000000 !important;} {% endcomment %}
+            table, td, div, h1, p {
+                font-family: Arial, sans-serif;
+                color: #404B4F;
+            }
+            table.maintable {
+                max-width: 800px;
+                margin: 0 auto;
+            }
+            /*table, td {border:2px solid #000000 !important;}*/
+            h2 {
+                margin-bottom: 0;
+            }
+            h3 {
+                margin-top: 2rem;
+                margin-bottom: 0.5rem;
+            }
+            p {
+                margin-top: 0.5rem;
+            }
+            dd {
+                margin-left: 0;
+            }
+            .btn {
+                border: 1px solid #7C8B90;
+                display: inline-block;
+                padding: 11px 16px 13px 16px;
+                line-height: 24px;
+                font-size: 1em;
+                font-weight: 700;
+                margin-bottom: 0.5em;
+                text-decoration: none;
+                color: #404B4F;
+            }
+            .btn-action {
+                background-color: #C93675;
+                color: #ffffff;
+                border-color: transparent;
+            }
+            .p-20 {
+                padding: 20px;
+            }
+
+            .p-0-0-12 {
+                padding: 0 0 12px;
+            }
+
+            .p-0-20 {
+                padding: 0 20px;
+            }
+
+            .p-20-0 {
+                padding: 20px 0;
+            }
+            .p-20-0-0 {
+                padding: 20px 0 0;
+            }
+
+            .p-8-0-4 {
+                padding: 8px 0 4px;
+            }
+
+            .p-4-16 {
+                padding: 4px 16px;
+            }
+
+            .p-50-20 {
+                padding: 50px 20px;
+            }
+
+            .p-50-20-20 {
+                padding: 50px 20px 20px;
+            }
+
+            .p-20-20-40 {
+                padding: 20px 20px 40px;
+            }
+
+            .p-40-0-20 {
+                padding: 40px 0 20px;
+            }
+            .va-top {
+                vertical-align: top;
+            }
         </style>
     </head>
     <body class="no-margin no-padding">
-        <table role="presentation" class="email-presentation-table">
+        <table class="maintable" role="presentation" class="email-presentation-table">
             {% with melding=taak.melding.response_json %}
                 <tr>
                     <td align="left" class="p-40-0-20">
@@ -97,10 +178,10 @@
                             <p>
                                 Is de taak afgehandeld? Dan kunt u dit zelf aangeven. Hieronder vindt u alle informatie over de melding zoals deze door de melder is ingediend. Ook vindt u alle taak gegevens.
                             </p>
-                            <div>
+                            <p class="p-20-0">
                                 <a href="{{ opgelost_url }}" class="btn btn-action">De taak is opgelost</a>
                                 <a href="{{ niet_opgelost_url }}" class="btn btn-secondary">De taak is niet opgelost</a>
-                            </div>
+                            </p>
                         {% elif not taaktype_externe_instantie_feedback_vereist %}
                             {% comment %} @Remco @TODO Onderstaande tekst moet nog aangepast worden. {% endcomment %}
                             <p>De taak is automatisch afgehandeleld in onze systemen.</p>
@@ -108,23 +189,33 @@
                     </td>
                 </tr>
                 <tr>
-                    <td align="left" class="p-0-20">
+                    <td class="p-20">
+                        <hr>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="p-0-20">
                         <table class="email-table">
                             <tr>
-                                <td class="p-4-16" colspan="2">
+                                <td colspan="2">
                                     <h2 class="no-margin-bottom">{{ taak.adres }}</h2>
                                 </td>
                             </tr>
                             <tr>
-                                <td>Fotos hier</td>
+                                <td colspan="2">Fotos hier</td>
                             </tr>
                             <tr>
-                                <td class="p-4-16" colspan="2">
-                                    <h2 class="no-margin-bottom">Melding</h2>
+                                <td colspan="2">
+                                    <h2 class="p-20-0-0">Melding</h2>
                                 </td>
                             </tr>
                             <tr>
-                                <td class="p-4-16 va-top">
+                                <td colspan="2">
+                                    <hr>
+                                </td>
+                            </tr>            
+                            <tr>
+                                <td class="va-top">
                                     <dl>
                                         <dt>
                                             <strong>Nummer</strong>
@@ -144,6 +235,10 @@
                                         <dd class="p-0-0-12">
                                             {{ melding.onderwerp }}
                                         </dd>
+                                    </dl>
+                                </td>
+                                <td class="va-top">
+                                    <dl>
                                         <dt>
                                             <strong>Omschrijving</strong>
                                         </dt>
@@ -152,12 +247,19 @@
                                         </dd>
                                     </dl>
                                 </td>
-                                <tr>
-                                    <td class="p-4-16" colspan="2">
-                                        <h2 class="no-margin-bottom">Locatie</h2>
-                                    </td>
-                                </tr>
-                                <td class="p-4-16 va-top">
+                            </tr>
+                            <tr>
+                                <td colspan="2">
+                                    <h2 class="p-20-0-0">Locatie</h2>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">
+                                    <hr>
+                                </td>
+                            </tr>  
+                            <tr>
+                                <td class="va-top">
                                     <dl>
                                         <dt>
                                             <strong>Adres</strong>
@@ -166,33 +268,38 @@
                                             {{ taak.adres }}
                                         </dd>
                                         <dt>
-                                            <strong>Adres</strong>
+                                            <strong>Wijk</strong>
                                         </dt>
                                         <dd class="p-0-0-12">
                                             {{ taak.taak_zoek_data.wijknaam }}
                                         </dd>
+                                    </dl>
+                                </td>
+                                <td>
+                                    <dl>
                                         <dt>
-                                            <strong>Adres</strong>
+                                            <strong>Buurt</strong>
                                         </dt>
                                         <dd class="p-0-0-12">
                                             {{ taak.taak_zoek_data.buurtnaam }}
-                                        </dd>
-                                        <dt>
-                                            <strong>Kaart</strong>
-                                        </dt>
-                                        <dd class="p-0-0-12">
-                                            Kaart hier
                                         </dd>
                                     </dl>
                                 </td>
                             </tr>
                             <tr>
-                                <td class="p-4-16" colspan="2">
-                                    <h2 class="no-margin-bottom">Melder</h2>
+                                <td colspan="2">Kaart hier</td>
+                            <tr>
+                                <td colspan="2">
+                                    <h2 class="p-20-0-0">Melder</h2>
                                 </td>
                             </tr>
                             <tr>
-                                <td class="p-4-16 va-top">
+                                <td colspan="2">
+                                    <hr>
+                                </td>
+                            </tr>  
+                            <tr>
+                                <td class="va-top">
                                     <dl>
                                         {% if melding.signalen_voor_melding|length > 0 %}
                                             {% for signaal in melding.signalen_voor_melding %}
