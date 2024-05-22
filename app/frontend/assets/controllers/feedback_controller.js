@@ -59,7 +59,7 @@ export default class extends Controller {
     const allFieldsValid = this.checkValids()
     event.preventDefault()
     if (allFieldsValid) {
-      this.formTarget.requestSubmit()
+      this.element.submit()
     }
   }
 }
