@@ -125,7 +125,7 @@ def taak_feedback_handle(
                 )
                 if taak_status_aanpassen_response.status_code != 200:
                     logger.error(
-                        f"taak_toewijzing_intrekken taak_status_aanpassen: status_code={taak_status_aanpassen_response.status_code}, taak_id={id}, repsonse_text={taak_status_aanpassen_response.text}"
+                        f"taak_feedback_handle taak_status_aanpassen: status_code={taak_status_aanpassen_response.status_code}, taak_id={id}, repsonse_text={taak_status_aanpassen_response.text}"
                     )
                 if taak_status_aanpassen_response.status_code == 200:
                     return render(
@@ -153,7 +153,7 @@ def taak_feedback_handle(
         )
         if taak_status_aanpassen_response.status_code != 200:
             logger.error(
-                f"taak_toewijzing_intrekken taak_status_aanpassen: status_code={taak_status_aanpassen_response.status_code}, taak_id={id}, repsonse_text={taak_status_aanpassen_response.text}"
+                f"taak_feedback_handle taak_status_aanpassen: status_code={taak_status_aanpassen_response.status_code}, taak_id={id}, repsonse_text={taak_status_aanpassen_response.text}"
             )
         if taak_status_aanpassen_response.status_code == 200:
             return render(
