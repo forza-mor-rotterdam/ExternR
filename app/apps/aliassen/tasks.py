@@ -59,8 +59,12 @@ def task_update_melding_alias_data(self, melding_alias_id):
     melding_alias = MeldingAlias.objects.filter(pk=melding_alias_id).first()
     if melding_alias:
         melding_alias.valideer_bron_url()
-        melding_alias.save()
         melding_alias.update_zoek_data()
+        melding_alias.save()
+    else:
+        raise ValueError(
+            f"No melding alias found for melding_alias_id: {melding_alias_id}"
+        )
 
     return f"MeldingAlias with id={melding_alias_id}, updated"
 

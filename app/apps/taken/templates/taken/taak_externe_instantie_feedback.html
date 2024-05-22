@@ -5,35 +5,40 @@
 {% endblock title %}
 {% block body %}
     <turbo-frame id="feedback">
-        <h1>
-            <span class="green">Bedankt</span> voor het doorgeven!
-        </h1>
-        <div class="grid-container">
-            <div class="grid-item">
+    <h1>
+        <span class="green">Bedankt</span> voor het doorgeven!
+    </h1>
+    <div class="grid-container">
+        <div class="grid-item">
             <h2>Kunt u aangeven waarom u de taak niet heeft kunnen afhandelen?</h2>
             <dl>
                 <div>
-                    <dt><strong>Taak:</strong></dt>
-                    <dd>{{taak.taaktype}}</dd>
+                    <dt>
+                        <strong>Taak:</strong>
+                    </dt>
+                    <dd>
+                        {{ taak.taaktype }}
+                    </dd>
                 </div>
                 <div>
-                    <dt><strong>Adres:</strong></dt>
-                    <dd>{{taak.adres}}</dd>
+                    <dt>
+                        <strong>Adres:</strong>
+                    </dt>
+                    <dd>
+                        {{ taak.adres }}
+                    </dd>
                 </div>
             </dl>
-            <form 
-                action="."
-                method="post"
-                class="form--beheer"
-                data-controller="feedback"
-                novalidate
-                data-action="submit->feedback#onSubmit">
+            <form action="."
+                  method="post"
+                  class="form--beheer"
+                  data-controller="feedback"
+                  novalidate
+                  data-action="submit->feedback#onSubmit">
                 {% csrf_token %}
                 <fieldset>
                     {{ form.omschrijving_intern_opties|render_rotterdam_formulier }}
-                    <div class="hidden" data-feedback-target="toelichting">
-                        {{ form.omschrijving_intern|render_rotterdam_formulier }}
-                        </div>
+                    <div class="hidden" data-feedback-target="toelichting">{{ form.omschrijving_intern|render_rotterdam_formulier }}</div>
                 </fieldset>
                 <div class="form-row container__button">
                     <div class="form-row btn-row">
@@ -44,6 +49,6 @@
                 </div>
             </form>
         </div>
+    </div>
     </turbo-frame>
 {% endblock body %}
-

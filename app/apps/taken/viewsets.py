@@ -1,11 +1,15 @@
-from apps.services.mail import MailService
+from apps.aliassen.tasks import task_update_melding_alias_data
 from apps.taken.models import Taak, Taaktype
 from apps.taken.serializers import (
     TaakgebeurtenisStatusSerializer,
     TaakSerializer,
     TaaktypeSerializer,
 )
-from apps.taken.tasks import taak_afsluiten_zonder_feedback
+from apps.taken.tasks import (
+    send_taak_aangemaakt_email_task,
+    taak_afsluiten_zonder_feedback_task,
+)
+from celery import chain
 from drf_spectacular.utils import extend_schema
 from rest_framework import mixins, status, viewsets
 from rest_framework.decorators import action
@@ -70,14 +74,18 @@ class TaakViewSet(
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         taak = Taak.acties.aanmaken(serializer)
-        MailService().taak_aangemaakt_email(
-            taak,
-            verzenden=True,
-            request=request,
+
+        base_url = request.build_absolute_uri("/")[:-1]  # Remove trailing slash
+
+        chain_of_tasks = chain(
+            task_update_melding_alias_data.si(taak.melding.id),
+            send_taak_aangemaakt_email_task.si(taak.id, base_url=base_url),
         )
-        # Immediately close taak if externe instantie doesnt need to provide feedback
+
         if not taak.taaktype.externe_instantie_feedback_vereist:
-            taak_afsluiten_zonder_feedback.delay(taak.id)
+            chain_of_tasks |= taak_afsluiten_zonder_feedback_task.si(taak.id)
+
+        chain_of_tasks.delay()
 
         serializer = self.get_serializer(taak, context={"request": request})
         return Response(serializer.data, status=status.HTTP_201_CREATED)

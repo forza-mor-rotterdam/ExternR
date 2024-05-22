@@ -94,7 +94,7 @@ class MailService:
         template_stijl="html",
         verzenden=False,
         bestanden=[],
-        request=None,
+        base_url=None,
     ):
         send_to = []
         taaktype = taak.taaktype
@@ -111,27 +111,9 @@ class MailService:
                 (str(taak.id) + settings.SECRET_HASH_KEY).encode()
             ).hexdigest()
 
-            # Construct the feedback URLs
-            opgelost_url = request.build_absolute_uri(
-                reverse(
-                    "feedback",
-                    kwargs={
-                        "taak_id": taak.id,
-                        "email_hash": taak_id_hash,
-                        "email_feedback_type": 1,
-                    },
-                )
-            )
-            niet_opgelost_url = request.build_absolute_uri(
-                reverse(
-                    "feedback",
-                    kwargs={
-                        "taak_id": taak.id,
-                        "email_hash": taak_id_hash,
-                        "email_feedback_type": 0,
-                    },
-                )
-            )
+            # Construct the feedback URLs using base_url
+            opgelost_url = f"{base_url}{reverse('feedback', kwargs={'taak_id': taak.id, 'email_hash': taak_id_hash, 'email_feedback_type': 1})}"
+            niet_opgelost_url = f"{base_url}{reverse('feedback', kwargs={'taak_id': taak.id, 'email_hash': taak_id_hash, 'email_feedback_type': 0})}"
             email_context.update(
                 {
                     "opgelost_url": opgelost_url,
@@ -158,10 +140,15 @@ class MailService:
 
         if send_to and not settings.DEBUG and verzenden:
             msg.send()
+        elif settings.DEBUG and verzenden and settings.DEVELOPER_EMAIL:
+            msg = EmailMultiRelated(
+                subject,
+                text_content,
+                settings.DEFAULT_FROM_EMAIL,
+                [settings.DEVELOPER_EMAIL],
+            )
+            msg.attach_alternative(html_content, "text/html")
+            msg.send()
         if template_stijl == "html":
-            with open(
-                os.path.join(settings.BASE_DIR, "test_template.html"), "w"
-            ) as file:
-                file.write(html_content)
             return html_content
         return text_content

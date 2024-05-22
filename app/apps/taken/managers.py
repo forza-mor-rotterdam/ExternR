@@ -21,7 +21,7 @@ class TaakManager(models.Manager):
         from apps.taken.models import Taakgebeurtenis, Taakstatus, TaakZoekData
 
         with transaction.atomic():
-            meldingalias, meldingalias_aangemaakt = MeldingAlias.objects.get_or_create(
+            meldingalias, _ = MeldingAlias.objects.get_or_create(
                 bron_url=serializer.validated_data.get("melding")
             )
             taak_zoek_data_instance, _ = TaakZoekData.objects.get_or_create(
@@ -43,6 +43,7 @@ class TaakManager(models.Manager):
             )
             taak.taakstatus = taakstatus
             taak.save()
+
             transaction.on_commit(
                 lambda: aangemaakt.send_robust(
                     sender=self.__class__,

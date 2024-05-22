@@ -14,6 +14,8 @@ class MeldingNotificatieAPIView(APIView):
         melding_alias, aangemaakt = MeldingAlias.objects.get_or_create(
             bron_url=request.GET.get("melding_url")
         )
-        task_update_melding_alias_data.delay(melding_alias.id)
+        notificatie_type = request.GET.get("notificatie_type")
+        if notificatie_type != "taakopdracht_aangemaakt":
+            task_update_melding_alias_data.delay(melding_alias.id)
 
         return Response({}, status=status.HTTP_200_OK)

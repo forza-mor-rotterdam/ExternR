@@ -73,7 +73,7 @@ class TaakFeedbackHandleForm(forms.Form):
             }
         ),
         choices=REDEN_CHOICES,
-        required=True
+        required=True,
     )
 
     omschrijving_intern = forms.CharField(
@@ -83,7 +83,7 @@ class TaakFeedbackHandleForm(forms.Form):
                 "class": "hidden",
                 "data-testid": "information",
                 "rows": "4",
-                "placeholder": "Omschrijf hier de reden"
+                "placeholder": "Omschrijf hier de reden",
             }
         ),
         required=True,

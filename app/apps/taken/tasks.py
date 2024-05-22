@@ -1,5 +1,6 @@
 import celery
 from apps.meldingen.service import MeldingenService
+from apps.services.mail import MailService
 from apps.taken.models import Taak
 from celery import shared_task
 from celery.utils.log import get_task_logger
@@ -77,7 +78,7 @@ def compare_and_update_status(self, taak_id):
 
 
 @shared_task(bind=True, base=BaseTaskWithRetry)
-def taak_afsluiten_zonder_feedback(self, taak_id):
+def taak_afsluiten_zonder_feedback_task(self, taak_id):
     try:
         taak = Taak.objects.get(id=taak_id)
         taak_status_aanpassen_response = MeldingenService().taak_status_aanpassen(
@@ -95,6 +96,23 @@ def taak_afsluiten_zonder_feedback(self, taak_id):
                 f"Task status code is not 200: {taak_status_aanpassen_response.status_code}"
             )
     except Exception as e:
-        logger.error(f"Error in close_task_no_feedback_required: {e}")
+        logger.error(f"Error in taak_afsluiten_zonder_feedback task: {e}")
         # Raise an exception to trigger retry
+        raise e
+
+
+@shared_task(bind=True, base=BaseTaskWithRetry)
+def send_taak_aangemaakt_email_task(self, taak_id, base_url=None):
+    taak = Taak.objects.get(id=taak_id)
+    if not taak:
+        raise ValueError("Taak is none")
+    try:
+        # Use the base_url and user_email in your mail service if needed
+        MailService().taak_aangemaakt_email(
+            taak,
+            verzenden=True,
+            base_url=base_url,
+        )
+    except Exception as e:
+        logger.error(f"Error in send_taak_aangemaakt_email task: {e}")
         raise e
