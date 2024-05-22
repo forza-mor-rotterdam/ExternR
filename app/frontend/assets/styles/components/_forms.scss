@@ -517,6 +517,17 @@ ul.list--form-radio-input {
     .container__checkbox--single label {
         padding-left: $input-padding-y;
     }
+
+    .list--form-radio-input {
+        .list--form-radio-input {
+            position: relative;
+            left: auto;
+        }
+    }
+
+    .hidden {
+        @extend .visually-hidden;
+    }
 }
 
 .form-check-input {

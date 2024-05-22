@@ -65,16 +65,25 @@ class TaakFeedbackHandleForm(forms.Form):
         ("3", "Andere reden."),
     )
     omschrijving_intern_opties = forms.ChoiceField(
-        label="Reden", widget=forms.RadioSelect, choices=REDEN_CHOICES, required=True
+        label="Reden",
+        widget=forms.RadioSelect(
+            attrs={
+                "data-action": "change->feedback#onChangeReden",
+                "class": "list--form-radio-input",
+            }
+        ),
+        choices=REDEN_CHOICES,
+        required=True
     )
 
     omschrijving_intern = forms.CharField(
         label="Toelichting",
         widget=forms.Textarea(
             attrs={
-                "class": "form-control",
+                "class": "hidden",
                 "data-testid": "information",
                 "rows": "4",
+                "placeholder": "Omschrijf hier de reden"
             }
         ),
         required=True,

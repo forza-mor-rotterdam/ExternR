@@ -5,23 +5,45 @@
 {% endblock title %}
 {% block body %}
     <turbo-frame id="feedback">
-    <h1>
-        <span class="green">Bedankt</span> voor het doorgeven!
-    </h1>
-    <h2>Kunt u aangeven waarom u de taak niet heeft kunnen afhandelen?</h2>
-    <form action="." method="post" class="form--beheer">
-        {% csrf_token %}
-        <fieldset>
-            {{ form.omschrijving_intern_opties|render_rotterdam_formulier }}
-            {{ form.omschrijving_intern|render_rotterdam_formulier }}
-        </fieldset>
-        <div class="form-row container__button">
-            <div class="form-row btn-row">
-                <button type="submit" class="btn btn-action">
-                    <span>Versturen</span>
-                </button>
-            </div>
+        <h1>
+            <span class="green">Bedankt</span> voor het doorgeven!
+        </h1>
+        <div class="grid-container">
+            <div class="grid-item">
+            <h2>Kunt u aangeven waarom u de taak niet heeft kunnen afhandelen?</h2>
+            <dl>
+                <div>
+                    <dt><strong>Taak:</strong></dt>
+                    <dd>{{taak.taaktype}}</dd>
+                </div>
+                <div>
+                    <dt><strong>Adres:</strong></dt>
+                    <dd>{{taak.adres}}</dd>
+                </div>
+            </dl>
+            <form 
+                action="."
+                method="post"
+                class="form--beheer"
+                data-controller="feedback"
+                novalidate
+                data-action="submit->feedback#onSubmit">
+                {% csrf_token %}
+                <fieldset>
+                    {{ form.omschrijving_intern_opties|render_rotterdam_formulier }}
+                    <div class="hidden" data-feedback-target="toelichting">
+                        {{ form.omschrijving_intern|render_rotterdam_formulier }}
+                        </div>
+                </fieldset>
+                <div class="form-row container__button">
+                    <div class="form-row btn-row">
+                        <button type="submit" class="btn btn-action">
+                            <span>Versturen</span>
+                        </button>
+                    </div>
+                </div>
+            </form>
         </div>
-    </form>
     </turbo-frame>
 {% endblock body %}
+
