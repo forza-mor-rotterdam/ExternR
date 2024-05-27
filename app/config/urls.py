@@ -19,6 +19,7 @@ from apps.context.views import (
     ContextLijstView,
     ContextVerwijderenView,
 )
+from apps.health.views import healthz
 from apps.main.views import (
     clear_melding_token_from_cache,
     config,
@@ -81,6 +82,7 @@ urlpatterns = [
     ),
     path("config/", config, name="config"),
     path("health/", include("health_check.urls")),
+    path("healthz/", healthz, name="healthz"),
     # START taken
     path(
         "taken/",

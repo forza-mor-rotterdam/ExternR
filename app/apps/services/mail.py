@@ -128,7 +128,7 @@ class MailService:
         html_template = get_template("email/email_taak_aangemaakt.html")
         text_content = text_template.render(email_context)
         html_content = html_template.render(email_context)
-        subject = f"Taaktype: {taaktype} - taak aangemaakt"
+        subject = "De gemeente Rotterdam heeft een melding van een bewoner ontvangen waarvan de taakafhandeling onder de verantwoordelijkheid valt van uw organisatie."
         msg = EmailMultiRelated(
             subject, text_content, settings.DEFAULT_FROM_EMAIL, send_to
         )
