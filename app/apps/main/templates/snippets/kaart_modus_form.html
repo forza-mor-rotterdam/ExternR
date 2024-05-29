@@ -1,0 +1,12 @@
+{% load rotterdam_formulier_html %}
+<turbo-frame id="kaart_modus">
+<form action="{% url 'kaart_modus' %}"
+      method="post"
+      data-controller="kaartModus"
+      data-kaartModus-target="form"
+      data-kaartModus-request-type-value="{{ request_type }}"
+      class="form__kaart-modus">
+    {% csrf_token %}
+    {{ form.kaart_modus|render_rotterdam_formulier }}
+</form>
+</turbo-frame>

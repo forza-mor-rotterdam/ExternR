@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}
+    Account | ExternR
+{% endblock title %}
+{% block body %}
+    <turbo-frame id="overview">
+    <div class="border-green print-only"></div>
+    <div class="page__detail">
+        {% if request.user.is_authenticated %}
+            <div>
+                <div class="grid-container">
+                    <div class="grid-item">
+                        <div>
+                            <h1>Account</h1>
+                        </div>
+                    </div>
+                </div>
+                <div class="grid-container">
+                    <div class="grid-item">
+                        <section class="section--seperated">
+                            <div class="container__details">{% include "auth/rollen_rechten.html" %}</div>
+                        </section>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <div>
+                <div class="grid-container">
+                    <div class="grid-item">
+                        <div>
+                            <h1>Om te beginnen</h1>
+                        </div>
+                    </div>
+                </div>
+                <div class="grid-container">
+                    <div class="grid-item">
+                        <section class="section--seperated">
+                            <div class="container__details">
+                                <h2>Inloggen</h2>
+                                <p>
+                                    Je bent niet ingelogd.
+                                    <br>
+                                    Gebruik de knop hieronder om in te loggen.
+                                </p>
+                                <a href="{% url 'root' %}" class="btn btn-action"  target="_top">Inloggen</a>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+    </turbo-frame>
+{% endblock body %}

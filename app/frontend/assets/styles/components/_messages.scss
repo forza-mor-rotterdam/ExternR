@@ -1,0 +1,34 @@
+.messages-container {
+    pointer-events: none;
+    position: absolute;
+    top: -16px;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+
+    .wrapper {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        color: #00689e;
+        background-color: #eaf4fa;
+        box-sizing: border-box;
+        transform: translateY(-100%);
+        transition: transform 1s;
+        a {
+            color: inherit;
+        }
+        .messages {
+            margin: $breadcrumb-padding-y $input-padding-x;
+            @include list-clean();
+        }
+    }
+
+    &.show {
+        .wrapper {
+            transform: translateY(0);
+        }
+    }
+}

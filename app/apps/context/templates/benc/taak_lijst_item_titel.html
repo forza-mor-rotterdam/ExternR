@@ -1,0 +1,30 @@
+{% load vind_in_dict from main_tags %}
+{% load l10n %}
+<div>
+    {% with grafnummer=taak.taak_zoek_data.grafnummer vak=taak.taak_zoek_data.vak plaats=taak.taak_zoek_data.begraafplaats %}
+        <h2 class="h5">
+            {% vind_in_dict taak.melding.response_json.signalen_voor_melding.0.meta_uitgebreid.begraafplaats.choices plaats as signaal_begraafplaats_naam %}
+            {% if signaal_begraafplaats_naam == taak.taak_zoek_data.begraafplaats %}
+                {% vind_in_dict taak.melding.response_json.meta_uitgebreid.begraafplaats.choices plaats %},
+            {% else %}
+                {{ signaal_begraafplaats_naam }},
+            {% endif %}
+            {% if vak %}Vak {{ vak }},{% endif %}
+            {% if grafnummer %}Graf {{ grafnummer }}{% endif %}
+            {% if taak.taakstatus.naam %}
+                <span class="badge {% if taak.taakstatus.naam == 'nieuw' or taak.taakstatus.naam == 'openstaand' %}badge--darkblue {% elif taak.taakstatus.naam == 'toegewezen' %}badge--yellow {% else %}badge--green{% endif %}">{{ taak.taakstatus.naam|lower|capfirst }}</span>
+            {% endif %}
+        </h2>
+        <div>
+            <span class="incident__category">{{ taak.titel }}</span>
+        </div>
+        <div class="incident__moment">
+            <span data-taak-target="incidentDate">
+                {% localize on %}
+                {{ taak.taakstatus.aangemaakt_op|date:"D d M Y"|lower }} {{ taak.taakstatus.aangemaakt_op|time:"H:i" }}
+                <br>
+            {% endlocalize %}
+        </span>
+    </div>
+{% endwith %}
+</div>

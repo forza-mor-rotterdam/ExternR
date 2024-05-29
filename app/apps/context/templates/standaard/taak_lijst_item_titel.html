@@ -1,0 +1,30 @@
+{% load replace_comma_by_dot from main_tags %}
+{% load l10n %}
+<div>
+    <h2 class="h5">
+        {{ taak.adres }}
+        {% if taak.taakstatus.naam %}
+            <span class="badge {% if taak.taakstatus.naam == 'nieuw' or taak.taakstatus.naam == 'openstaand' %}badge--darkblue {% elif taak.taakstatus.naam == 'toegewezen' %}badge--yellow {% else %}badge--green{% endif %}">{{ taak.taakstatus.naam|lower|capfirst }}
+            {% endif %}
+        </span>
+    </h2>
+    {% if taak.taak_zoek_data.postcode %}<strong>{{ taak.taak_zoek_data.postcode }}</strong>{% endif %}
+    <div>
+        <span class="incident__category">{{ taak.titel }}</span>
+    </div>
+    <div class="incident__moment">
+        <span data-taak-target="incidentDate">
+            {% localize on %}
+            {{ taak.taakstatus.aangemaakt_op|date:"D d M Y"|lower }} {{ taak.taakstatus.aangemaakt_op|time:"H:i" }}
+            <br>
+        {% endlocalize %}
+    </span>
+</div>
+<div class="incident__distance">
+    {% with taak.taak_zoek_data.geometrie as geo %}
+        <span><span data-incidentlist-target="taakAfstand"
+      data-latitude="{{ geo.1|replace_comma_by_dot }}"
+      data-longitude="{{ geo.0|replace_comma_by_dot }}">{{ taak.afstand }}</span> meter</span>
+    {% endwith %}
+</div>
+</div>

@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}
+    Fout 403 - verboden | ExternR
+{% endblock title %}
+{% block javascripts %}
+{% endblock javascripts %}
+{% block body_class %}
+    errorpage
+{% endblock body_class %}
+{% block body %}
+    <turbo-frame id="overview">
+    <div class="page__detail">
+        {% if request.user.is_authenticated %}
+            <div class="container__details">
+                <div>
+                    <h1 class="h3 block--black">Fout 403 - Verboden</h1>
+                    <p class="margin-bottom">Je bent ingelogd, maar je hebt niet genoeg rechten om deze pagina te bekijken.</p>
+                    <h3>Relevante links</h3>
+                    Hieronder vind je de belangrijkste links.
+                    <ul class="list--blocks-horizontal margin-bottom">
+                        <li>
+                            <a href="{% url 'taken' %}">Taken overzicht</a>
+                        </li>
+                        <li>
+                            <a href="{% url 'beheer' %}" target="_top">Beheer</a>
+                        </li>
+                    </ul>
+                    <div>{% include "auth/rollen_rechten.html" %}</div>
+                </div>
+                <div class="full-width">
+                    <img src="/static/images/skyline.svg" alt="" />
+                    <span class="h1 block--black"></span>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+    </turbo-frame>
+{% endblock body %}

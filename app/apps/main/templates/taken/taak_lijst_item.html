@@ -1,0 +1,91 @@
+{% extends "snippets/modal_context.html" %}
+{% load webpack_static from webpack_loader %}
+{% load vind_in_dict to_timestamp from main_tags %}
+{% load json_encode replace_comma_by_dot adres_order_nummer from main_tags %}
+{% load mor_core_url mor_core_protected_url from main_tags %}
+{% load context_template from context_tags %}
+{% load get_bijlagen from melding_tags %}
+{% block before_modal_content %}
+    {% get_bijlagen taak.melding.response_json as bijlagen %}
+    <div data-incidentlist-target="taakItem"
+         data-modal-target="taakItem"
+         data-id="{{ taak.id }}"
+         data-uuid="{{ taak.uuid }}"
+         data-melding-id="{{ taak.melding.response_json.id }}"
+         data-melding-uuid="{{ taak.melding.response_json.uuid }}"
+         data-titel="{{ taak.titel }}"
+         data-adres="{{ taak.adres }}"
+         data-geometrie="{% if taak.taak_zoek_data.geometrie %}{{ taak.taak_zoek_data.geometrie|json_encode }}{% else %}{% endif %}"
+         {% if bijlagen %}data-afbeelding-url="{{ bijlagen.0.afbeelding_verkleind_relative_url|mor_core_protected_url }}"{% endif %}
+         class="list-item"
+         {% if taak.taak_zoek_data.locatie_type != "graf" and not taak.afgesloten_op %}data-controller="taak modal"{% endif %}>
+        <div class="wrapper__swipe" data-taak-target="swipeContainer">
+            {% if taak.taak_zoek_data.locatie_type != "graf" and not taak.afgesloten_op %}
+                <button class="container__actions handle--no-success"
+                        data-id="{{ taak.id }}"
+                        data-taak-target="buttonNietOpgelost"
+                        data-modal-title-param="Taak afhandelen"
+                        data-modal-sub-title-param="{{ taak.titel }}"
+                        data-modal-url-param="{% url 'incident_modal_handle_part' taak.id %}?resolutie=niet_opgelost"
+                        data-modal-id-param="incident_modal_handle_{{ taak.id }}"
+                        data-action="modal#openModal">
+                    <div>
+                        <span>Niet opgelost</span>
+                    </div>
+                </button>
+                <button class="container__actions handle--success"
+                        data-id="{{ taak.id }}"
+                        data-taak-target="buttonOpgelost"
+                        data-modal-title-param="Taak afhandelen"
+                        data-modal-sub-title-param="{{ taak.titel }}"
+                        data-modal-url-param="{% url 'incident_modal_handle_part' taak.id %}?resolutie=opgelost"
+                        data-modal-id-param="incident_modal_handle_{{ taak.id }}"
+                        data-action="modal#openModal">
+                    <div>
+                        <span>Afhandelen</span>
+                    </div>
+                </button>
+            {% endif %}
+            <div class="container__flex">
+                <a href="{% url 'taak_detail' taak.id %}"
+                   data-turbo-frame="taak_basis"
+                   data-page="{{ page_obj.number }}"
+                   aria-label="Bekijk taak {{ taak.id }}"
+                   data-controller="incidentlistItem">
+                    <div class="container__image">
+                        {% if bijlagen %}
+                            {% with bijlagen|first as first_foto %}
+                                <div class="background-image"
+                                     data-src="{{ first_foto.afbeelding_verkleind_relative_url|mor_core_protected_url }}">
+                                    <img alt="afbeelding_verkleind" />
+                                </div>
+                            {% endwith %}
+                        {% else %}
+                            <div class="background-image"
+                                 data-src="{% webpack_static 'icons/noimage.svg' %}">
+                                <img class="width60" alt="noimage" />
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="container__info">
+                        {% if taak.taak_zoek_data.straatnaam %}
+                            {% include "standaard/taak_lijst_item_titel.html" %}
+                        {% else %}
+                            {% include "benc/taak_lijst_item_titel.html" %}
+                        {% endif %}
+                    </div>
+                </a>
+                {% if taak.taak_zoek_data.straatnaam %}
+                    {% include "standaard/taak_lijst_item_map.html" %}
+                {% else %}
+                    {% include "benc/taak_lijst_item_map.html" %}
+                {% endif %}
+            </div>
+        </div>
+    {% endblock before_modal_content %}
+    {% block turbo_frame_id %}
+        incident_modal_handle_{{ taak.id }}
+    {% endblock turbo_frame_id %}
+    {% block after_modal_content %}
+    </div>
+{% endblock after_modal_content %}

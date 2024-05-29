@@ -1,0 +1,16 @@
+{% load vind_in_dict from main_tags %}
+{% load l10n %}
+{% with grafnummer=taak_zoek_data.grafnummer vak=taak_zoek_data.vak plaats=taak_zoek_data.begraafplaats %}
+    {% if grafnummer %}Grafnummer {{ grafnummer }}{% endif %}
+    {% if vak %}, Vak {{ vak }}{% endif %}
+    {% if not grafnummer and not vak and plaats %}
+        {% vind_in_dict melding.signalen_voor_melding.0.meta_uitgebreid.begraafplaats.choices plaats as signaal_begraafplaats_naam %}
+        {% if signaal_begraafplaats_naam == taak_zoek_data.begraafplaats %}
+            {% vind_in_dict melding.meta_uitgebreid.begraafplaats.choices plaats %}
+        {% else %}
+            {{ signaal_begraafplaats_naam }}
+        {% endif %}
+    {% endif %}
+{% endwith %}
+<br />
+{{ subtitel }}

@@ -1,0 +1,25 @@
+{% load json_encode from main_tags %}
+<div class="container__map full-width">
+    <div class="container__map-tools">
+        <turbo-frame id="kaart_modus" src="{% url 'kaart_modus' %}"  data-spinner="hide">
+        </turbo-frame>
+    </div>
+    <div data-controller="kaart"
+         class="map"
+         id="incidentMap"
+         data-kaart-main-outlet="main"
+         data-action="touchstart->kaart#onTwoFingerDrag touchend->kaart#onTwoFingerDrag">
+        <div class="map__overlay">
+            <span>Gebruik twee vingers om de kaart te verplaatsen</span>
+        </div>
+        <button class="btn btn-on-map"
+                data-action="kaart#toggleBuurten"
+                id="buurten-button">
+            <input type="checkbox"
+                   class="form-check-input"
+                   id="buurten-checkbox"
+                   data-action="kaart#toggleBuurten" />
+            <span>Buurten</span>
+        </button>
+    </div>
+</div>

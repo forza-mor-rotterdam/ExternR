@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block body %}
+    {% block before_modal_content %}
+    {% endblock before_modal_content %}
+    <div class="modal">
+        <div class="modal-dialog">
+            <div class="modal-backdrop modal-exit"
+                 data-action="click->modal#closeModal"></div>
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1>
+                        <span data-modal-target="title"></span>
+                        <br>
+                        <small data-modal-target="subTitle"></small>
+                    </h1>
+                    <button type="button"
+                            class="btn-close"
+                            aria-label="Sluit"
+                            data-action="modal#closeModal"></button>
+                </div>
+                <div class="modal-body">
+                    <turbo-frame data-modal-target="turboFrame"></turbo-frame>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% block after_modal_content %}
+    {% endblock after_modal_content %}
+{% endblock body %}

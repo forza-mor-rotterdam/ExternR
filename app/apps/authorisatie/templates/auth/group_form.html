@@ -1,0 +1,97 @@
+{% extends "base_beheer.html" %}
+{% load rotterdam_formulier_html %}
+{% block title %}
+    {% if object %}
+        Rechtengroep '{{ object.name }}' aanpassen
+    {% else %}
+        Rechtengroep aanmaken
+    {% endif %}
+    | Beheer | ExternR
+{% endblock title %}
+{% block body %}
+    <div class="page__beheer">
+        <div>
+            <a href="{% url 'rechtengroep_lijst' %}"
+               data-turbo-action='advance'
+               class="link--back">
+                <svg width="25"
+                     height="16"
+                     viewBox="0 0 25 16"
+                     fill="none"
+                     xmlns="http://www.w3.org/2000/svg">
+                    <path d="M9.15173 1.73256L7.73753 0.318359L1.44704 6.60885L1.4142 6.576L0 7.9902L1.4115 9.4017L1.37867 9.43453L7.67186 15.7277L9.08606 14.3135L3.7726 9.00006H24.0098V7.00006H3.88423L9.15173 1.73256Z" fill="#404B4F" />
+                </svg>
+                Rechtengroepen
+            </a>
+        </div>
+        {% if object %}
+            <h1>Rechtengroep '{{ object.name }}' aanpassen</h1>
+        {% else %}
+            <h1>Rechtengroep aanmaken</h1>
+        {% endif %}
+        <div class="grid-container">
+            <div class="grid-item">
+                {% if object.user_set.all %}
+                    <div class="alert alert--warning">
+                        <span>
+                            <svg width="32"
+                                 height="32"
+                                 viewBox="0 0 32 32"
+                                 fill="none"
+                                 xmlns="http://www.w3.org/2000/svg">
+                                <path fill-rule="evenodd" clip-rule="evenodd" d="M16.0001 6.21851L26.6516 26L5.34849 26L16.0001 6.21851ZM14.2391 5.2703C14.9943 3.8679 17.0059 3.86791 17.761 5.27031L28.4126 25.0518C29.13 26.3843 28.165 28 26.6516 28H5.34849C3.83514 28 2.87007 26.3842 3.58755 25.0518L14.2391 5.2703ZM15.0001 12H17.0001V20H15.0001V12ZM15.0001 24V22H17.0001V24H15.0001Z" fill="#A65600" />
+                            </svg>
+                        </span>
+                        <div>
+                            <p>
+                                Let op: het wijzigen van deze rechtengroep heeft gevolgen voor alle gebruikers die gebruik maken van deze rechtengroep.
+                            </p>
+                            <p>
+                                De rechtengroep kan niet worden verwijderd. Als de bovenstaande gebruikers in een andere rechtengroep worden gezet, kan deze rechtengroep wel verwijderd worden
+                            </p>
+                        </div>
+                    </div>
+                {% endif %}
+                <form action="." method="post" class="form--beheer columns--two">
+                    {% csrf_token %}
+                    <fieldset>
+                        {{ form.name|render_rotterdam_formulier }}
+                        {{ form.permissions|render_rotterdam_formulier }}
+                    </fieldset>
+                    <div class="form-row container__button">
+                        <div class="form-row btn-row">
+                            <button type="reset"
+                                    class="btn btn-tertiary"
+                                    data-controller="utils"
+                                    data-action="utils#goToUrl"
+                                    data-utils-url-param="{% url 'rechtengroep_lijst' %}">
+                                <span>Annuleren</span>
+                            </button>
+                            <button type="submit" class="btn btn-action">
+                                <span>Aanpassen</span>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div>
+                {% if object.user_set.all %}
+                    <div class="container__userlist">
+                        <h2 class="h3">Gebruikers die gebruikmaken van deze rechtengroep</h2>
+                        <ul class="list-clean">
+                            {% for gebruiker in object.user_set.all %}
+                                <li>
+                                    <a href="{% url 'gebruiker_aanpassen' gebruiker.id %}">{{ gebruiker.email }}</a>
+                                    {% comment %} {% if gebruiker.first_name or profiel.gebruiker.last_name %}
+                            ({{gebruiker.first_name}}
+                            {% if gebruiker.last_name %} {{gebruiker.last_name}}{% endif %})
+                                    {% endif %} {% endcomment %}
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock body %}

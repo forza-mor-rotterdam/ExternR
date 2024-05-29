@@ -1,0 +1,15 @@
+{% if group and group.active %}<h3 class="h6">{{ filter.name|capfirst }}</h3>{% endif %}
+<ul class="list-filters--active list-clean">
+    {% for optie in filter.options %}
+        {% if optie.checked %}
+            <li class="js-filter-active">
+                <button class="btn btn-secondary btn-filter--active"
+                        data-action="filter#removeFilter"
+                        data-filter-code-param="{{ filter.key }}_{{ optie.id }}"
+                        data-filter-description-param="{{ filter.key }}">
+                    <span>{{ optie.filter_label }}</span>
+                </button>
+            </li>
+        {% endif %}
+    {% endfor %}
+</ul>

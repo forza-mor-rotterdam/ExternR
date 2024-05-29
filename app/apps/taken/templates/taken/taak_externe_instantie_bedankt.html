@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% load rotterdam_formulier_html %}
+{% block title %}
+    ExternR
+{% endblock title %}
+{% block body %}
+    <turbo-frame id="feedback">
+    <h1>
+        <span class="green">Bedankt</span> voor het doorgeven!
+    </h1>
+    <dl>
+        <div>
+            <dt>
+                <strong>Taak:</strong>
+            </dt>
+            <dd>
+                {{ taak.taaktype }}
+            </dd>
+        </div>
+        <div>
+            <dt>
+                <strong>Adres:</strong>
+            </dt>
+            <dd>
+                {{ taak.adres }}
+            </dd>
+        </div>
+    </dl>
+    <h2>Samen houden we Rotterdam schoon, heel & veilig</h2>
+    <p>U kunt nu dit scherm sluiten, de gemeente neemt het vanaf hier weer over.</p>
+    </turbo-frame>
+{% endblock body %}

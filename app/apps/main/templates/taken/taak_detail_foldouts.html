@@ -1,0 +1,397 @@
+{% load webpack_static from webpack_loader %}
+{% load multiply previous next from list_tags %}
+{% load taakopdracht render_onderwerp get_bijlagen from melding_tags %}
+{% load to_datetime replace_comma_by_dot vind_in_dict from main_tags %}
+{% load json_encode replace_n python_any from main_tags %}
+{% load mor_core_url mor_core_protected_url from main_tags %}
+{% load context_template from context_tags %}
+{% load get_gebruiker_object_middels_email get_taakgebeurtenis_voor_taakstatus from gebruikers_tags %}
+<section data-testid="detailTaak" class="padding-bottom">
+    <div class="container__details taak">
+        <details>
+            <summary>
+                <h2>
+                    <svg width="20"
+                         height="17"
+                         viewBox="0 0 55 43"
+                         fill="none"
+                         xmlns="http://www.w3.org/2000/svg">
+                        <path d="M49.6439 0.0427246L23.0468 33.2845L4.96397 11.2844L0.317383 15.0798L23.0965 42.8261L54.3288 3.79295L49.6439 0.0427246Z" fill="#00811F" />
+                    </svg>
+                    Taak
+                    {% if taak.spoed %}<span><span class="icon icon--warning">Spoed</span></span>{% endif %}
+                </h2>
+            </summary>
+            {% if taak.id %}
+                <h3 class="h5">Taaknummer</h3>
+                <p>{{ taak.id }}</p>
+            {% endif %}
+            {% if taak.titel %}
+                <h3 class="h5">Omschrijving</h3>
+                <p>{{ taak.titel }}</p>
+            {% endif %}
+            {% if taak.bericht %}
+                <h3 class="h5">Interne opmerking</h3>
+                <p>{{ taak.bericht }}</p>
+            {% endif %}
+            {% if taak.taaktype.externe_instantie_naam %}
+                <h3 class="h5">Externe instantie</h3>
+                <p>{{ taak.taaktype.externe_instantie_naam }}</p>
+            {% endif %}
+            {% if taak.taaktype.externe_instantie_email %}
+                <h3 class="h5">Externe instantie email</h3>
+                <p>{{ taak.taaktype.externe_instantie_email }}</p>
+            {% endif %}
+            {% if taak.taaktype.externe_instantie_verwantwoordelijke %}
+                <h3 class="h5">Externe instantie verwantwoordelijke</h3>
+                <p>{{ taak.taaktype.externe_instantie_verwantwoordelijke }}</p>
+            {% endif %}
+            {% if taak.aangemaakt_op %}
+                <h3 class="h5">Aangemaakt</h3>
+                <p>
+                    {{ taak.aangemaakt_op|to_datetime|date:'d-m-Y H:i' }}
+                    <br>
+                    {% with taakgebeurtenis=taak.taakgebeurtenissen_voor_taak|get_taakgebeurtenis_voor_taakstatus:'nieuw' %}
+                        {% include "incident/part_gebruiker_telefoon.html" with gebruiker=taakgebeurtenis.gebruiker|get_gebruiker_object_middels_email %}
+                    {% endwith %}
+                </p>
+            {% endif %}
+            {% if taak.aangepast_op %}
+                {% if taak.aangepast_op|to_datetime|date:'d-m-Y H:i' != taak.aangemaakt_op|to_datetime|date:'d-m-Y H:i' and taak.aangepast_op|to_datetime|date:'d-m-Y H:i' != taak.afgesloten_op|to_datetime|date:'d-m-Y H:i' %}
+                    <h3 class="h5">Aangepast</h3>
+                    <p>{{ taak.aangepast_op|to_datetime|date:'d-m-Y H:i' }}</p>
+                {% endif %}
+            {% endif %}
+            {% if taak.afgesloten_op %}
+                <h3 class="h5">Afgesloten</h3>
+                <p>
+                    {{ taak.afgesloten_op|to_datetime|date:'d-m-Y H:i' }}
+                    <br>
+                    {% with taakgebeurtenis=taak.taakgebeurtenissen_voor_taak|get_taakgebeurtenis_voor_taakstatus:'voltooid' %}
+                        {% include "incident/part_gebruiker_telefoon.html" with gebruiker=taakgebeurtenis.gebruiker|get_gebruiker_object_middels_email %}
+                    {% endwith %}
+                </p>
+            {% endif %}
+            {% if taak.taakstatus %}
+                <h3 class="h5">Status</h3>
+                <p>{{ taak.taakstatus.naam }}</p>
+            {% endif %}
+            {% if taak.resolutie %}
+                <h3 class="h5">Resolutie</h3>
+                <p>{{ taak.resolutie }}</p>
+            {% endif %}
+        </details>
+        <details data-action="toggle->detail#toggleDetailLocatie">
+            <summary>
+                <h2>
+                    <svg width="20"
+                         height="26"
+                         viewBox="0 0 20 26"
+                         fill="none"
+                         xmlns="http://www.w3.org/2000/svg">
+                        <path d="M17.6349 3.61281C16.709 2.48342 15.544 1.57355 14.224 0.948802C12.9039 0.324055 11.4617 0 10.0013 0C8.54084 0 7.09861 0.324055 5.77856 0.948802C4.4585 1.57355 3.29352 2.48342 2.3676 3.61281C0.837677 5.46838 0.000976563 7.79842 0.000976562 10.2034C0.000976563 12.6083 0.837677 14.9384 2.3676 16.7939L10.0013 26.0002L17.6361 16.7939C19.1652 14.938 20.0013 12.608 20.0011 10.2032C20.0009 7.79839 19.1644 5.46853 17.6349 3.61281ZM10.0001 13.9988C9.11016 13.9988 8.24017 13.7348 7.50017 13.2404C6.76018 12.746 6.18343 12.0432 5.84285 11.2209C5.50227 10.3987 5.41316 9.49394 5.58678 8.62106C5.76041 7.74818 6.18898 6.94639 6.81829 6.31708C7.4476 5.68777 8.24939 5.2592 9.12227 5.08557C9.99515 4.91195 10.8999 5.00106 11.7222 5.34164C12.5444 5.68222 13.2472 6.25897 13.7416 6.99897C14.2361 7.73896 14.5 8.60895 14.5 9.49893C14.5 10.6925 14.0259 11.8371 13.1821 12.6812C12.3382 13.5252 11.1937 13.9996 10.0001 13.9999V13.9988Z" fill="#00811F" />
+                    </svg>
+                    Locatie
+                </h2>
+            </summary>
+            {% if taak.taak_zoek_data.locatie_type == "graf" %}
+                <h3 class="h5">Begraafplaats</h3>
+                <p>
+                    {% vind_in_dict melding.signalen_voor_melding.0.meta_uitgebreid.begraafplaats.choices taak_zoek_data.begraafplaats as signaal_begraafplaats_naam %}
+                    {% if signaal_begraafplaats_naam == taak_zoek_data.begraafplaats %}
+                        {% vind_in_dict melding.meta_uitgebreid.begraafplaats.choices taak_zoek_data.begraafplaats %}
+                    {% else %}
+                        {{ signaal_begraafplaats_naam }}
+                    {% endif %}
+                </p>
+                {% if taak_zoek_data.grafnummer %}
+                    <h3 class="h5">Grafnummer</h3>
+                    <p>{{ taak_zoek_data.grafnummer }}</p>
+                {% endif %}
+                {% if taak_zoek_data.vak %}
+                    <h3 class="h5">Vak</h3>
+                    <p>{{ taak_zoek_data.vak }}</p>
+                {% endif %}
+                {% if melding.signalen_voor_melding.0.meta.naam_overledene %}
+                    <h3 class="h5">Naam overledene</h3>
+                    <p>{{ melding.signalen_voor_melding.0.meta.naam_overledene }}</p>
+                {% elif melding.meta.naam_overledene %}
+                    <h3 class="h5">Naam overledene</h3>
+                    <p>{{ melding.meta.naam_overledene }}</p>
+                {% endif %}
+            {% else %}
+                <div>
+                    <h3 class="h5">Ter hoogte van</h3>
+                    <p>{{ taak.adres }}</p>
+                </div>
+                <div>
+                    {% if taak_zoek_data.wijknaam %}
+                        <div>
+                            <h3 class="h5">Wijk</h3>
+                            <p>{{ taak_zoek_data.wijknaam }}</p>
+                        </div>
+                    {% endif %}
+                    {% if taak_zoek_data.buurtnaam %}
+                        <div>
+                            <h3 class="h5">Buurt</h3>
+                            <p>{{ taak_zoek_data.buurtnaam }}</p>
+                        </div>
+                    {% endif %}
+                    {% if taak.taak_zoek_data.subbuurt %}
+                        <div>
+                            <dt>Subbuurt:</dt>
+                            <dd>
+                                {{ taak.taak_zoek_data.subbuurt }}
+                            </dd>
+                        </div>
+                    {% endif %}
+                    {% if taak.taak_zoek_data.plaatsbepaling %}
+                        <div>
+                            <dt>Plaatsbepaling:</dt>
+                            <dd>
+                                {{ taak.taak_zoek_data.plaatsbepaling }}
+                            </dd>
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="locatie-container">
+                    <label for="egd_id">
+                        <input id="egd_id"
+                               type="checkbox"
+                               data-detail-map-layer-type-param="EGD"
+                               data-action="detail#onMapLayerChange">
+                        Toon EGD-kaartlaag
+                    </label>
+                    <div class="container__uitklapper">
+                        <span>{% include "icons/info.svg" %}</span>
+                        <div class="legenda">
+                            <ul class="list-clean">
+                                <li>
+                                    <span class="legenda-item openbaar"></span>
+                                    <span>Openbaar</span>
+                                </li>
+                                <li>
+                                    <span class="legenda-item ret"></span>
+                                    <span>RET</span>
+                                </li>
+                                <li>
+                                    <span class="legenda-item kunst"></span>
+                                    <span>Civiele kunstwerken</span>
+                                </li>
+                                <li>
+                                    <span class="legenda-item begraafplaats"></span>
+                                    <span>Begraafplaatsen</span>
+                                </li>
+                                <li>
+                                    <span class="legenda-item aquisitie"></span>
+                                    <span>Aquisitie</span>
+                                </li>
+                                <li>
+                                    <span class="legenda-item vastgoed"></span>
+                                    <span>Vastgoed</span>
+                                </li>
+                                <li>
+                                    <span class="legenda-item"></span>
+                                    <span>Overig</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="container__map full-width">
+                    <div class="map map--single"
+                         id="incidentMap"
+                         data-action="touchstart->detail#onTwoFingerDrag touchend->detail#onTwoFingerDrag">
+                        <div class="map__overlay">
+                            <span>Gebruik twee vingers om de kaart te verplaatsen</span>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        </details>
+        <details>
+            <summary>
+                <h2>
+                    <svg width="20"
+                         height="22"
+                         viewBox="0 0 20 22"
+                         fill="none"
+                         xmlns="http://www.w3.org/2000/svg">
+                        <path d="M4 4H7V6H4V4Z" fill="#00811F" />
+                        <path d="M7 8H4V10H7V8Z" fill="#00811F" />
+                        <path d="M4 12H7V14H4V12Z" fill="#00811F" />
+                        <path d="M7 16H4V18H7V16Z" fill="#00811F" />
+                        <path d="M8 4H16V6H8V4Z" fill="#00811F" />
+                        <path d="M16 8H8V10H16V8Z" fill="#00811F" />
+                        <path d="M8 12H16V14H8V12Z" fill="#00811F" />
+                        <path d="M16 16H8V18H16V16Z" fill="#00811F" />
+                        <path fill-rule="evenodd" clip-rule="evenodd" d="M0 0V22H20V0H0ZM18 2H2V20H18V2Z" fill="#00811F" />
+                    </svg>
+                    Melding
+                </h2>
+            </summary>
+            <h3 class="h5">Meldingnummer</h3>
+            <p class="no-margin">
+                {% if melding.id %}
+                    {{ melding.id }}
+                {% else %}
+                    Onbekend
+                {% endif %}
+            </p>
+            {% if taak.taak_zoek_data.locatie_type == "adres" %}
+                <h3 class="h5">MeldR-nummer</h3>
+                <p class="no-margin">
+                    {% if melding.signalen_voor_melding.0.bron_signaal_id != None %}
+                        {{ melding.signalen_voor_melding.0.bron_signaal_id }}
+                    {% else %}
+                        Onbekend
+                    {% endif %}
+                </p>
+                <small>
+                    {% if melding.signalen_voor_melding|length > 1 %}
+                        <strong>Bestaand uit de samengevoegde meldingen:</strong>
+                        <br>
+                        {% for signaal in melding.signalen_voor_melding %}
+                            {% if signaal.bron_signaal_id %}
+                                {% if not forloop.last %}
+                                    {{ signaal.bron_signaal_id }},
+                                {% else %}
+                                    {{ signaal.bron_signaal_id }}
+                                {% endif %}
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
+                </small>
+            {% endif %}
+            <h3 class="h5">Ingediend</h3>
+            <p>{{ melding.aangemaakt_op|to_datetime|date:'d-m-Y H:i' }}</p>
+            {% if melding.meta.aannemer %}
+                <h3 class="h5">Aangenomen door</h3>
+                <p>{{ melding.meta.aannemer }}</p>
+            {% endif %}
+            {% if melding.onderwerpen %}
+                <h3 class="h5">Onderwerp</h3>
+                <p>
+                    {% for onderwerp in melding.onderwerpen %}
+                        <turbo-frame id="onderwerp_{{ onderwerp|urlencode }}" data-spinner="hide" loading="lazy" src="{% url 'onderwerp' %}?url={{ onderwerp|urlencode }}"></turbo-frame>
+                        {% if not forloop.last %},{% endif %}
+                    {% endfor %}
+                </p>
+            {% endif %}
+            {% if melding.signalen_voor_melding.0.omschrijving_melder and melding.signalen_voor_melding.0.omschrijving_melder != "- geen korte omschrijving beschikbaar -" %}
+                <h3 class="h5">Omschrijving</h3>
+                <p>{{ melding.signalen_voor_melding.0.omschrijving_melder }}</p>
+            {% elif melding.meta.omschrijvingField and melding.meta.omschrijvingField != "- geen korte omschrijving beschikbaar -" %}
+                <h3 class="h5">Omschrijving</h3>
+                <p>{{ melding.meta.omschrijvingField }}</p>
+            {% endif %}
+            {% with aanvullende_vragen=melding.signalen_voor_melding.0.aanvullende_vragen %}
+                {% if aanvullende_vragen and melding.signalen_voor_melding.0.aanvullende_vragen %}
+                    {% for qa in aanvullende_vragen %}
+                        {% if qa.answers|python_any %}
+                            <h3 class="h5">{{ qa.question }}</h3>
+                            <p>
+                                {% for answer in qa.answers %}
+                                    {{ answer }}
+                                    {% if not forloop.last %},{% endif %}
+                                {% endfor %}
+                            </p>
+                        {% endif %}
+                    {% endfor %}
+                {% elif melding.signalen_voor_melding.0.aanvullende_informatie %}
+                    <h3 class="h5">Aanvullende informatie</h3>
+                    <p>{{ melding.signalen_voor_melding.0.aanvullende_informatie|replace_n|safe }}</p>
+                {% elif melding.meta.aanvullendeInformatieField %}
+                    <h3 class="h5">Aanvullende informatie</h3>
+                    <p>{{ melding.meta.aanvullendeInformatieField|replace_n|safe }}</p>
+                {% endif %}
+            {% endwith %}
+            {% if melding.afdeling.omschrijving %}
+                <h3 class="h5">Afdeling</h3>
+                <p>
+                    {{ melding.afdeling.omschrijving }}
+                    {{ melding.afdeling.omschrijving }}
+                </p>
+            {% endif %}
+            <h3 class="h5">Met spoed oppakken</h3>
+            <p>
+                {% if melding.urgentie >= 0.5 %}
+                    Ja
+                {% else %}
+                    Nee
+                {% endif %}
+            </p>
+        </details>
+        {% if perms.authorisatie.melder_gegevens_bekijken %}
+            <details class="details--melder">
+                <summary>
+                    <h2>
+                        {% include "icons/person.svg" with width="23" height="26" %}
+                        Melder
+                    </h2>
+                </summary>
+                {% if melding.signalen_voor_melding|length > 0 %}
+                    {% for signaal in melding.signalen_voor_melding %}
+                        <div class="margin-bottom">
+                            {% if signaal.melder.naam %}
+                                <p>{{ signaal.melder.naam }}</p>
+                            {% else %}
+                                <p>
+                                    <small>Geen naam opgegeven</small>
+                                </p>
+                            {% endif %}
+                            {% if signaal.melder.telefoonnummer and signaal.melder.telefoonnummer != "Anoniem" %}
+                                <p>
+                                    <a href="tel:{{ signaal.melder.telefoonnummer }}"
+                                       target="_blank"
+                                       class="link link--phone">
+                                        {% include "icons/phone.svg" %}
+                                        {{ signaal.melder.telefoonnummer }}
+                                    </a>
+                                </p>
+                            {% else %}
+                                <p>
+                                    <small>Geen telefoonnummer opgegeven</small>
+                                </p>
+                            {% endif %}
+                            {% if signaal.melder.email %}
+                                <p>
+                                    <a href="mailto:{{ signaal.melder.email }}"
+                                       target="_blank"
+                                       class="link link--email">
+                                        {% include "icons/email.svg" with width="20" height="16" %}
+                                        {{ signaal.melder.email }}
+                                    </a>
+                                </p>
+                            {% else %}
+                                <p>
+                                    <small>Geen e-mailadres opgegeven</small>
+                                </p>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <p>
+                        <small>Geen gegevens bekend</small>
+                    </p>
+                {% endif %}
+            </details>
+        {% endif %}
+        <details>
+            <summary>
+                <h2>
+                    <svg width="21"
+                         height="22"
+                         viewBox="0 0 21 22"
+                         fill="none"
+                         xmlns="http://www.w3.org/2000/svg">
+                        <path d="M19.0009 11C19.0009 15.9706 14.9715 20 10.0009 20C6.96008 20 4.27145 18.4919 2.64218 16.1829L0.953125 17.2577C2.93876 20.1233 6.25068 22 10.0009 22C16.0761 22 21.0009 17.0751 21.0009 11C21.0009 4.92487 16.0761 0 10.0009 0C6.96339 0 4.21339 1.23121 2.22279 3.22181L1.00098 2V6H5.00098L3.637 4.63602C5.26568 3.00735 7.51567 2 10.0009 2C14.9715 2 19.0009 6.02944 19.0009 11Z" fill="#00811F" />
+                        <path d="M9.00098 5H11.001V11.8573L15.1973 14.28L14.1973 16.0121L9.00098 13V5Z" fill="#00811F" />
+                    </svg>
+                    Tijdlijn
+                </h2>
+            </summary>
+            {% include "incident/part_tijdlijn.html" %}
+        </details>
+    </div>
+</section>

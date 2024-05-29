@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}
+    Home | ExternR
+{% endblock title %}
+{% block body %}
+    <turbo-frame id="overview">
+    <div class="border-green print-only"></div>
+    <div class="page__detail">
+        <div data-controller="detail">
+            <div class="grid-container">
+                <div class="grid-item">
+                    <div>
+                        <h1>Welkom bij ExternR</h1>
+                    </div>
+                </div>
+            </div>
+            <div class="grid-container">
+                <div class="grid-item">
+                    <section class="section--seperated">
+                        <div class="container__details">
+                            <p>Als functioneelbeheerder kun je rechtsboven in het menu inloggen.</p>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </div>
+    </div>
+    </turbo-frame>
+{% endblock body %}

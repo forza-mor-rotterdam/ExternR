@@ -1,0 +1,73 @@
+version: '3'
+services:
+  app:
+    build: ./app
+    ports:
+      - "8008:8000"
+    env_file:
+      - .env.test
+    depends_on:
+      redis:
+        condition: service_started
+      database:
+        condition: service_started
+    networks:
+      - externr_network
+
+  database:
+    image: postgis/postgis:13-3.1
+    shm_size: '1024m'
+    ports:
+      - "5432"
+    env_file:
+      - .env.test
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - externr_network
+
+  redis:
+    image: redis
+    networks:
+      - externr_network
+    ports:
+      - "6379"
+
+  # app_celery_worker:
+  #   build: ./app
+  #   command: "celery -A config worker -l info"
+  #   depends_on:
+  #     database:
+  #       condition: service_started
+  #     redis:
+  #       condition: service_started
+  #   # volumes:
+  #   #   - ./media:/media
+  #   env_file:
+  #     - .env.test
+  #   networks:
+  #     - externr_network
+  #   restart: on-failure
+
+  # app_celery_beat:
+  #   build: ./app
+  #   command: "celery -A config beat -l info --scheduler django_celery_beat.schedulers:DatabaseScheduler"
+  #   depends_on:
+  #     database:
+  #       condition: service_started
+  #     redis:
+  #       condition: service_started
+  #   # volumes:
+  #   #   - ./media:/media
+  #   env_file:
+  #     - .env.test
+  #   networks:
+  #     - externr_network
+  #   restart: on-failure
+
+networks:
+  externr_network:
+    external: true

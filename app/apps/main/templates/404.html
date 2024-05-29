@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% load webpack_static from webpack_loader %}
+{% block title %}
+    Fout 404 - De pagina wordt niet gevonden | ExternR
+{% endblock title %}
+{% block javascripts %}
+{% endblock javascripts %}
+{% block body_class %}
+    no-js errorpage
+{% endblock body_class %}
+{% block body %}
+    <div class="container__details">
+        <div>
+            <h1 class="h3 block--black">Fout 404 - De pagina wordt niet gevonden</h1>
+            <p>Haal even diep adem, neem een bak koffie en probeer het straks nog een keer.</p>
+            <div class="no-js">
+                <p>Tot die tijd, hier een leuk quizje om te spelen over typisch Rotterdamse uitspraken. Wat betekent:</p>
+                <figure class="question">
+                    <q id="errorpageQuestion"></q>
+                </figure>
+                <div class="container__answers" id="errorpageContainerAnswers"></div>
+            </div>
+            <div>
+                <a href="/taken">Naar overzicht</a>
+                <a class="link--whatsapp"
+                   id="errorPageWaLink"
+                   data-errorValue="ExternR - 404 - gebruiker: {{ request.user }}"
+                   href=""
+                   target="_blank">Whatsapp de melding door</a>
+            </div>
+        </div>
+        <div class="full-width">
+            <img src="/static/images/skyline.svg" alt="" />
+            <span class="h1 block--black"></span>
+        </div>
+    </div>
+    <canvas id="confetti"></canvas>
+    <script src="/static/script/errorpages.js"></script>
+{% endblock body %}

@@ -1,0 +1,21 @@
+{% load context_template from context_tags %}
+{% context_template "taak_afhandelen_subtitel.html" as subtitel_template %}
+<section class="section--seperated section--seperated__no-border-bottom"
+         data-testid="detailActions">
+    <div class="container__details container__details--sticky-bottom">
+        {% if not taak.afgesloten_op %}
+            <div class="sticky sticky--bottom">
+                <div class="form-row">
+                    <button class="btn btn-action"
+                            data-modal-title-param="Taak afhandelen"
+                            data-modal-url-param="{% url 'incident_modal_handle_part' taak.id %}"
+                            data-modal-id-param="incident_modal_handle_{{ taak.id }}"
+                            data-action="modal#openModal"
+                            data-modal-sub-title-param="{% include subtitel_template with subtitel=taak.titel %}">
+                        Taak afhandelen
+                    </button>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</section>
