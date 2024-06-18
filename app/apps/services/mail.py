@@ -147,8 +147,6 @@ class MailService:
                 settings.DEFAULT_FROM_EMAIL,
                 [
                     settings.DEVELOPER_EMAIL,
-                    "j.strikwerda@alteza.nl",
-                    "j.strikwerda@rotterdam.nl",
                 ],
             )
             msg.attach_alternative(html_content, "text/html")
