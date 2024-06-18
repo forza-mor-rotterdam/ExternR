@@ -122,9 +122,7 @@ class TaaktypeAanmakenView(TaaktypeAanmakenAanpassenView, CreateView):
         return response
 
 
-def taak_feedback_handle(
-    request, taak_id: int, email_hash: str, email_feedback_type: int
-):
+def taak_feedback_handle(request, taak_id: int, email_hash: str):
     taak = get_object_or_404(Taak, pk=taak_id)
     form = None
     try:
@@ -144,13 +142,6 @@ def taak_feedback_handle(
             "Er is een fout opgetreden bij het verwerken van uw verzoek.",
             status=500,
         )
-    # Geen valide feedback_type (opgelost of niet_opgelost)
-    if email_feedback_type not in [0, 1]:
-        logger.error(f"Incorrect value for email_feedback_type: {email_feedback_type}")
-        return HttpResponseServerError(
-            f"Ongeldige waarde voor email_feedback_type: {email_feedback_type}.",
-            status=500,
-        )
     # Taak is reeds voltooid
     if taak.taakstatus.naam == "voltooid":
         return render(
@@ -161,62 +152,37 @@ def taak_feedback_handle(
             },
         )
     # Feedback niet opgelost
-    if email_feedback_type == 0:
-        form = TaakFeedbackHandleForm()
-        if request.POST:
-            form = TaakFeedbackHandleForm(request.POST)
-            if form.is_valid():
-                taak_status_aanpassen_response = (
-                    MeldingenService().taak_status_aanpassen(
-                        taakopdracht_url=taak.taakopdracht,
-                        status="voltooid",
-                        resolutie="niet_opgelost",
-                        omschrijving_intern=form.cleaned_data.get(
-                            "omschrijving_intern"
-                        ),
-                        gebruiker=taak.taaktype.externe_instantie_email,
-                    )
+    form = TaakFeedbackHandleForm()
+    if request.POST:
+        form = TaakFeedbackHandleForm(request.POST)
+        if form.is_valid():
+            taak_status_aanpassen_response = MeldingenService().taak_status_aanpassen(
+                taakopdracht_url=taak.taakopdracht,
+                status="voltooid",
+                resolutie="niet_opgelost",
+                omschrijving_intern=form.cleaned_data.get("omschrijving_intern"),
+                gebruiker=taak.taaktype.externe_instantie_email,
+            )
+            if taak_status_aanpassen_response.status_code != 200:
+                logger.error(
+                    f"taak_feedback_handle taak_status_aanpassen: status_code={taak_status_aanpassen_response.status_code}, taak_id={id}, repsonse_text={taak_status_aanpassen_response.text}"
                 )
-                if taak_status_aanpassen_response.status_code != 200:
-                    logger.error(
-                        f"taak_feedback_handle taak_status_aanpassen: status_code={taak_status_aanpassen_response.status_code}, taak_id={id}, repsonse_text={taak_status_aanpassen_response.text}"
-                    )
-                if taak_status_aanpassen_response.status_code == 200:
-                    return render(
-                        request,
-                        "taken/taak_externe_instantie_bedankt.html",
-                        {
-                            "taak": taak,
-                        },
-                    )
-        return render(
-            request,
-            "taken/taak_externe_instantie_feedback.html",
-            {
-                "form": form,
-                "taak": taak,
-            },
-        )
-    # Feedback opgelost
-    elif email_feedback_type == 1:
-        taak_status_aanpassen_response = MeldingenService().taak_status_aanpassen(
-            taakopdracht_url=taak.taakopdracht,
-            status="voltooid",
-            resolutie="opgelost",
-            gebruiker=taak.taaktype.externe_instantie_email,
-        )
-        if taak_status_aanpassen_response.status_code != 200:
-            logger.error(
-                f"taak_feedback_handle taak_status_aanpassen: status_code={taak_status_aanpassen_response.status_code}, taak_id={id}, repsonse_text={taak_status_aanpassen_response.text}"
-            )
-        if taak_status_aanpassen_response.status_code == 200:
-            return render(
-                request,
-                "taken/taak_externe_instantie_bedankt.html",
-                {
-                    "taak": taak,
-                },
-            )
+            if taak_status_aanpassen_response.status_code == 200:
+                return render(
+                    request,
+                    "taken/taak_externe_instantie_bedankt.html",
+                    {
+                        "taak": taak,
+                    },
+                )
+    return render(
+        request,
+        "taken/taak_externe_instantie_feedback.html",
+        {
+            "form": form,
+            "taak": taak,
+        },
+    )
 
     return render(
         request,

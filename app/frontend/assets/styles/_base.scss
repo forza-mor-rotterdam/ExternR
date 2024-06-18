@@ -482,6 +482,21 @@ body.no-js {
 }
 
 // HELPER-CLASSES
+.color--primary {
+    color: $green-tint01;
+}
+
+.vertical-center {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 100%;
+}
+
+.center {
+    text-align: center;
+}
+
 .foldout {
     height: auto;
     overflow: hidden;

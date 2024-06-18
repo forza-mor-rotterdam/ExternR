@@ -97,6 +97,7 @@ class MailService:
         base_url=None,
     ):
         send_to = []
+        # @ TODO retrieve taaktype data from taakr
         taaktype = taak.taaktype
 
         email_context = {
@@ -106,20 +107,17 @@ class MailService:
             "bijlagen": bestanden,
         }
 
-        if taaktype.externe_instantie_feedback_vereist:
-            taak_id_hash = hashlib.sha256(
-                (str(taak.id) + settings.SECRET_HASH_KEY).encode()
-            ).hexdigest()
+        taak_id_hash = hashlib.sha256(
+            (str(taak.id) + settings.SECRET_HASH_KEY).encode()
+        ).hexdigest()
 
-            # Construct the feedback URLs using base_url
-            opgelost_url = f"{base_url}{reverse('feedback', kwargs={'taak_id': taak.id, 'email_hash': taak_id_hash, 'email_feedback_type': 1})}"
-            niet_opgelost_url = f"{base_url}{reverse('feedback', kwargs={'taak_id': taak.id, 'email_hash': taak_id_hash, 'email_feedback_type': 0})}"
-            email_context.update(
-                {
-                    "opgelost_url": opgelost_url,
-                    "niet_opgelost_url": niet_opgelost_url,
-                }
-            )
+        # Construct the feedback URLs using base_url
+        niet_opgelost_url = f"{base_url}{reverse('feedback', kwargs={'taak_id': taak.id, 'email_hash': taak_id_hash})}"
+        email_context.update(
+            {
+                "niet_opgelost_url": niet_opgelost_url,
+            }
+        )
 
         if taak.taaktype.externe_instantie_email:
             send_to.append(taak.taaktype.externe_instantie_email)

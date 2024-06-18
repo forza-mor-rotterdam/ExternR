@@ -354,7 +354,10 @@ def taak_afhandelen(request, id):
     resolutie = request.GET.get("resolutie", "opgelost")
     taak = get_object_or_404(Taak, pk=id)
     taaktypes = TaakRService().get_taaktypes(
-        params={"taakapplicatie_taaktype_url": taak.taaktype.taaktype_url(request)},
+        params={
+            "taakapplicatie_taaktype_url": taak.taaktype.taaktype_url(request),
+            "actief": True,
+        },
         force_cache=True,
     )
     volgende_taaktypes = []
