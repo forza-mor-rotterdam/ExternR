@@ -98,6 +98,7 @@ INSTALLED_APPS = (
     "django.contrib.admin",
     "django.contrib.gis",
     "django.contrib.postgres",
+    "django.forms",
     "rest_framework",
     "rest_framework.authtoken",
     "drf_spectacular",
