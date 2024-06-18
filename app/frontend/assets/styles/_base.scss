@@ -9,7 +9,9 @@ body {
     margin: 0;
     font-family: "Bolder", sans-serif;
     font-size: 1em;
-    color: $gray-tint11;
+    color: $black;
+    background-color: $gray-tint00;
+    scroll-behavior: smooth;
 
     @media (min-width: map-get($grid-breakpoints, sm)) {
         font-size: 1.125em;
@@ -39,6 +41,21 @@ header {
     }
 }
 
+.container__block__full-width {
+    padding: $alert-padding-x 0;
+    background-color: $gray-tint01;
+
+    > .content-wrapper {
+        max-width: map-get($container-max-widths, xxl);
+        margin: 0 auto;
+    }
+}
+
+img {
+    max-width: 100%;
+    max-height: 100%;
+}
+
 .grid-container {
     display: grid;
     grid-auto-columns: minmax(0, 1fr);
@@ -59,8 +76,13 @@ header {
     font-size: 2em !important;
 }
 
+strong + p {
+    margin-top: 0;
+}
+
 main,
-header {
+header,
+.container__block__full-width .content-wrapper {
     padding: 0 map-get($container-margin, sm) map-get($container-margin, sm);
 
     @media (min-width: map-get($grid-breakpoints, md)) {
@@ -104,10 +126,32 @@ body {
     }
 }
 
+turbo-frame {
+    &[complete] {
+        > * {
+            transition: opacity 0.25s;
+            opacity: 1;
+        }
+    }
+    &[busy] {
+        > * {
+            transition: opacity 0.5s;
+            opacity: 0;
+        }
+    }
+}
+
 // HEADINGS
 h1,
 .h1 {
-    font-size: $h1-font-size;
+    font-size: calc(1.1em + 1.5vw); //$h1-font-size;
+
+    &.icon--left {
+        img {
+            margin-right: 1vw;
+            vertical-align: middle;
+        }
+    }
 }
 
 h2,
@@ -136,6 +180,10 @@ p {
     max-width: map-get($container-max-widths, lg);
 }
 
+h2 + p {
+    margin-top: 0;
+}
+
 @mixin has-icon {
     display: inline-block;
     margin-left: 25px;
@@ -154,7 +202,7 @@ p {
 
 // TABLES
 table {
-    font-size: 16px;
+    font-size: 0.875em;
     border-collapse: collapse;
     width: 100%;
 
@@ -489,6 +537,17 @@ body.no-js {
 .display-flex {
     display: flex;
     justify-content: space-between;
+
+    &--2cols-md {
+        @media (min-width: map-get($grid-breakpoints, md)) {
+            display: flex;
+            gap: $alert-padding-x;
+            > div {
+                flex: 0 0 50%;
+                max-width: calc(50% - $alert-padding-x/2);
+            }
+        }
+    }
 }
 
 .no-padding {
@@ -521,6 +580,14 @@ body.no-js {
     margin: 0;
 }
 
+.margin-bottom {
+    margin-bottom: 1rem;
+}
+
+.margin-bottom-half {
+    margin-bottom: 0.5rem;
+}
+
 .padding-bottom {
     padding-bottom: 1rem;
 }
@@ -545,6 +612,61 @@ body.no-js {
     width: 60%;
 }
 
-.green {
+.color--primary {
     color: $primary;
+}
+
+.border--gray {
+    border: 1px solid $gray-tint04;
+    padding: $input-padding-x;
+    box-sizing: border-box;
+}
+.border--gray-shadowed {
+    @extend .border--gray;
+    box-shadow: 0px 2px 10px 0px #00000040;
+}
+.label--positive,
+.label--negative {
+    font-size: $h5-font-size;
+    line-height: 24px;
+    min-height: 32px;
+    margin-top: 0;
+    display: block;
+    padding-bottom: 1em;
+}
+
+.label--positive {
+    color: $green-tint01;
+
+    &::before {
+        content: url("data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjUiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCA1NSA0MyIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiBjbGFzcz0iaWNvbi0tY2hlY2ttYXJrIj4KPHBhdGggZD0iTTQ5LjY0MzkgMC4wNDI3MjQ2TDIzLjA0NjggMzMuMjg0NUw0Ljk2Mzk3IDExLjI4NDRMMC4zMTczODMgMTUuMDc5OEwyMy4wOTY1IDQyLjgyNjFMNTQuMzI4OCAzLjc5Mjk1TDQ5LjY0MzkgMC4wNDI3MjQ2WiIgZmlsbD0iIzAwODExRiIvPgo8L3N2Zz4K");
+        vertical-align: middle;
+        margin-right: $input-padding-y;
+    }
+}
+.label--negative {
+    color: $red;
+
+    &::before {
+        content: url("data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjUiIGhlaWdodD0iMjUiIHZpZXdCb3g9IjAgMCAxNiAxNiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiBjbGFzcz0iaWNvbi0tY2xvc2UiPgo8cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTE0Ljg5NDIgMTUuOTU1TDE1Ljk1NDggMTQuODk0M0w5LjA2MDUzIDhMMTUuOTU0OCAxLjEwNTcxTDE0Ljg5NDIgMC4wNDUwNTI1TDcuOTk5ODcgNi45MzkzNEwxLjEwNTU4IDAuMDQ1MDUxNkwwLjA0NDkyMzQgMS4xMDU3MUw2LjkzOTIxIDhMMC4wNDQ5MjE5IDE0Ljg5NDNMMS4xMDU1OCAxNS45NTVMNy45OTk4NyA5LjA2MDY2TDE0Ljg5NDIgMTUuOTU1WiIgZmlsbD0iI0NFNEMzQiIvPgo8L3N2Zz4K");
+        vertical-align: middle;
+        margin-right: $input-padding-y;
+    }
+}
+
+.has-button-fullwidth {
+    .btn {
+        max-width: none !important;
+    }
+}
+
+.flex-container--sticky {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: calc(100vh - 100px);
+
+    div:first-child {
+        flex: 1;
+    }
 }

@@ -110,7 +110,7 @@
         label {
             @extend .btn;
             text-align: center;
-            line-height: 44px;
+            line-height: 2.6em !important;
             padding: 0 12px 0 39px;
             height: 40px;
             display: inline-block;
@@ -120,10 +120,11 @@
             position: relative;
             border: 1px solid $gray-tint08;
             box-sizing: border-box;
-
-            &.active {
+        }
+        .active {
+            label {
                 height: 38px;
-                line-height: 42px;
+                line-height: 2.4em !important;
                 border: 3px solid $gray-tint11;
                 padding: 0 10px 0 37px;
             }
@@ -136,7 +137,33 @@
     @media (min-width: map-get($grid-breakpoints, sm)) {
         .form__kaart-modus {
             label {
-                font-size: 1rem;
+                font-size: 1em;
+            }
+        }
+    }
+
+    .fz-large & {
+        .form__kaart-modus {
+            label {
+                line-height: 1.8em !important;
+            }
+            .active {
+                label {
+                    line-height: 1.6em !important;
+                }
+            }
+        }
+    }
+
+    .fz-xlarge & {
+        .form__kaart-modus {
+            label {
+                line-height: 1.3em !important;
+            }
+            .active {
+                label {
+                    line-height: 1.1em !important;
+                }
             }
         }
     }
@@ -199,7 +226,6 @@
         .container__content {
             flex: 0 1 75%;
             font-size: 16px;
-            text-wrap: nowrap;
             .link {
                 // a {
                 color: $primary;
@@ -214,6 +240,21 @@
             }
             .gap {
                 gap: $input-padding-y;
+            }
+        }
+    }
+
+    .fz-large & {
+        .leaflet-popup-content {
+            .container__content {
+                font-size: 24px;
+            }
+        }
+    }
+    .fz-xlarge & {
+        .leaflet-popup-content {
+            .container__content {
+                font-size: 32px;
             }
         }
     }

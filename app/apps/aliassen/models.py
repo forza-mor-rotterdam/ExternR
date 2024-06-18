@@ -27,11 +27,9 @@ class MeldingAlias(BasisModel):
     def valideer_bron_url(self):
         response = MeldingenService().get_by_uri(self.bron_url)
         if response.status_code != 200:
-            self.response_json = {}
-            logger.error(
-                f"Melding ophalen fout: status code: {response.status_code}, melding_alias id: {self.id}"
-            )
-            return
+            error = f"Melding ophalen fout: status code: {response.status_code}, melding_alias id: {self.id}"
+            logger.error(error)
+            raise Exception(error)
         self.response_json = response.json()
 
     def update_zoek_data(self):

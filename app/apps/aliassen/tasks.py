@@ -9,8 +9,17 @@ logger = get_task_logger(__name__)
 
 DEFAULT_RETRY_DELAY = 2
 MAX_RETRIES = 6
+RETRY_BACKOFF_MAX = 60 * 30
+RETRY_BACKOFF = 120
 
-LOCK_EXPIRE = 5
+
+class BaseTaskWithRetryBackoff(celery.Task):
+    autoretry_for = (Exception,)
+    max_retries = MAX_RETRIES
+    default_retry_delay = DEFAULT_RETRY_DELAY
+    retry_backoff_max = RETRY_BACKOFF_MAX
+    retry_backoff = RETRY_BACKOFF
+    retry_jitter = True
 
 
 class BaseTaskWithRetry(celery.Task):
@@ -52,19 +61,27 @@ def task_update_melding_alias_data_for_all_meldingen(self, cache_timeout=0):
     return f"updated/totaal={melding_alias_items_for_update.count()}/{all_melding_alias_items.count()}"
 
 
-@shared_task(bind=True, base=BaseTaskWithRetry)
+def _update_melding_alias_data(melding_alias_id):
+    from apps.aliassen.models import MeldingAlias
+
+    melding_alias = MeldingAlias.objects.filter(pk=melding_alias_id).first()
+    if melding_alias:
+        melding_alias.valideer_bron_url()
+        melding_alias.save()
+        melding_alias.update_zoek_data()
+
+    return f"MeldingAlias with id={melding_alias_id}, updated"
+
+
+@shared_task(bind=True, base=BaseTaskWithRetryBackoff)
 def task_update_melding_alias_data(self, melding_alias_id):
     from apps.aliassen.models import MeldingAlias
 
     melding_alias = MeldingAlias.objects.filter(pk=melding_alias_id).first()
     if melding_alias:
         melding_alias.valideer_bron_url()
-        melding_alias.update_zoek_data()
         melding_alias.save()
-    else:
-        raise ValueError(
-            f"No melding alias found for melding_alias_id: {melding_alias_id}"
-        )
+        melding_alias.update_zoek_data()
 
     return f"MeldingAlias with id={melding_alias_id}, updated"
 

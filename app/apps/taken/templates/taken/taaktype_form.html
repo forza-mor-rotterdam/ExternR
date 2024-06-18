@@ -48,15 +48,15 @@
                         </div>
                     </div>
                 {% endif %}
-                <form action="." method="post" class="form--beheer">
+                <form action="{% url 'taaktype_aanmaken' %}"
+                      method="post"
+                      class="form--beheer"
+                      {% if form.redirect_field.value %}data-turbo="false"{% endif %}>
                     {% csrf_token %}
                     <fieldset>
+                        {{ form.redirect_field|render_rotterdam_formulier }}
                         {{ form.omschrijving|render_rotterdam_formulier }}
-                        {{ form.externe_instantie_naam|render_rotterdam_formulier }}
-                        {{ form.externe_instantie_email|render_rotterdam_formulier }}
-                        {{ form.externe_instantie_feedback_vereist|render_rotterdam_formulier }}
-                        {{ form.externe_instantie_naam_verantwoordelijke|render_rotterdam_formulier }}
-                        {{ form.volgende_taaktypes|render_rotterdam_formulier }}
+                        {{ form.toelichting|render_rotterdam_formulier }}
                         <div class="container__checkbox--single">
                             <h3 class="label">Is dit taaktype actief?</h3>
                             {{ form.actief|render_rotterdam_formulier }}
@@ -71,8 +71,20 @@
                                     data-utils-url-param="{% url 'taaktype_lijst' %}">
                                 <span>Annuleren</span>
                             </button>
+                            {% if taaktype_url %}
+                                <a href="{{ TAAKR_URL }}/beheer/taaktype/aanmaken/?taaktype_url={{ taaktype_url }}"
+                                   class="btn btn-action">
+                                    <span>Aanpassen in TaakR</span>
+                                </a>
+                            {% endif %}
                             <button type="submit" class="btn btn-action">
-                                <span>Aanpassen</span>
+                                <span>
+                                    {% if taaktype_url %}
+                                        Aanpassen
+                                    {% else %}
+                                        Aanmaken
+                                    {% endif %}
+                                </span>
                             </button>
                         </div>
                     </div>

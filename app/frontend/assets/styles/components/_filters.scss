@@ -3,14 +3,14 @@
 .count {
     color: $white;
     background-color: $primary;
-    font-size: 12px;
+    font-size: 0.75em;
     border-radius: 50%;
-    width: 24px;
-    height: 24px;
+    width: 1.8em;
+    height: 1.8em;
     padding: 0 !important;
     display: inline-block;
     text-align: center;
-    line-height: 24px;
+    line-height: 1.9em;
     margin: 0 3px;
 
     button & {
@@ -47,10 +47,15 @@
         margin: 0 $input-padding-x;
     }
 
+    .btn-close {
+        right: -(map-get($container-margin, sm));
+    }
+
     .show-filters & {
         .full-page-view__main {
             // opacity: 1;
             transform: translateZ(0);
+            padding: 0 map-get($container-margin, sm) map-get($container-margin, sm);
         }
     }
 
@@ -195,6 +200,11 @@
                 border-top: 0;
             }
         }
+    }
+
+    .container__skyline-alert--confirmation {
+        margin: 3em auto 0;
+        max-width: map-get($container-max-widths, md);
     }
 }
 

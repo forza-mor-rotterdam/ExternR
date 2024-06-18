@@ -1,4 +1,5 @@
 // grijstinten
+$gray-tint00: #f6f9fa;
 $gray-tint01: #eff4f6;
 $gray-tint02: #e4eef1;
 $gray-tint03: #dbe7ea;
@@ -15,6 +16,7 @@ $gray-tint11: #404b4f;
 $green-tint01: #00811f;
 $green-tint02: #006e32;
 $green-tint03: #006e32;
+$green-tint04: #e1efe2;
 
 // magentatinten
 $magenta-tint01: #c93675;
@@ -52,8 +54,8 @@ $warning: #edb500;
 $danger: #e3614d;
 $light: $gray-tint01;
 $dark: $gray-tint11;
-$action: $magenta-tint01;
-$action-active: $magenta-tint02;
+$action: $green-tint01;
+$action-active: $green-tint02;
 
 // Grid breakpoints
 //

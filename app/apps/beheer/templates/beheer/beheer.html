@@ -1,6 +1,6 @@
 {% extends "base_beheer.html" %}
 {% block title %}
-    Beheer | ExternR
+    Beheer | FixeR
 {% endblock title %}
 {% block body %}
     <h1>Beheer</h1>
@@ -18,13 +18,12 @@
             <a href="{% url 'rechtengroep_lijst' %}">Rechtengroepen</a>
         </li>
     </ul>
-    <h2>Andere Forzamor beheer productie omgevingen</h2>
+    <h2>Andere Forzamor beheer {{ APP_ENV }} omgevingen</h2>
     <ul class="list--blocks-horizontal">
-        <li>
-            <a href="https://planr.forzamor.nl/beheer">PlanR</a>
-        </li>
-        <li>
-            <a href="https://onderwerpen.forzamor.nl/beheer">Onderwerpen</a>
-        </li>
+        {% for url in env_urls %}
+            <li>
+                <a href="{{ url.0 }}">{{ url.1 }}</a>
+            </li>
+        {% endfor %}
     </ul>
 {% endblock body %}

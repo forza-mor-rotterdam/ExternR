@@ -26,14 +26,13 @@ from apps.main.views import (
     http_403,
     http_404,
     http_500,
-    incident_modal_handle,
     informatie,
     kaart_modus,
     meldingen_bestand,
     meldingen_bestand_protected,
-    onderwerp,
     root,
     sorteer_filter,
+    taak_afhandelen,
     taak_detail,
     taak_zoeken,
     taken,
@@ -118,11 +117,10 @@ urlpatterns = [
     # END taken
     # START partials
     path("part/pageheader-form/", ui_settings_handler, name="pageheader_form_part"),
-    path("onderwerp/", onderwerp, name="onderwerp"),
     path(
-        "part/taak-modal-handle/<int:id>/",
-        incident_modal_handle,
-        name="incident_modal_handle_part",
+        "taak/<int:id>/afhandelen/",
+        taak_afhandelen,
+        name="taak_afhandelen",
     ),
     # END partials
     # START beheer

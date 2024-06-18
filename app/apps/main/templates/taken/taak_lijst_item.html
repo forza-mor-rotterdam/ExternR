@@ -26,7 +26,7 @@
                         data-taak-target="buttonNietOpgelost"
                         data-modal-title-param="Taak afhandelen"
                         data-modal-sub-title-param="{{ taak.titel }}"
-                        data-modal-url-param="{% url 'incident_modal_handle_part' taak.id %}?resolutie=niet_opgelost"
+                        data-modal-url-param="{% url 'taak_afhandelen' taak.id %}?resolutie=niet_opgelost"
                         data-modal-id-param="incident_modal_handle_{{ taak.id }}"
                         data-action="modal#openModal">
                     <div>
@@ -38,7 +38,7 @@
                         data-taak-target="buttonOpgelost"
                         data-modal-title-param="Taak afhandelen"
                         data-modal-sub-title-param="{{ taak.titel }}"
-                        data-modal-url-param="{% url 'incident_modal_handle_part' taak.id %}?resolutie=opgelost"
+                        data-modal-url-param="{% url 'taak_afhandelen' taak.id %}?resolutie=opgelost"
                         data-modal-id-param="incident_modal_handle_{{ taak.id }}"
                         data-action="modal#openModal">
                     <div>

@@ -34,18 +34,6 @@
                 <h3 class="h5">Interne opmerking</h3>
                 <p>{{ taak.bericht }}</p>
             {% endif %}
-            {% if taak.taaktype.externe_instantie_naam %}
-                <h3 class="h5">Externe instantie</h3>
-                <p>{{ taak.taaktype.externe_instantie_naam }}</p>
-            {% endif %}
-            {% if taak.taaktype.externe_instantie_email %}
-                <h3 class="h5">Externe instantie email</h3>
-                <p>{{ taak.taaktype.externe_instantie_email }}</p>
-            {% endif %}
-            {% if taak.taaktype.externe_instantie_verwantwoordelijke %}
-                <h3 class="h5">Externe instantie verwantwoordelijke</h3>
-                <p>{{ taak.taaktype.externe_instantie_verwantwoordelijke }}</p>
-            {% endif %}
             {% if taak.aangemaakt_op %}
                 <h3 class="h5">Aangemaakt</h3>
                 <p>
@@ -123,6 +111,17 @@
                 <div>
                     <h3 class="h5">Ter hoogte van</h3>
                     <p>{{ taak.adres }}</p>
+                    {% if geometrie %}
+                        <a class="link link--navigate"
+                           href="#"
+                           data-modal-title-param="Navigeren"
+                           data-modal-url-param="{% url 'navigeer' geometrie.1|replace_comma_by_dot geometrie.0|replace_comma_by_dot %}"
+                           data-modal-id-param="navigeer"
+                           data-action="modal#openModal">
+                            {% include "icons/navigate.svg" %}
+                            Navigeren
+                        </a>
+                    {% endif %}
                 </div>
                 <div>
                     {% if taak_zoek_data.wijknaam %}
@@ -159,7 +158,7 @@
                         <input id="egd_id"
                                type="checkbox"
                                data-detail-map-layer-type-param="EGD"
-                               data-action="detail#onMapLayerChange">
+                               data-action="detail#onMapLayerChange" />
                         Toon EGD-kaartlaag
                     </label>
                     <div class="container__uitklapper">
@@ -273,7 +272,7 @@
                 <h3 class="h5">Onderwerp</h3>
                 <p>
                     {% for onderwerp in melding.onderwerpen %}
-                        <turbo-frame id="onderwerp_{{ onderwerp|urlencode }}" data-spinner="hide" loading="lazy" src="{% url 'onderwerp' %}?url={{ onderwerp|urlencode }}"></turbo-frame>
+                        {% render_onderwerp onderwerp %}
                         {% if not forloop.last %},{% endif %}
                     {% endfor %}
                 </p>
@@ -391,7 +390,8 @@
                     Tijdlijn
                 </h2>
             </summary>
-            {% include "incident/part_tijdlijn.html" %}
+            <turbo-frame id="taak_detail_melding_tijdlijn" src="{% url 'taak_detail_melding_tijdlijn' taak.id %}" loading="lazy">
+            </turbo-frame>
         </details>
     </div>
 </section>

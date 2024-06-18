@@ -145,7 +145,9 @@ class MailService:
                 subject,
                 text_content,
                 settings.DEFAULT_FROM_EMAIL,
-                [settings.DEVELOPER_EMAIL],
+                [
+                    settings.DEVELOPER_EMAIL,
+                ],
             )
             msg.attach_alternative(html_content, "text/html")
             msg.send()

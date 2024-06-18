@@ -55,7 +55,10 @@
                     {% csrf_token %}
                     <fieldset>
                         {{ form.naam|render_rotterdam_formulier }}
-                        {{ form.taaktypes|render_rotterdam_formulier }}
+                        <div class="form-row">
+                            <h3 class="label">{{ form.taaktypes.label_tag }}</h3>
+                            {{ form.taaktypes }}
+                        </div>
                         {{ form.filters|render_rotterdam_formulier }}
                         {{ form.template|render_rotterdam_formulier }}
                     </fieldset>
@@ -85,7 +88,7 @@
                                     <a href="{% url 'gebruiker_aanpassen' profiel.gebruiker.id %}">{{ profiel.gebruiker.email }}</a>
                                     {% comment %} {% if profiel.gebruiker.first_name or profiel.gebruiker.last_name %}
                                 ({{profiel.gebruiker.first_name}}
-                                {% if profiel.gebruiker.last_name %} {{profiel.gebruiker.last_name}}{% endif %})
+                                {% if profiel.gebruiker.last_name %}{{profiel.gebruiker.last_name}}{% endif %})
                                     {% endif %} {% endcomment %}
                                 </li>
                             {% endfor %}

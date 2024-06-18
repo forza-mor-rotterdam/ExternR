@@ -1,0 +1,227 @@
+turbo-frame {
+    .onboarding-complete {
+        opacity: 0;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: white;
+        padding: 20px;
+        width: 100%;
+        max-width: 17em;
+        text-align: center;
+        transition: opacity 0.5s;
+        pointer-events: none;
+        overflow: hidden;
+        z-index: -1;
+
+        h2,
+        p {
+            opacity: 0;
+        }
+        .circle {
+            position: relative;
+            margin: 0 auto;
+            overflow: hidden;
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: $white;
+            z-index: -1;
+            box-shadow:
+                35px -35px 0 2px $white,
+                -35px -35px 0 2px $white,
+                -35px 35px 0 2px $white,
+                35px 35px 0 2px $white,
+                0 0 0 2px $white;
+
+            .line1,
+            .line2 {
+                position: absolute;
+                border-top: 3px solid $green-tint01;
+                transform: rotate(45deg);
+                width: 0;
+            }
+
+            .line1 {
+                transform-origin: 0 50%;
+                top: 30px;
+                left: 17px;
+            }
+
+            .line2 {
+                transform: rotate(-45deg);
+                transform-origin: 0 0;
+                top: 46px;
+                left: 30px;
+            }
+        }
+    }
+    &.complete {
+        > div {
+            > h2,
+            > form {
+                opacity: 0.3;
+                pointer-events: none;
+            }
+        }
+        .onboarding-complete {
+            opacity: 1;
+            transition: opacity 0.5s;
+            z-index: 2100;
+            pointer-events: all;
+            > * {
+                animation-iteration-count: 1;
+            }
+
+            .circle {
+                animation: circle--green 0.3s ease 0.5s forwards;
+
+                .line1,
+                .line2 {
+                    animation: line--22 0.1s ease-in 0.8s forwards;
+                }
+
+                .line2 {
+                    animation: line--37 0.1s ease-out 1s forwards;
+                }
+            }
+
+            h2,
+            p {
+                animation: fade-in 0.5s ease-in 1.5s forwards;
+            }
+        }
+    }
+}
+
+.onboarding {
+    max-width: map-get($container-max-widths, md);
+    margin: 0 auto;
+    padding-bottom: 5em;
+
+    .btn-start {
+        opacity: 0;
+        animation: slide-in-from-bottom 0.25s ease-in-out 0.9s forwards;
+    }
+    .container__wijkenlijst {
+        max-height: 1500px;
+        overflow: hidden;
+        transition: max-height 1s ease-in-out;
+        &.hidden {
+            max-height: 0;
+        }
+    }
+
+    .list--form-check-input--tile-image {
+        li {
+            label {
+                opacity: 0;
+                animation: fade-in 1s ease-in-out 2.5s forwards;
+            }
+
+            @for $i from 1 through 10 {
+                &:nth-child(#{$i}n) {
+                    label {
+                        animation-delay: #{$i * 0.1}s;
+                    }
+                }
+            }
+        }
+    }
+
+    .form-row {
+        margin-bottom: 0;
+        h3.label {
+            font-size: 1.125em;
+            line-height: 1.6em;
+            margin-bottom: 0.5em;
+
+            &.has-more-info {
+                margin-right: 4.6em;
+                position: relative;
+                z-index: 10;
+            }
+
+            .count {
+                transform: translateY(-0.2em);
+                margin-left: 0.25em;
+                font-style: normal;
+            }
+        }
+    }
+
+    .flex-container--sticky {
+        > .container__buttons {
+            margin-top: 50px;
+        }
+    }
+
+    .foldout--info {
+        text-align: right;
+        position: relative;
+        max-height: 1.7em;
+        overflow: hidden;
+        transition: all 0.5s ease-in-out;
+        margin-top: -2.4em;
+        font-size: 0.875em;
+
+        &.show {
+            max-height: 500px;
+            transition: all 0.5s ease-in-out;
+        }
+
+        .summary {
+            position: relative;
+            display: inline;
+            font-size: 1em;
+            font-weight: 400;
+            border: 0;
+            text-align: right;
+            cursor: pointer;
+            &::-webkit-details-marker {
+                display: none;
+            }
+
+            svg {
+                transform: scale(0.7) translateY(-2px);
+                vertical-align: middle;
+                path {
+                    fill: $black;
+                }
+            }
+        }
+        p {
+            text-align: left;
+            margin: 0.5em 0;
+        }
+    }
+
+    .invalid-text {
+        display: inline-block;
+        margin-top: 1em;
+    }
+    .list--form-check-input + .invalid-text {
+        margin-top: 0em;
+        margin-bottom: 1em;
+    }
+
+    .container__cards {
+        overflow-x: hidden;
+        .card {
+            transform: translateX(100%);
+            opacity: 0;
+            animation: slide-in-from-right 0.5s forwards;
+            animation-iteration-count: 1;
+            @for $i from 1 through 10 {
+                &:nth-child(#{$i}n) {
+                    animation-delay: #{$i * 0.25}s;
+                }
+            }
+
+            svg {
+                transform: translate(-2px, -4px);
+            }
+        }
+    }
+}

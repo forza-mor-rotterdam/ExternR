@@ -1,5 +1,6 @@
 {% load rotterdam_formulier_html %}
 {% load l10n %}
+{% load get_svg_path from main_tags %}
 {{ form }}
 {% if field|is_checkbox %}
     <div class="col {{ classes.label }} {{ classes.value }} {{ classes.single_value }}">
@@ -17,13 +18,80 @@
             {% if field.help_text %}<p class="help-block">{{ field.help_text|safe }}</p>{% endif %}
         </div>
     </div>
+{% elif field|is_multiple_checkbox %}
+    <div class="form-row {{ classes.label }} {{ classes.value }} {{ classes.single_value }}{% if field.errors %} is-invalid{% endif %}">
+        {% if field.auto_id and not field.field.widget.attrs.hideLabel %}
+            <h3 class="label {% if field.field.widget.attrs.hasMoreInfo and field.help_text %}has-more-info{% endif %}">
+                <span>{{ field.label }}
+                    {% if field.field.widget.attrs.showCount %}</span><i class="count">0</i>{% endif %}
+            </h3>
+        {% endif %}
+        {% if field.field.widget.attrs.hasMoreInfo and field.help_text %}
+            <div class="foldout--info" data-controller="utils">
+                <h4 class="summary" data-action="click->utils#foldOut">
+                    {% include "icons/info.svg" %}
+                    Meer info
+                </h4>
+                <p>{{ field.help_text|safe }}</p>
+            </div>
+        {% endif %}
+        {% if field.field.widget.attrs.showSelectAll %}
+            <div class="container__buttons">
+                <button class="btn btn-textlink btn-inline"
+                        data-action="selectAll#selectAll"
+                        data-selectAll-filter-type-param="all">Selecteer alles</button>
+                |
+                <button class="btn btn-inline" data-action="selectAll#selectAll">Selecteer niets</button>
+            </div>
+        {% endif %}
+        <div id="{{ field.auto_id }}">
+            <ul class="{% if field.field.widget.attrs.classList %}{{ field.field.widget.attrs.classList }}{% else %}list--form-check-input{% endif %}">
+                {% for choice in field %}
+                    <li {% if field.field.required and form.required_css_class %}class="{{ form.required_css_class }}"{% endif %}>
+                        <div class="form-check">
+                            {{ choice.tag }}
+                            <label class="form-check-label" for="{{ choice.id_for_label }}">
+                                {% if field.field.widget.attrs.hasIcon %}
+                                    {% with choice.choice_label.icon as icon_url %}
+                                        {% if icon_url %}
+                                            {{ icon_url|get_svg_path|safe }}
+                                        {% else %}
+                                            {% include "icons/noimage.svg" %}
+                                        {% endif %}
+                                    {% endwith %}
+                                    {{ choice.choice_label.naam }}
+                                {% else %}
+                                    {{ choice.choice_label }}
+                                {% endif %}
+                            </label>
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+            {% for error in field.errors %}
+                <span class="help-block invalid-text {{ form.error_css_class }}">{{ error }}</span>
+            {% endfor %}
+            {% if field.help_text and not field.field.widget.attrs.hasMoreInfo %}
+                <p class="help-block">{{ field.help_text|safe }}</p>
+            {% endif %}
+        </div>
+    </div>
 {% elif field|is_radio %}
-    <div class="form-row {{ classes.label }} {{ classes.value }} {{ classes.single_value }}">
+    <div class="form-row {{ classes.label }} {{ classes.value }} {{ classes.single_value }}{% if field.errors %} is-invalid{% endif %}">
         {% if classes.icon %}
             {% include "rotterdam_formulier_html/field_icon.html" %}
         {% endif %}
         {% if field.auto_id and not field.field.widget.attrs.hideLabel %}<h3 class="label">{{ field.label }}</h3>{% endif %}
-        <div>{{ field }}</div>
+        <ul class="{% if field.field.widget.attrs.classList %}{{ field.field.widget.attrs.classList }}{% else %}list--form-radio-input{% endif %}">
+            {% for choice in field %}
+                <li {% if field.field.required and form.required_css_class %}class="{{ form.required_css_class }}"{% endif %}>
+                    <div class="form-check">
+                        {{ choice.tag }}
+                        <label class="form-check-label" for="{{ choice.id_for_label }}">{{ choice.choice_label }}</label>
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
         <p class="help-block invalid-text"></p>
         {% for error in field.errors %}
             <span class="help-block invalid-text {{ form.error_css_class }}">{{ error }}</span>
@@ -48,7 +116,7 @@
         {% if field.help_text %}<p class="help-block">{{ field.help_text|safe }}</p>{% endif %}
     </div>
 {% elif field|is_datetime_input %}
-    <div class="form-row {{ classes.label }} {{ classes.value }} {{ classes.single_value }} {% if field.field.show_hidden_initial %}hidden{% endif %}">
+    <div class="form-row {{ classes.label }} {{ classes.value }} {{ classes.single_value }} {% if field.field.show_hidden_initial %}hidden{% endif %}{% if field.errors %}is-invalid{% endif %}">
         {% if classes.icon %}
             {% include "rotterdam_formulier_html/field_icon.html" %}
         {% endif %}
@@ -74,7 +142,7 @@
         </div>
     </div>
 {% elif field|is_select %}
-    <div class="form-row col {{ classes.label }} {{ classes.value }} {{ classes.single_value }}">
+    <div class="form-row col {{ classes.label }} {{ classes.value }} {{ classes.single_value }}{% if field.errors %} is-invalid{% endif %}">
         {% if field|is_select_multiple %}
             {% if classes.icon %}
                 {% include "rotterdam_formulier_html/field_icon.html" %}
@@ -91,6 +159,7 @@
                         {% if field.field.required %}required{% endif %}>
                     {% for choice in field %}{{ choice.tag }}{% endfor %}
                 </select>
+                <span class="help-block invalid-text {{ form.error_css_class }}">{{ error }}</span>
                 {% for error in field.errors %}
                     <span class="help-block invalid-text {{ form.error_css_class }}">{{ error }}</span>
                 {% endfor %}
@@ -118,37 +187,8 @@
             </div>
         {% endif %}
     </div>
-{% elif field|is_multiple_checkbox %}
-    <div class="form-row {{ classes.label }} {{ classes.value }} {{ classes.single_value }}">
-        {% if field.auto_id and not field.field.widget.attrs.hideLabel %}
-            <h3 class="label">{{ field.label }}{{ field.field.widget.attrs.hideLabel }}</h3>
-        {% endif %}
-        <div id="{{ field.auto_id }}">
-            <ul class="list--form-check-input">
-                {% for choice in field %}
-                    <li class="{% if field.field.required and form.required_css_class %}{{ form.required_css_class }}{% endif %}">
-                        <div class="form-check">
-                            {{ choice.tag }}
-                            {% comment %} <input type="checkbox"
-        class="form-check-input"
-        id="{{ choice.id_for_label}}"
-        name="{{ field.html_name }}"
-        value="{{ choice.widget.value }}"
-        {% render_attrs field %}
-        {% if field.field.required %}required{% endif %}> {% endcomment %}
-                            <label class="form-check-label" for="{{ choice.id_for_label }}">{{ choice.choice_label }}</label>
-                        </div>
-                    </li>
-                {% endfor %}
-            </ul>
-            {% for error in field.errors %}
-                <span class="help-block invalid-text {{ form.error_css_class }}">{{ error }}</span>
-            {% endfor %}
-            {% if field.help_text %}<p class="help-block">{{ field.help_text|safe }}</p>{% endif %}
-        </div>
-    </div>
 {% elif field|is_textarea %}
-    <div class="form-row {{ classes.label }} {{ classes.value }} {{ classes.single_value }}">
+    <div class="form-row {{ classes.label }} {{ classes.value }} {{ classes.single_value }}{% if field.errors %} is-invalid{% endif %}">
         {% if classes.icon %}
             {% include "rotterdam_formulier_html/field_icon.html" %}
         {% endif %}
@@ -164,13 +204,14 @@
                       class="form-control {% if field.errors %}is-invalid{% endif %}"
                       rows="4"
                       name="{{field.html_name}}"
-                      {% render_attrs field %}>{% if field.value %}{{ field.value }}{% endif %}</textarea>
+                      {% render_attrs field %}
+                      {% if field.field.required %}required{% endif %}>{% if field.value %}{{ field.value }}{% endif %}</textarea>
             <p class="help-block invalid-text {{ form.error_css_class }}">{{ error }}</p>
             {% if field.help_text %}<p class="help-block">{{ field.help_text|safe }}</p>{% endif %}
         </div>
     </div>
 {% elif field|is_file %}
-    <div class="form-row {{ classes.label }} {{ classes.value }} {{ classes.single_value }}">
+    <div class="form-row {{ classes.label }} {{ classes.value }} {{ classes.single_value }}{% if field.errors %} is-invalid{% endif %}">
         {% if field.auto_id and not field.field.widget.attrs.hideLabel %}
             <label class="label--file {% if field.field.required %}{{ form.required_css_class }}{% endif %}"
                    for="{{ field.auto_id }}">
@@ -216,7 +257,7 @@
 {% elif field|is_hidden %}
     {{ field }}
 {% else %}
-    <div class="form-row {{ classes.label }} {{ classes.value }} {{ classes.single_value }} {% if field.field.show_hidden_initial %}hidden{% endif %}">
+    <div class="form-row {{ classes.label }} {{ classes.value }} {{ classes.single_value }} {% if field.field.show_hidden_initial %}hidden{% endif %}{% if field.errors %} is-invalid{% endif %}">
         {% if classes.icon %}
             {% include "rotterdam_formulier_html/field_icon.html" %}
         {% endif %}

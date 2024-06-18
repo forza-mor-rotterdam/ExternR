@@ -4,7 +4,7 @@ from apps.taken.admin_filters import (
     TaakstatusFilter,
     TitelFilter,
 )
-from apps.taken.models import Taak, Taakgebeurtenis, Taaktype, TaakZoekData
+from apps.taken.models import Taak, Taakgebeurtenis, Taakstatus, Taaktype, TaakZoekData
 from apps.taken.tasks import compare_and_update_status
 from django.contrib import admin
 from django.db.models import Count
@@ -45,6 +45,7 @@ class TaakAdmin(admin.ModelAdmin):
                     "additionele_informatie",
                     "taakopdracht",
                     "taak_zoek_data",
+                    "bezig_met_verwerken",
                 )
             },
         ),
@@ -169,7 +170,19 @@ class TaakgebeurtenisAdmin(admin.ModelAdmin):
     )
 
 
+class TaakstatusAdmin(admin.ModelAdmin):
+    list_display = (
+        "id",
+        "uuid",
+        "naam",
+        "taak",
+        "aangemaakt_op",
+        "aangepast_op",
+    )
+
+
 admin.site.register(TaakZoekData, TaakZoekDataAdmin)
 admin.site.register(Taak, TaakAdmin)
 admin.site.register(Taaktype, TaaktypeAdmin)
 admin.site.register(Taakgebeurtenis, TaakgebeurtenisAdmin)
+admin.site.register(Taakstatus, TaakstatusAdmin)
