@@ -83,12 +83,6 @@ class TaaktypeAanpassenView(TaaktypeAanmakenAanpassenView, UpdateView):
             return redirect(f"{form.cleaned_data.get('redirect_field')}{taaktype_url}")
         return response
 
-    def get_form_kwargs(self):
-        kwargs = super().get_form_kwargs()
-        current_taaktype = self.get_object()
-        kwargs["current_taaktype"] = current_taaktype
-        return kwargs
-
 
 @method_decorator(login_required, name="dispatch")
 @method_decorator(
