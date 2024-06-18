@@ -255,3 +255,37 @@ MSB_WIJKEN = [
         ],
     },
 ]
+
+PDOK_WIJKEN = [
+    # Noord
+    {"wijkcode": "WK059903", "wijknaam": "Delfshaven", "stadsdeel": "Noord"},
+    {
+        "wijkcode": "WK059906",
+        "wijknaam": "Hillegersberg-Schiebroek",
+        "stadsdeel": "Noord",
+    },
+    {"wijkcode": "WK059908", "wijknaam": "Kralingen-Crooswijk", "stadsdeel": "Noord"},
+    {"wijkcode": "WK059905", "wijknaam": "Noord", "stadsdeel": "Noord"},
+    {"wijkcode": "WK059919", "wijknaam": "Nieuw-Mathenesse", "stadsdeel": "Noord"},
+    {"wijkcode": "WK059904", "wijknaam": "Overschie", "stadsdeel": "Noord"},
+    {"wijkcode": "WK059925", "wijknaam": "Rivium", "stadsdeel": "Noord"},
+    {"wijkcode": "WK059901", "wijknaam": "Rotterdam Centrum", "stadsdeel": "Noord"},
+    {"wijkcode": "WK059924", "wijknaam": "Rotterdam-Noord-West", "stadsdeel": "Noord"},
+    {"wijkcode": "WK059914", "wijknaam": "Prins Alexander", "stadsdeel": "Noord"},
+    {"wijkcode": "WK059918", "wijknaam": "Spaanse Polder", "stadsdeel": "Noord"},
+    # Zuid
+    {
+        "wijkcode": "WK059923",
+        "wijknaam": "Botlek-Europoort-Maasvlakte",
+        "stadsdeel": "Zuid",
+    },
+    {"wijkcode": "WK059915", "wijknaam": "Charlois", "stadsdeel": "Zuid"},
+    {"wijkcode": "WK059910", "wijknaam": "Feijenoord", "stadsdeel": "Zuid"},
+    {"wijkcode": "WK059917", "wijknaam": "Hoek van Holland", "stadsdeel": "Zuid"},
+    {"wijkcode": "WK059916", "wijknaam": "Hoogvliet", "stadsdeel": "Zuid"},
+    {"wijkcode": "WK059912", "wijknaam": "IJsselmonde", "stadsdeel": "Zuid"},
+    {"wijkcode": "WK059913", "wijknaam": "Pernis", "stadsdeel": "Zuid"},
+    {"wijkcode": "WK059927", "wijknaam": "Rozenburg", "stadsdeel": "Zuid"},
+    {"wijkcode": "WK059922", "wijknaam": "Vondelingenplaat", "stadsdeel": "Zuid"},
+    {"wijkcode": "WK059921", "wijknaam": "Waalhaven-Eemhaven", "stadsdeel": "Zuid"},
+]

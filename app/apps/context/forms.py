@@ -2,7 +2,6 @@ from apps.context.filters import FilterManager
 from apps.context.models import Context
 from apps.taken.models import Taaktype
 from django import forms
-from utils.forms import RadioSelect
 
 
 class ContextAanpassenForm(forms.ModelForm):
@@ -18,10 +17,9 @@ class ContextAanpassenForm(forms.ModelForm):
         required=False,
     )
     template = forms.ChoiceField(
-        widget=RadioSelect(
+        widget=forms.RadioSelect(
             attrs={
                 "class": "list--form-radio-input",
-                # "data-action": "change->bijlagen#updateImageDisplay",
             }
         ),
         label="Sjabloon",
@@ -71,3 +69,21 @@ class ContextAanmakenForm(ContextAanpassenForm):
         ].help_text = "Ieder sjabloon toont andere informatie. Het ‘Standaard’ sjabloon voldoet voor de meeste afdelingen."
         self.fields["taaktypes"].label = "Met welke taaktypes werkt deze rol?"
         self.fields["filters"].label = "Welke filters zijn relevant voor deze rol?"
+
+
+class TaaktypesForm(forms.ModelForm):
+    taaktypes = forms.ModelMultipleChoiceField(
+        widget=forms.CheckboxSelectMultiple(
+            attrs={
+                "class": "form-check-input",
+                "data-action": "change->incidentHandleForm#toggleNewTask",
+            }
+        ),
+        queryset=Taaktype.objects.all(),
+        label="Taaktypes",
+        required=False,
+    )
+
+    class Meta:
+        model = Context
+        fields = ("taaktypes",)

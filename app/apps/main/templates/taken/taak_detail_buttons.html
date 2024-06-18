@@ -8,7 +8,7 @@
                 <div class="form-row">
                     <button class="btn btn-action"
                             data-modal-title-param="Taak afhandelen"
-                            data-modal-url-param="{% url 'incident_modal_handle_part' taak.id %}"
+                            data-modal-url-param="{% url 'taak_afhandelen' taak.id %}"
                             data-modal-id-param="incident_modal_handle_{{ taak.id }}"
                             data-action="modal#openModal"
                             data-modal-sub-title-param="{% include subtitel_template with subtitel=taak.titel %}">

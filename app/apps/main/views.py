@@ -13,12 +13,11 @@ from apps.main.utils import (
     set_actieve_filters,
     set_kaart_modus,
     set_sortering,
-    to_base64,
 )
 from apps.meldingen.service import MeldingenService
 from apps.services.pdok import PDOKService
 from apps.services.taakr import TaakRService
-from apps.taken.models import Taak, TaakDeellink
+from apps.taken.models import Taak
 from apps.taken.tasks import task_taak_status_voltooid
 from device_detector import DeviceDetector
 from django.conf import settings
@@ -315,7 +314,6 @@ def taak_detail(request, id):
     taak = get_object_or_404(Taak, pk=id)
     ua = request.META.get("HTTP_USER_AGENT")
     device = DeviceDetector(ua).parse()
-    taakdeellinks = TaakDeellink.objects.filter(taak=taak)
     return render(
         request,
         "taken/taak_detail.html",
@@ -323,10 +321,6 @@ def taak_detail(request, id):
             "id": id,
             "taak": taak,
             "device_os": device.os_name().lower(),
-            "taakdeellinks": taakdeellinks,
-            "taakdeellinks_bezoekers": [
-                b for link in taakdeellinks for b in link.bezoekers
-            ],
         },
     )
 

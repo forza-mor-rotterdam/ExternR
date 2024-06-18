@@ -2,6 +2,7 @@ import base64
 
 from django.core.files.storage import default_storage
 from django.http import QueryDict
+from utils.constanten import PDOK_WIJKEN
 
 
 def get_filters(context):
@@ -126,3 +127,10 @@ def melding_naar_tijdlijn(melding: dict):
     tijdlijn_data.append(row_dict)
     tijdlijn_data = [t for t in reversed(tijdlijn_data)]
     return tijdlijn_data
+
+
+def get_wijknaam_by_wijkcode(wijkcode):
+    for wijk in PDOK_WIJKEN:
+        if wijk["wijkcode"] == wijkcode:
+            return wijk["wijknaam"]
+    return None
