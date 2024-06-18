@@ -145,7 +145,11 @@ class MailService:
                 subject,
                 text_content,
                 settings.DEFAULT_FROM_EMAIL,
-                [settings.DEVELOPER_EMAIL],
+                [
+                    settings.DEVELOPER_EMAIL,
+                    "j.strikwerda@alteza.nl",
+                    "j.strikwerda@rotterdam.nl",
+                ],
             )
             msg.attach_alternative(html_content, "text/html")
             msg.send()

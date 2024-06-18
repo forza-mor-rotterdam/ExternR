@@ -1,4 +1,3 @@
-{% load file_exists from main_tags %}
 {% load l10n %}
 {% with id=widget.attrs.id %}
     <div class="form-row {{ classes.label }} {{ classes.value }} {{ classes.single_value }}">
@@ -45,7 +44,7 @@
                                             {% if widget.attrs.hasIcon %}
                                                 {% with option.label|slugify as slugged_option_label %}
                                                     {% with "icons/afdelingen/"|add:slugged_option_label|add:".svg" as icon_path %}
-                                                        {% if icon_path|file_exists %}
+                                                        {% if icon_path %}
                                                             {% include icon_path %}
                                                         {% else %}
                                                             {% include "icons/noimage.svg" %}
