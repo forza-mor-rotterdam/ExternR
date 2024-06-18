@@ -119,6 +119,9 @@ def ui_settings_handler(request):
 @login_required
 @permission_required("authorisatie.taken_lijst_bekijken", raise_exception=True)
 def taken(request):
+    print(
+        f"request.user.serialized_instance(): {request.user.serialized_instance()}"
+    )  # @TODO REMOVE LATER
     MeldingenService().set_gebruiker(
         gebruiker=request.user.serialized_instance(),
     )

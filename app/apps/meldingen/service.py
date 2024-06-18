@@ -37,6 +37,8 @@ class MeldingenService:
         )
 
     def haal_token(self):
+        print(f"Username: {settings.MELDINGEN_USERNAME}")  # @TODO REMOVE LATER
+        print(f"Password: {settings.MELDINGEN_PASSWORD}")  # @TODO REMOVE LATER
         meldingen_token = cache.get("meldingen_token")
         if not meldingen_token:
             email = settings.MELDINGEN_USERNAME
