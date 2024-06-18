@@ -4,6 +4,18 @@
         padding-top: 2rem;
     }
 
+    h1 {
+        small {
+            font-size: 1rem;
+        }
+
+        .icon--person {
+            @media (max-width: map-get($grid-breakpoints, sm)) {
+                transform: translateY(0.2em);
+            }
+        }
+    }
+
     .alert {
         margin-bottom: 2rem;
     }
@@ -26,6 +38,10 @@
         }
     }
 
+    .form-control + .help-block:not(.invalid-text) {
+        margin-top: -1.5rem;
+    }
+
     .pagetitle,
     h2 {
         margin-bottom: 0.25em;
@@ -43,6 +59,7 @@
         @media (min-width: map-get($grid-breakpoints, md)) {
             display: flex;
             justify-content: space-between;
+            gap: 20px;
 
             + .alert {
                 margin-top: -32px;
@@ -68,6 +85,9 @@
         }
     }
 
+    fieldset .container__flex {
+        margin-top: 0;
+    }
     ul.list--images {
         margin: 0 -16px;
         li {
@@ -100,7 +120,7 @@
         }
     }
 
-    form {
+    form:not(.full-width) {
         max-width: map-get($container-max-widths, md);
         margin: 0 auto;
     }
@@ -152,5 +172,94 @@
     .container__table {
         width: 100%;
         overflow-x: auto;
+    }
+
+    .container__hideables {
+        .task--hideable {
+            margin-bottom: 2rem;
+            padding: 1rem;
+            background-color: $gray-tint01;
+            &.hide {
+                display: none;
+            }
+
+            .btn {
+                max-width: none;
+            }
+
+            .form-row {
+                margin-bottom: 0;
+            }
+
+            input[type="checkbox"] {
+                @include form-check-input;
+                margin-right: 5px;
+                vertical-align: bottom;
+            }
+        }
+
+        .btn-textlink {
+            max-width: none;
+            text-align: left;
+            &.hide {
+                display: none;
+            }
+        }
+    }
+    .container__example--task {
+        margin-bottom: 2rem;
+
+        .example--task {
+            display: block;
+            width: 270px;
+            margin-bottom: 0.5em;
+        }
+        .icon-preview {
+            vertical-align: middle;
+        }
+    }
+}
+
+.container__explained {
+    padding-bottom: 1em;
+
+    .container__image {
+        position: relative;
+        background-color: $gray-tint01;
+        max-height: 388px;
+        img {
+            display: block;
+            margin: 0 auto;
+            max-height: 388px;
+        }
+    }
+
+    .icon--positive,
+    .icon--negative {
+        position: absolute;
+        top: $input-padding-y;
+        left: $input-padding-y;
+        width: 30px;
+        height: 30px;
+        background-color: $white;
+        background-repeat: no-repeat;
+        background-position: 50%;
+        background-size: 20px;
+        box-sizing: border-box;
+        border: 1px solid $gray-tint04;
+
+        @media (min-width: map-get($grid-breakpoints, md)) {
+            width: 60px;
+            height: 60px;
+            background-size: 40px;
+        }
+    }
+
+    .icon--positive {
+        background-image: url("data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjUiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCA1NSA0MyIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiBjbGFzcz0iaWNvbi0tY2hlY2ttYXJrIj4KPHBhdGggZD0iTTQ5LjY0MzkgMC4wNDI3MjQ2TDIzLjA0NjggMzMuMjg0NUw0Ljk2Mzk3IDExLjI4NDRMMC4zMTczODMgMTUuMDc5OEwyMy4wOTY1IDQyLjgyNjFMNTQuMzI4OCAzLjc5Mjk1TDQ5LjY0MzkgMC4wNDI3MjQ2WiIgZmlsbD0iIzAwODExRiIvPgo8L3N2Zz4K");
+    }
+
+    .icon--negative {
+        background-image: url("data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjUiIGhlaWdodD0iMjUiIHZpZXdCb3g9IjAgMCAxNiAxNiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiBjbGFzcz0iaWNvbi0tY2xvc2UiPgo8cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTE0Ljg5NDIgMTUuOTU1TDE1Ljk1NDggMTQuODk0M0w5LjA2MDUzIDhMMTUuOTU0OCAxLjEwNTcxTDE0Ljg5NDIgMC4wNDUwNTI1TDcuOTk5ODcgNi45MzkzNEwxLjEwNTU4IDAuMDQ1MDUxNkwwLjA0NDkyMzQgMS4xMDU3MUw2LjkzOTIxIDhMMC4wNDQ5MjE5IDE0Ljg5NDNMMS4xMDU1OCAxNS45NTVMNy45OTk4NyA5LjA2MDY2TDE0Ljg5NDIgMTUuOTU1WiIgZmlsbD0iI0NFNEMzQiIvPgo8L3N2Zz4K");
     }
 }

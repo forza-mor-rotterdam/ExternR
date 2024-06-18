@@ -1,8 +1,10 @@
 from apps.context.models import Context
 from apps.services.pdok import PDOKService
+from apps.taken.models import Taaktype
 from django.conf import settings
 from django.db.models import Q
 from django.template.defaultfilters import slugify
+from utils.constanten import ALLE_WIJKEN
 
 
 class StandaardFilter:
@@ -211,7 +213,7 @@ class TaaktypeFilter(StandaardFilter):
     @classmethod
     def get_selected_options_for_filter(cls, selected_options, profiel):
         if not selected_options:
-            taaktypes = profiel.taaktypes
+            taaktypes = Taaktype.objects.all()
             if (
                 profiel.context
                 and profiel.context.template == Context.TemplateOpties.BENC
@@ -224,7 +226,7 @@ class TaaktypeFilter(StandaardFilter):
         if not self._profiel:
             return []
 
-        taaktypes = self._profiel.taaktypes.all()
+        taaktypes = Taaktype.objects.all()
         if (
             self._profiel.context
             and self._profiel.context.template == Context.TemplateOpties.BENC
@@ -268,7 +270,7 @@ class WijkBuurtFilter(StandaardFilter):
     def get_selected_options_for_filter(cls, selected_options, profiel):
         if not selected_options:
             buurten = PDOKService().get_buurten_middels_wijkcodes(
-                settings.WIJKEN_EN_BUURTEN_GEMEENTECODE, profiel.wijken
+                settings.WIJKEN_EN_BUURTEN_GEMEENTECODE, ALLE_WIJKEN
             )
             return buurten
         return selected_options
@@ -304,7 +306,7 @@ class WijkBuurtFilter(StandaardFilter):
                 ),
             }
             for wijk in all_data.get("wijken", [])
-            if wijk["wijkcode"] in self._profiel.wijken
+            if wijk["wijkcode"] in ALLE_WIJKEN
         ]
 
 

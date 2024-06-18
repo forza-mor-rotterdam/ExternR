@@ -70,3 +70,44 @@
         }
     }
 }
+.list-tags,
+.container__badges {
+    .badge {
+        background-color: $green-tint01;
+        padding: 4px $input-padding-y;
+        margin-bottom: $input-padding-y;
+    }
+}
+
+.list-tags {
+    li {
+    }
+    .badge {
+        margin: 0;
+    }
+}
+
+.container__badges--overview {
+    @media (min-width: map-get($grid-breakpoints, md)) {
+        display: flex;
+        gap: $alert-padding-x;
+
+        > div {
+            flex: 0 1 33%;
+        }
+    }
+
+    > div {
+        padding: $input-padding-x;
+        background-color: $gray-tint01;
+        font-size: $h4-font-size;
+
+        h2 {
+            margin: 0;
+        }
+
+        ul {
+            margin: 0.25em 0 0;
+        }
+    }
+}

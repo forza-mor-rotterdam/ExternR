@@ -109,12 +109,12 @@ def get_svg_pathl(url):
     method = "get"
     action: Request = getattr(requests, method)
     cache_timeout = 60 * 60
-
     try:
         cache_key = url
         response = cache.get(url)
         if not response:
-            response: Response = action()
+            response: Response = action(url=url)
+
             if int(response.status_code) == 200:
                 cache.set(cache_key, response, cache_timeout)
         if response:

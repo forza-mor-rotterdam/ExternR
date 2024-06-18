@@ -1,3 +1,4 @@
+{% load file_exists from main_tags %}
 {% load l10n %}
 {% with id=widget.attrs.id %}
     <div class="form-row {{ classes.label }} {{ classes.value }} {{ classes.single_value }}">
@@ -35,7 +36,6 @@
                                 <li class="{% if widget.required and form.required_css_class %}{{ form.required_css_class }}{% endif %}">
                                     <div class="form-check">
                                         {% include "django/forms/widgets/input.html" with widget=option %}
-                                        {% include option.template_name with widget=option %}
                                         <label class="form-check-label"
                                                for="{{ option.attrs.id }}"
                                                {% if option.selected %}checked{% endif %}
@@ -44,7 +44,7 @@
                                             {% if widget.attrs.hasIcon %}
                                                 {% with option.label|slugify as slugged_option_label %}
                                                     {% with "icons/afdelingen/"|add:slugged_option_label|add:".svg" as icon_path %}
-                                                        {% if icon_path %}
+                                                        {% if icon_path|file_exists %}
                                                             {% include icon_path %}
                                                         {% else %}
                                                             {% include "icons/noimage.svg" %}

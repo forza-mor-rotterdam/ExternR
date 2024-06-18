@@ -20,16 +20,16 @@ form label {
 }
 
 /**
- * Sanders design calls for a button in error state, not normally
- * something done in forms.  We do markup with existing classes:
- *   -- .btn, like any button,
- *   -- .is-invalid, like textfield with error.
- * The .is-invalid does a red border in combination with .form-control,
- * and we want the red border, but not the .form-control, since that
- * also affects sizing of the button.
- * So we provide explicit CSS for btn in combination with is-invalid.
- * This is based on _forms.scss in bootstrap: @mixin form-validation-state
- */
+   * Sanders design calls for a button in error state, not normally
+   * something done in forms.  We do markup with existing classes:
+   *   -- .btn, like any button,
+   *   -- .is-invalid, like textfield with error.
+   * The .is-invalid does a red border in combination with .form-control,
+   * and we want the red border, but not the .form-control, since that
+   * also affects sizing of the button.
+   * So we provide explicit CSS for btn in combination with is-invalid.
+   * This is based on _forms.scss in bootstrap: @mixin form-validation-state
+   */
 .btn.is-invalid {
     border-color: $form-feedback-invalid-color;
     &:focus {
@@ -95,7 +95,7 @@ fieldset {
             no-repeat;
         background-position: 8px 50%;
         color: $gray-tint11;
-        font-size: 16px;
+        font-size: 0.875em;
     }
 }
 
@@ -200,6 +200,7 @@ textarea {
     background-size: contain;
     border: 1px solid #7c8b90;
     border-radius: 0;
+    margin-bottom: 0;
 
     &:checked[type="checkbox"] {
         background-color: $primary;
@@ -209,7 +210,7 @@ textarea {
 
     &[type="radio"] {
         border-radius: 50%;
-        margin-left: 0;
+        margin: 0;
     }
 
     &:checked[type="radio"] {
@@ -423,6 +424,7 @@ textarea {
 }
 
 ul.list--form-check-input,
+ul.form-check-input,
 ul.list--form-radio-input {
     @include list-clean();
     // display: flex;
@@ -434,7 +436,7 @@ ul.list--form-radio-input {
     input {
         @include form-check-input();
         position: absolute;
-        top: 25%;
+        top: 1.2em;
         left: 10px;
 
         ~ .form-check-label {
@@ -454,12 +456,27 @@ ul.list--form-radio-input {
                 line-height: 1.25rem;
             }
             input {
-                top: -2px;
+                top: 0;
+                transform: none;
             }
         }
     }
     .form--beheer.columns--two & {
         columns: 2;
+    }
+}
+
+ul.form-check-input {
+    li {
+        label {
+            width: 100%;
+            padding-left: 35px;
+            box-sizing: border-box;
+            input {
+                top: -3px;
+                left: 0;
+            }
+        }
     }
 }
 
@@ -484,21 +501,83 @@ ul.list--form-check-input {
         margin-left: 0;
 
         input {
-            margin-right: 0;
-            top: 0;
+            margin: 0;
+            top: 50%;
             left: $input-padding-y;
+            transform: translateY(-50%);
+        }
+    }
+}
+
+ul.list--form-check-input--tile-image {
+    @include list-clean();
+    display: flex;
+    gap: 1em;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    > li {
+        flex: 0 0 47%;
+        position: relative;
+        background-color: $white;
+        border-radius: 7px;
+        text-align: center;
+
+        label {
+            display: flex;
+            width: 100%;
+            height: 110px;
+            border-radius: 7px;
+            justify-content: center;
+            flex-direction: column;
+            font-weight: 700;
+            cursor: pointer;
+
+            svg {
+                margin: 0 auto 8px;
+                width: 44px;
+                height: 44px;
+            }
+        }
+        input {
+            -webkit-appearance: none;
+            position: relative;
+            width: 0;
+            height: 0;
+            position: absolute;
+            cursor: pointer;
+            &:checked + label {
+                background-color: $green-tint04;
+                outline: 2px solid $green-tint01;
+
+                svg {
+                    .highlight {
+                        fill: $green-tint01;
+                    }
+                }
+            }
+            &:focus + label {
+                outline: 2px solid black;
+            }
         }
     }
 }
 
 ul.list--form-radio-input {
-    li {
-        border: 1px solid $gray-tint04;
+    &.background--white {
+        li {
+            background-color: $white;
+        }
     }
     .form--beheer & {
         li,
         li:first-child {
             margin-bottom: 0.5rem;
+        }
+    }
+
+    .modal & {
+        li {
+            border: 1px solid $gray-tint04;
         }
     }
 }
@@ -517,20 +596,9 @@ ul.list--form-radio-input {
     .container__checkbox--single label {
         padding-left: $input-padding-y;
     }
-
-    .list--form-radio-input {
-        .list--form-radio-input {
-            position: relative;
-            left: auto;
-        }
-    }
-
-    .hidden {
-        @extend .visually-hidden;
-    }
 }
 
-.form-check-input {
+input.form-check-input {
     @include form-check-input();
 }
 
@@ -644,14 +712,11 @@ ul.list--form-radio-input {
 
     > div {
         flex: 1;
-
-        input {
-            ~ .form-check-label {
-                line-height: 1.5rem;
-                min-height: 48px;
-            }
-        }
     }
+}
+
+.django-ckeditor-widget {
+    width: 100%;
 }
 
 .form--aanpassen {
@@ -663,4 +728,207 @@ ul.list--form-radio-input {
             @include form-check-input();
         }
     }
+}
+
+fieldset.section {
+    margin-bottom: 2em;
+    legend {
+        display: block;
+        font-size: $h3-font-size;
+        font-weight: 700;
+        line-height: 2em;
+        width: 100%;
+        border-bottom: 1px solid $gray-tint04;
+        margin-bottom: 1em;
+    }
+}
+
+.container__form-rows {
+    &.cols2 {
+        @media (min-width: map-get($grid-breakpoints, md)) {
+            columns: 2;
+
+            .form-row {
+                width: 100%;
+                break-inside: avoid-column;
+            }
+        }
+    }
+}
+
+form.onboarding {
+    .progress {
+        position: relative;
+        height: 2.5rem;
+    }
+    .btn-previous--icon {
+        transform: rotate(180deg);
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        svg {
+            width: 12px;
+            height: 24px;
+            path {
+                // fill: currentColor;
+            }
+        }
+    }
+    h3 {
+        margin-bottom: 0;
+    }
+    .sticky {
+        .btn {
+            margin: 0 auto;
+        }
+    }
+
+    .container__flex {
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .form-as-p {
+        input[type="checkbox"] {
+            @extend .visually-hidden;
+        }
+        input[type="checkbox"] + label {
+            padding-left: 0;
+            color: $black;
+        }
+        ul.list--form-check-input--tile-image {
+            li {
+                margin-bottom: 20px;
+            }
+            label {
+                background-color: $green-tint04;
+                outline: 2px solid $green-tint01;
+                cursor: default;
+
+                svg {
+                    .highlight {
+                        fill: $green-tint01;
+                    }
+                }
+            }
+        }
+    }
+}
+
+.select2-container--default {
+    width: 100% !important;
+    margin-top: 0.5rem !important;
+    .select2-selection--single,
+    .select2-selection--multiple {
+        border-radius: 0 !important;
+        background-color: white;
+        border: 1px solid #7c8b90;
+        outline: 0;
+        padding: 0 16px;
+        font-size: 1em;
+        width: 100%;
+        color: #404b4f;
+        text-align: left;
+        -webkit-appearance: none;
+        min-height: 48px !important;
+        // background-image: url(data:image/svg+xml, <svg width=%2724%27 height=%2724%27 viewBox=%270 0 24 24%27 fill=%27none%27 xmlns=%27http://www.w3.org/2000/svg%27> <path fill-rule=%27evenodd%27 clip-rule=%27evenodd%27 d=%27M15.75 9.75L12 4.5L8.25 9.75H15.75ZM15.75 14.25L12 19.5L8.25 14.25H15.75Z%27 fill=%27%2365757B%27/> </svg>);
+        // background-repeat: no-repeat;
+        // background-position: right 10px center;
+        // background-size: 24px 24px;
+
+        .select2-selection__rendered {
+            line-height: 42px;
+            padding: 0;
+        }
+
+        .select2-selection__arrow {
+            top: 50%;
+            right: 8px;
+            transform: translateY(-50%);
+        }
+
+        &:focus {
+            outline: 3px solid $gray-tint11;
+        }
+
+        &:hover {
+            outline: 1px solid $green-tint01;
+        }
+    }
+
+    .select2-dropdown {
+        padding: 0;
+        .select2-search {
+            .select2-search__field {
+                // background-image: url("../icons/search.svg");
+                background-repeat: no-repeat;
+                background-position: 10px center; /* Adjust the position as needed */
+                padding-left: 40px; /* Ensure there's enough padding for the icon */
+                min-height: 32px;
+            }
+        }
+    }
+
+    .select2-selection--multiple {
+        padding: 4px 0;
+        .select2-search {
+            .select2-search__field {
+                min-height: 42px;
+                &:focus,
+                &:hover {
+                    outline: 0 !important;
+                }
+            }
+        }
+        .select2-search--inline {
+            float: none;
+        }
+
+        .select2-selection__rendered {
+            display: inline !important;
+            list-style: none;
+            padding: 0 !important;
+            white-space: normal !important;
+            line-height: 1;
+
+            .select2-selection__choice {
+                line-height: 48px;
+                padding: 10px 35px 10px 8px;
+                float: unset;
+                display: inline-flex;
+                line-height: 1rem;
+                background: $green-tint01
+                    url("data:image/svg+xml,%3csvg width=%2732%27 height=%2732%27 viewBox=%270 0 32 32%27 fill=%27black%27 xmlns=%27http://www.w3.org/2000/svg%27%3e%3cpath fill-rule=%27evenodd%27 clip-rule=%27evenodd%27 d=%27M26.6077 6.80752L25.1935 5.39331L16.0011 14.5857L6.80875 5.39331L5.39453 6.80752L14.5869 15.9999L5.39453 25.1923L6.80874 26.6065L16.0011 17.4141L25.1935 26.6065L26.6077 25.1923L17.4153 15.9999L26.6077 6.80752Z%27 fill=%27white%27/%3e%3c/svg%3e")
+                    calc(100% - 8px) / 28px auto no-repeat;
+                border: 0;
+                border-radius: 0;
+                color: $white;
+
+                .select2-selection__choice__remove {
+                    height: 100%;
+                    width: 100%;
+                    opacity: 0;
+
+                    span {
+                        display: none;
+                    }
+                }
+            }
+        }
+    }
+
+    .select2-results__option--highlighted,
+    .select2-results__option--selected,
+    .select2-results__option[aria-selected="true"] {
+        &.select2-results__option--selectable,
+        &[aria-selected="true"] {
+            background-color: $gray-tint02 !important;
+            color: $gray-tint11 !important;
+        }
+    }
+}
+
+body > .select2-container--default,
+.modal > .select2-container--default {
+    margin-top: 0 !important;
 }

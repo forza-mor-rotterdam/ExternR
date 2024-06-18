@@ -289,3 +289,27 @@ PDOK_WIJKEN = [
     {"wijkcode": "WK059922", "wijknaam": "Vondelingenplaat", "stadsdeel": "Zuid"},
     {"wijkcode": "WK059921", "wijknaam": "Waalhaven-Eemhaven", "stadsdeel": "Zuid"},
 ]
+
+ALLE_WIJKEN = [
+    "WK059903",
+    "WK059906",
+    "WK059908",
+    "WK059905",
+    "WK059919",
+    "WK059904",
+    "WK059925",
+    "WK059901",
+    "WK059924",
+    "WK059914",
+    "WK059918",
+    "WK059923",
+    "WK059915",
+    "WK059910",
+    "WK059917",
+    "WK059916",
+    "WK059912",
+    "WK059913",
+    "WK059927",
+    "WK059922",
+    "WK059921",
+]

@@ -37,3 +37,14 @@
         }
     }
 }
+
+.container__skyline-alert--confirmation {
+    .alert {
+        border-color: $green-tint01;
+    }
+
+    svg {
+        display: block;
+        margin: 0;
+    }
+}

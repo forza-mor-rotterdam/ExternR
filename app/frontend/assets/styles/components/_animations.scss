@@ -1,0 +1,113 @@
+.fade-in-sequence {
+    > * {
+        opacity: 0;
+        animation: fade-in 1s forwards;
+        animation-iteration-count: 1;
+        @for $i from 1 through 10 {
+            &:nth-child(#{$i}n) {
+                animation-delay: #{$i * 0.2}s;
+            }
+        }
+    }
+}
+
+@keyframes circle--green {
+    0% {
+        box-shadow:
+            35px -35px 0 2px $white,
+            -35px -35px 0 2px $white,
+            -35px 35px 0 2px $white,
+            35px 35px 0 2px $white,
+            0 0 0 2px $white;
+    }
+    25% {
+        box-shadow:
+            0 -125px 0 2px $white,
+            -35px -35px 0 2px $white,
+            -35px 35px 0 2px $white,
+            35px 35px 0 2px $white,
+            0 0 0 2px $green-tint01;
+    }
+    50% {
+        box-shadow:
+            0 -125px 0 2px $white,
+            -125px 0px 0 2px $white,
+            -35px 35px 0 2px $white,
+            35px 35px 0 2px $white,
+            0 0 0 2px $green-tint01;
+    }
+    75% {
+        box-shadow:
+            0 -125px 0 2px $white,
+            -125px 0px 0 2px $white,
+            0px 125px 0 2px $white,
+            35px 35px 0 2px $white,
+            0 0 0 2px $green-tint01;
+    }
+    100% {
+        box-shadow:
+            0 -125px 0 2px $white,
+            -125px 0px 0 2px $white,
+            0px 125px 0 2px $white,
+            120px 40px 0 2px $white,
+            0 0 0 2px $green-tint01;
+    }
+}
+
+@keyframes line--22 {
+    0% {
+        width: 0;
+    }
+    100% {
+        width: 22px;
+    }
+}
+
+@keyframes line--37 {
+    0% {
+        width: 0;
+    }
+    100% {
+        width: 37px;
+    }
+}
+
+@keyframes spinner {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(335deg);
+    }
+}
+
+@keyframes fade-in {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+@keyframes slide-in-from-right {
+    0% {
+        opacity: 0;
+        transform: translateX(30px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes slide-in-from-bottom {
+    0% {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
