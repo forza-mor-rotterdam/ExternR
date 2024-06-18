@@ -3,17 +3,24 @@ from django import forms
 
 
 class TaaktypeAanpassenForm(forms.ModelForm):
-    def __init__(self, *args, current_taaktype=None, **kwargs):
-        super().__init__(*args, **kwargs)
-        if current_taaktype:
-            self.fields["volgende_taaktypes"].queryset = Taaktype.objects.filter(
-                actief=True
-            ).exclude(id=current_taaktype.id)
-
-    volgende_taaktypes = forms.ModelMultipleChoiceField(
-        widget=forms.CheckboxSelectMultiple(attrs={"class": "form-check-input"}),
-        queryset=Taaktype.objects.filter(actief=True),
-        label="Volgende taaktypes",
+    omschrijving = forms.CharField(
+        label="Titel",
+        widget=forms.TextInput(
+            attrs={
+                "data-testid": "titel",
+                "rows": "4",
+            }
+        ),
+        required=True,
+    )
+    toelichting = forms.CharField(
+        label="Omschrijving",
+        widget=forms.Textarea(
+            attrs={
+                "data-testid": "omschrijving",
+                "rows": "4",
+            }
+        ),
         required=False,
     )
     actief = forms.BooleanField(
@@ -21,16 +28,16 @@ class TaaktypeAanpassenForm(forms.ModelForm):
         label="Actief",
         required=False,
     )
+    redirect_field = forms.CharField(
+        widget=forms.HiddenInput(),
+        required=False,
+    )
 
     class Meta:
         model = Taaktype
         fields = (
             "omschrijving",
-            "externe_instantie_naam",
-            "externe_instantie_email",
-            "externe_instantie_feedback_vereist",
-            "externe_instantie_naam_verantwoordelijke",
-            "volgende_taaktypes",
+            "toelichting",
             "actief",
         )
 
@@ -40,11 +47,7 @@ class TaaktypeAanmakenForm(TaaktypeAanpassenForm):
         model = Taaktype
         fields = (
             "omschrijving",
-            "externe_instantie_naam",
-            "externe_instantie_email",
-            "externe_instantie_feedback_vereist",
-            "externe_instantie_naam_verantwoordelijke",
-            "volgende_taaktypes",
+            "toelichting",
             "actief",
         )
 
@@ -53,9 +56,6 @@ class TaaktypeAanmakenForm(TaaktypeAanpassenForm):
         self.fields[
             "omschrijving"
         ].help_text = "Omschrijf het taaktype zo concreet mogelijk. Formuleer de gewenste actie, bijvoorbeeld ‘Grofvuil ophalen’."
-        self.fields[
-            "volgende_taaktypes"
-        ].help_text = "Dit zijn taken die mogelijk uitgevoerd moeten worden nadat de taak is afgerond."
 
 
 class TaakFeedbackHandleForm(forms.Form):

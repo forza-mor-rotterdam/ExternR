@@ -1,3 +1,6 @@
+from apps.context.models import Context
+from apps.services.pdok import PDOKService
+from django.conf import settings
 from django.db.models import Q
 from django.template.defaultfilters import slugify
 
@@ -17,15 +20,22 @@ class StandaardFilter:
     _selected_options = None
     _foldout_states = []
 
-    def __init__(self, filter_manager, selected_options, foldout_states=[]):
+    def __init__(
+        self, filter_manager, selected_options, foldout_states=[], profiel=None
+    ):
+        self._profiel = profiel
         self._selected_options = selected_options
         self._filter_manager = filter_manager
         self._foldout_states = foldout_states
-        self._set_options(selected_options)
+        self._set_all_options(self._selected_options)
 
     @classmethod
     def key(cls):
         return cls._key
+
+    @classmethod
+    def get_selected_options_for_filter(cls, selected_options, profiel):
+        return selected_options
 
     def get_option_key_lookup(self):
         return self._option_key_lookup
@@ -67,7 +77,12 @@ class StandaardFilter:
     def group_key(cls):
         return cls._group_key
 
-    def _set_options(self, selected_options):
+    def _set_all_options(self, selected_options):
+        f_dict = self._set_f_dict()
+        self._set_options(selected_options, f_dict)
+        self._set_option_group_lookup(selected_options, f_dict)
+
+    def _set_f_dict(self):
         option_key = self.get_option_key_lookup()
         option_value = self.get_option_value_lookup()
         option_value_fallback = self.get_option_value_fallback_lookup()
@@ -105,25 +120,32 @@ class StandaardFilter:
                 o[0]: (o[1], o[1], f_dict.get(o[0], (o[1], o[1], 0))[2])
                 for o in self._predefined_options
             }
+        return f_dict
 
-        def create_option(k, label, filter_label=None):
-            return {
-                "id": slugify(k),
-                "value": k,
-                "label": label,
-                "filter_label": label if not filter_label else filter_label,
-                "checked": str(k) in selected_options,
-            }
-
+    def _set_options(self, selected_options, f_dict):
         self._options = sorted(
             [
-                create_option(
-                    k, v[0], f"{v[1]} - {v[0]}" if self._option_group_lookup else v[0]
+                self._create_option(
+                    k,
+                    v[0],
+                    selected_options,
+                    f"{v[1]} - {v[0]}" if self._option_group_lookup else v[0],
                 )
                 for k, v in f_dict.items()
             ],
             key=lambda x: x.get("label"),
         )
+
+    def _create_option(self, k, label, selected_options, filter_label=None):
+        return {
+            "id": slugify(k),
+            "value": k,
+            "label": label,
+            "filter_label": label if not filter_label else filter_label,
+            "checked": str(k) in selected_options,
+        }
+
+    def _set_option_group_lookup(self, selected_options, f_dict):
         if self._option_group_lookup:
             self._groups = [
                 {
@@ -139,7 +161,7 @@ class StandaardFilter:
                     "label": self._label,
                     "options": sorted(
                         [
-                            create_option(kk, vv[0])
+                            self._create_option(kk, vv[0], selected_options)
                             for kk, vv in f_dict.items()
                             if g == vv[1]
                         ],
@@ -186,6 +208,40 @@ class TaaktypeFilter(StandaardFilter):
     _filter_lookup = "taaktype__id__in"
     _label = "Taak"
 
+    @classmethod
+    def get_selected_options_for_filter(cls, selected_options, profiel):
+        if not selected_options:
+            taaktypes = profiel.taaktypes
+            if (
+                profiel.context
+                and profiel.context.template == Context.TemplateOpties.BENC
+            ):
+                taaktypes = profiel.context.taaktypes
+            return [str(id) for id in taaktypes.values_list("id", flat=True)]
+        return selected_options
+
+    def _set_options(self, selected_options, f_dict):
+        if not self._profiel:
+            return []
+
+        taaktypes = self._profiel.taaktypes.all()
+        if (
+            self._profiel.context
+            and self._profiel.context.template == Context.TemplateOpties.BENC
+        ):
+            taaktypes = self._profiel.context.taaktypes.all()
+
+        self._options = [
+            {
+                "id": taaktype.id,
+                "value": taaktype.id,
+                "label": taaktype.omschrijving,
+                "filter_label": taaktype.omschrijving,
+                "checked": str(taaktype.id) in selected_options,
+            }
+            for taaktype in taaktypes
+        ]
+
 
 class TaakStatusFilter(StandaardFilter):
     _key = "taak_status"
@@ -208,6 +264,49 @@ class WijkBuurtFilter(StandaardFilter):
     _group_key = "wijken"
     _group_label = "Wijken & buurten"
 
+    @classmethod
+    def get_selected_options_for_filter(cls, selected_options, profiel):
+        if not selected_options:
+            buurten = PDOKService().get_buurten_middels_wijkcodes(
+                settings.WIJKEN_EN_BUURTEN_GEMEENTECODE, profiel.wijken
+            )
+            return buurten
+        return selected_options
+
+    def _set_option_group_lookup(self, selected_options, f_dict):
+        if not self._profiel:
+            return []
+        pdok_service = PDOKService()
+        all_data = pdok_service.get_buurten_middels_gemeentecode(
+            settings.WIJKEN_EN_BUURTEN_GEMEENTECODE
+        )
+        self._groups = [
+            {
+                "name": wijk["wijknaam"],
+                "group_key": slugify(wijk["wijkcode"]),
+                "folded": f"foldout_{slugify(wijk['wijkcode'])}"
+                in self._foldout_states,
+                "key": self._key,
+                "active": [
+                    buurt["buurtnaam"]
+                    for buurt in wijk.get("buurten", [])
+                    if buurt["buurtnaam"] in selected_options
+                ],
+                "label": self._label,
+                "options": sorted(
+                    [
+                        self._create_option(
+                            buurt["buurtnaam"], buurt["buurtnaam"], selected_options
+                        )
+                        for buurt in wijk.get("buurten", [])
+                    ],
+                    key=lambda x: x.get("label"),
+                ),
+            }
+            for wijk in all_data.get("wijken", [])
+            if wijk["wijkcode"] in self._profiel.wijken
+        ]
+
 
 class ZoekFilter(StandaardFilter):
     _key = "q"
@@ -219,7 +318,7 @@ class ZoekFilter(StandaardFilter):
             taak_zoek_data__bron_signaal_ids__icontains=search_query
         )
 
-    def _set_options(self, selected_options):
+    def _set_options(self, selected_options, f_dict):
         # For search filter, we don't need to set specific options
         self._options = []
 
@@ -235,7 +334,8 @@ class FilterManager:
     )
     _foldout_states = None
 
-    def __init__(self, taken, active_filters, foldout_states=[]):
+    def __init__(self, taken, active_filters, foldout_states=[], profiel=None):
+        self._profiel = profiel
         self._taken = taken
         self._active_filters = {
             k: v
@@ -246,7 +346,9 @@ class FilterManager:
 
     def _set_filter_options(self):
         self._filter_options = [
-            self._get_filter_class(k)(self, v, self._foldout_states)
+            self._get_filter_class(k)(
+                self, v, self._foldout_states, profiel=self._profiel
+            )
             for k, v in self._active_filters.items()
         ]
 
@@ -284,8 +386,9 @@ class FilterManager:
             queryset_filter &= search_conditions
 
         for k, v in self._active_filters.items():
+            filter_class = self._get_filter_class(k)
+            v = filter_class.get_selected_options_for_filter(v, self._profiel)
             if v:
-                filter_class = self._get_filter_class(k)
                 if filter_class:
                     queryset_filter &= Q(**{filter_class.get_filter_lookup(): v})
 

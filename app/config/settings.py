@@ -17,11 +17,17 @@ SECRET_KEY = os.environ.get(
     "DJANGO_SECRET_KEY", os.environ.get("SECRET_KEY", os.environ.get("APP_SECRET"))
 )
 
+# APP_ENV's
+PRODUCTIE = "productie"
+ACCEPTATIE = "acceptatie"
+TEST = "test"
+
 SECRET_HASH_KEY = os.getenv("SECRET_HASH_KEY", "hashkeyforzamorfeedback")
 
 GIT_SHA = os.getenv("GIT_SHA")
 DEPLOY_DATE = os.getenv("DEPLOY_DATE", "")
 ENVIRONMENT = os.getenv("ENVIRONMENT")
+APP_ENV = os.getenv("APP_ENV", PRODUCTIE)  # acceptatie/test/productie
 DEBUG = ENVIRONMENT == "development"
 
 ROOT_URLCONF = "config.urls"
@@ -53,8 +59,34 @@ DEV_SOCKET_PORT = os.getenv("DEV_SOCKET_PORT", "9000")
 
 UI_SETTINGS = {"fontsizes": ["fz-medium", "fz-large", "fz-xlarge"]}
 
+onderwerpen_urls = {
+    PRODUCTIE: "https://onderwerpen.forzamor.nl",
+    ACCEPTATIE: "https://onderwerpen-acc.forzamor.nl",
+    TEST: "https://onderwerpen-test.forzamor.nl",
+}
+ONDERWERPEN_URL = (
+    "https://onderwerpen-acc.forzamor.nl"
+    if DEBUG
+    else os.getenv(
+        "ONDERWERPEN_URL", onderwerpen_urls.get(APP_ENV, onderwerpen_urls[ACCEPTATIE])
+    )
+)
+
+taakr_urls = {
+    PRODUCTIE: "https://taakr.forzamor.nl",
+    ACCEPTATIE: "https://taakr-acc.forzamor.nl",
+    TEST: "https://taakr-test.forzamor.nl",
+}
+TAAKR_URL = (
+    "http://taakr.mor.local:8009"
+    if DEBUG
+    else os.getenv("TAAKR_URL", taakr_urls.get(APP_ENV, taakr_urls[ACCEPTATIE]))
+)
+
+
 INSTALLED_APPS = (
     # templates override
+    "apps.main",
     "apps.health",
     "django.contrib.humanize",
     "django.contrib.contenttypes",
@@ -83,7 +115,6 @@ INSTALLED_APPS = (
     "django_celery_results",
     "sorl.thumbnail",
     # Apps
-    "apps.main",
     "apps.authorisatie",
     "apps.authenticatie",
     "apps.taken",
@@ -294,6 +325,7 @@ CSP_IMG_SRC = (
     "cdn.jsdelivr.net",
     "ows.gis.rotterdam.nl",
     "www.gis.rotterdam.nl",
+    TAAKR_URL,
 )
 CSP_STYLE_SRC = (
     "'self'",
@@ -303,16 +335,21 @@ CSP_STYLE_SRC = (
     "cdn.jsdelivr.net",
 )
 CSP_CONNECT_SRC = (
-    ("'self'",)
+    (
+        "'self'",
+        "forzamor.nl",
+    )
     if not DEBUG
     else (
         "'self'",
         "ws:",
         "localhost:7001",
+        "taakr.mor.local:8009",
     )
 )
 CSP_FONT_SRC = ("'self'", "https://fonts.gstatic.com")
 
+FORM_RENDERER = "django.forms.renderers.TemplatesSetting"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",

@@ -30,7 +30,7 @@ class TaakBehandelForm(forms.Form):
                 "accept": ".jpg, .jpeg, .png, .heic",
                 "data-action": "change->bijlagen#updateImageDisplay",
                 "data-bijlagen-target": "bijlagenExtra",
-                "multiple": "multiple",
+                # "multiple": "multiple",
                 "hideLabel": True,
             }
         ),
