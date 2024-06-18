@@ -55,10 +55,7 @@ class TaaktypeSerializer(serializers.ModelSerializer):
             "uuid",
             "omschrijving",
             "toelichting",
-            "additionele_informatie",
             "actief",
-            "externe_instantie_naam",
-            # "externe_instantie_naam_verantwoordelijke",
         )
         read_only_fields = ("_links",)
 

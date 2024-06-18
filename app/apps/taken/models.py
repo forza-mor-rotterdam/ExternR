@@ -4,6 +4,7 @@ from apps.taken.querysets import TaakQuerySet
 from django.contrib.gis.db import models
 from django.contrib.postgres.fields import ArrayField
 from django.core.exceptions import ValidationError
+from rest_framework.reverse import reverse as drf_reverse
 from utils.models import BasisModel
 
 
@@ -49,12 +50,12 @@ class Taaktype(BasisModel):
     )
     actief = models.BooleanField(default=True)
 
-    externe_instantie_naam = models.CharField(max_length=200, blank=False, null=False)
-    externe_instantie_email = models.EmailField(unique=False, blank=False, null=False)
-    externe_instantie_feedback_vereist = models.BooleanField(default=False)
-    externe_instantie_naam_verantwoordelijke = models.CharField(
-        max_length=200, blank=True, null=True
-    )
+    def taaktype_url(self, request):
+        return drf_reverse(
+            "v1:taaktype-detail",
+            kwargs={"uuid": self.uuid},
+            request=request,
+        )
 
     class Meta:
         ordering = ("-aangemaakt_op",)
@@ -240,6 +241,9 @@ class Taak(BasisModel):
         on_delete=models.SET_NULL,
         blank=True,
         null=True,
+    )
+    bezig_met_verwerken = models.BooleanField(
+        default=False,
     )
 
     objects = TaakQuerySet.as_manager()
