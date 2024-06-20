@@ -51,8 +51,8 @@ class Taaktype(BasisModel):
     actief = models.BooleanField(default=True)
 
     # ExternR specific fields
-    externe_instantie = models.CharField(max_length=200, blank=True, null=True)
-    externe_instantie_email = models.EmailField(unique=False, blank=True, null=True)
+    externe_instantie = models.CharField(max_length=200, blank=False, null=False)
+    externe_instantie_email = models.EmailField(unique=False, blank=False, null=False)
     externe_instantie_verantwoordelijke = models.CharField(
         max_length=200, blank=True, null=True
     )
