@@ -1,5 +1,6 @@
 import logging
 
+from apps.instellingen.models import Instelling
 from apps.services.basis import BasisService
 from django.conf import settings
 
@@ -10,14 +11,17 @@ class TaakRService(BasisService):
     _default_error_message = "Er ging iets mis met het ophalen van data van TaakR"
 
     def __init__(self, *args, **kwargs: dict):
-        self._api_base_url = settings.TAAKR_URL
+        instelling = Instelling.acieve_instelling()
+        self._base_url = (
+            settings.TAAKR_URL if not instelling else instelling.taakr_basis_url
+        )
         super().__init__(*args, **kwargs)
 
     def get_afdelingen(
         self, use_cache=True, taakapplicatie_basis_urls=[], taaktype_actief=True
     ) -> list:
         alle_afdelingen = []
-        next_page = f"{self._api_base_url}/api/v1/afdeling"
+        next_page = f"{self._base_url}/api/v1/afdeling"
         while next_page:
             response = self.do_request(
                 next_page,
@@ -36,7 +40,7 @@ class TaakRService(BasisService):
         return alle_afdelingen
 
     def get_afdeling(self, afdeling_uuid):
-        url = f"{self._api_base_url}/api/v1/afdeling/{afdeling_uuid}"
+        url = f"{self._base_url}/api/v1/afdeling/{afdeling_uuid}"
         afdeling = self.do_request(
             url,
             cache_timeout=0,  # Back to 60*60
@@ -56,7 +60,7 @@ class TaakRService(BasisService):
 
     def get_taaktypes(self, params, force_cache=True) -> list:
         alle_taaktypes = []
-        next_page = f"{self._api_base_url}/api/v1/taaktype"
+        next_page = f"{self._base_url}/api/v1/taaktype"
         while next_page:
             response = self.do_request(
                 next_page,
@@ -71,7 +75,7 @@ class TaakRService(BasisService):
         return alle_taaktypes
 
     def get_taaktype(self, taaktype_uuid, force_cache=False):
-        url = f"{self._api_base_url}/api/v1/taaktype/{taaktype_uuid}"
+        url = f"{self._base_url}/api/v1/taaktype/{taaktype_uuid}"
         taaktype = self.do_request(
             url,
             cache_timeout=60 * 60,

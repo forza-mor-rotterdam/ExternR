@@ -30,6 +30,12 @@ ENVIRONMENT = os.getenv("ENVIRONMENT")
 APP_ENV = os.getenv("APP_ENV", PRODUCTIE)  # acceptatie/test/productie
 DEBUG = ENVIRONMENT == "development"
 
+# Fernet Key
+FIELD_ENCRYPTION_KEY = os.getenv(
+    "FIELD_ENCRYPTION_KEY", "Fp9p5Ml9hK2BravAUDd4O4pn9_KcBTfFbh-QEuuBN0E="
+)
+
+
 ROOT_URLCONF = "config.urls"
 WSGI_APPLICATION = "config.wsgi.application"
 
@@ -44,13 +50,6 @@ DEFAULT_ALLOWED_HOSTS = ".forzamor.nl,localhost,127.0.0.1,.mor.local"
 ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", DEFAULT_ALLOWED_HOSTS).split(",")
 
 MELDINGEN_URL = os.getenv("MELDINGEN_URL", "https://mor-core-acc.forzamor.nl")
-MELDINGEN_API_URL = os.getenv("MELDINGEN_API_URL", f"{MELDINGEN_URL}/api/v1")
-MELDINGEN_API_HEALTH_CHECK_URL = os.getenv(
-    "MELDINGEN_API_HEALTH_CHECK_URL", f"{MELDINGEN_URL}/health/"
-)
-MELDINGEN_TOKEN_API = os.getenv(
-    "MELDINGEN_TOKEN_API", f"{MELDINGEN_URL}/api-token-auth/"
-)
 MELDINGEN_TOKEN_TIMEOUT = 60 * 60
 MELDINGEN_USERNAME = os.getenv("MELDINGEN_USERNAME")
 MELDINGEN_PASSWORD = os.getenv("MELDINGEN_PASSWORD")
@@ -123,6 +122,7 @@ INSTALLED_APPS = (
     "apps.rotterdam_formulier_html",
     "apps.context",
     "apps.beheer",
+    "apps.instellingen",
 )
 
 LOGIN_URL = "/login/"
