@@ -71,7 +71,6 @@ class TaakViewSet(
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         taak = Taak.acties.aanmaken(serializer)
-
         base_url = request.build_absolute_uri("/")[:-1]  # Remove trailing slash
 
         chain_of_tasks = chain(

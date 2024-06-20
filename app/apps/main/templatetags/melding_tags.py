@@ -125,6 +125,5 @@ def get_bijlagen(melding):
     alle_bijlagen_gesorteerd = sorted(
         alle_bijlagen, key=lambda b: b.get("aangemaakt_op")
     )
-
     # Return the sorted list of bijlagen
     return alle_bijlagen_gesorteerd

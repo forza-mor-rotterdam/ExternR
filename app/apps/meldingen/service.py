@@ -102,7 +102,14 @@ class MeldingenService:
         return headers
 
     def do_request(
-        self, url, method="get", data={}, params={}, raw_response=True, cache_timeout=0
+        self,
+        url,
+        method="get",
+        data={},
+        params={},
+        raw_response=True,
+        cache_timeout=0,
+        stream=False,
     ) -> Response | dict:
         action: Request = getattr(requests, method)
         url = self.get_url(url)
@@ -112,6 +119,7 @@ class MeldingenService:
             "json": data,
             "params": params,
             "timeout": self._timeout,
+            "stream": stream,
         }
 
         if cache_timeout and method == "get":
@@ -221,3 +229,6 @@ class MeldingenService:
     def get_taakopdracht_data(self, taakopdracht_url):
         response = self.do_request(taakopdracht_url)
         return response
+
+    def afbeelding_ophalen(self, afbeelding_url: str, stream=False):
+        return self.do_request(afbeelding_url, stream=stream)

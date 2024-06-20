@@ -1,7 +1,5 @@
-{% load webpack_static from webpack_loader %}
-{% load to_datetime mor_core_url mor_core_protected_url from main_tags %}
-{% load taakopdracht render_onderwerp get_bijlagen from melding_tags %}
-{% get_bijlagen taak.melding.response_json as bijlagen %}
+{% load to_datetime from main_tags %}
+{% load render_onderwerp from melding_tags %}
 <!DOCTYPE html>
 <html lang="nl"
       xmlns="http://www.w3.org/1999/xhtml"
@@ -194,9 +192,9 @@
                             <h3>Toelichting</h3>
                             <p>{{ taaktype.toelichting }}</p>
                         {% endif %}
-                        {% if taak.taakgebeurtenissen_voor_taak.omschrijving_intern|length > 0 %}
-                            <h3>Taak omschrijving</h3>
-                            <p>{{ taak.taakgebeurtenissen_voor_taak.omschrijving_intern.0 }}</p>
+                        {% if taak.taakgebeurtenissen_voor_taak.first %}
+                            <h3>Bericht (omschrijving intern)</h3>
+                            <p>{{ taak.taakgebeurtenissen_voor_taak.first.omschrijving_intern }}</p>
                         {% endif %}
                         <h3>De taak is automatisch afgehandeleld in onze systemen.</h3>
                         <p>
@@ -219,32 +217,6 @@
                                 <td colspan="2">
                                     <h2 class="no-margin-bottom">{{ taak.adres }}</h2>
                                 </td>
-                            </tr>
-                            <tr>
-                                <td colspan="2">Fotos hier</td>
-                                {% if bijlagen %}
-                                    {% for foto in bijlagen %}
-                                        <p>Foto: {{ foto }} |</p>
-                                        <img src="{{ foto.afbeelding_relative_url|mor_core_protected_url }}"
-                                             class="image"
-                                             alt="" />
-                                    {% endfor %}
-                                    {% if bijlagen|length > 1 %}
-                                        {% for foto in bijlagen %}
-                                            <p>Foto: {{ foto }} |</p>
-                                            <img src="{{ foto.afbeelding_verkleind_relative_url|mor_core_protected_url }}"
-                                                 alt="" />
-                                        {% endfor %}
-                                    {% endif %}
-                                {% else %}
-                                    <p>No image</p>
-                                    <div class="no-image"
-                                         style="background-image: url('{% webpack_static 'icons/noimage.svg' %}')">
-                                    </div>
-                                {% endif %}
-                                {% if bijlagen %}
-                                    {% include "icons/expand.svg" %}
-                                {% endif %}
                             </tr>
                             {% if bijlagen %}
                                 <tr>
@@ -306,7 +278,7 @@
                                             <strong>Omschrijving</strong>
                                         </dt>
                                         <dd class="p-0-0-12">
-                                            {{ melding.omschrijving }}
+                                            {{ melding.signalen_voor_melding.0.omschrijving_melder }}
                                         </dd>
                                     </dl>
                                 </td>
