@@ -39,6 +39,9 @@ class TaaktypeAanpassenForm(forms.ModelForm):
             "omschrijving",
             "toelichting",
             "actief",
+            "externe_instantie",
+            "externe_instantie_email",
+            "externe_instantie_verantwoordelijke",
         )
 
 
@@ -49,6 +52,9 @@ class TaaktypeAanmakenForm(TaaktypeAanpassenForm):
             "omschrijving",
             "toelichting",
             "actief",
+            "externe_instantie",
+            "externe_instantie_email",
+            "externe_instantie_verantwoordelijke",
         )
 
     def __init__(self, *args, **kwargs):
