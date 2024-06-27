@@ -313,7 +313,7 @@ def kaart_modus(request):
 @permission_required("authorisatie.taak_bekijken", raise_exception=True)
 def taak_detail(request, id):
     taak = get_object_or_404(Taak, pk=id)
-    ua = request.META.get("HTTP_USER_AGENT")
+    ua = request.META.get("HTTP_USER_AGENT", "")
     device = DeviceDetector(ua).parse()
     return render(
         request,

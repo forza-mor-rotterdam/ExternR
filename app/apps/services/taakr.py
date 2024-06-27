@@ -29,7 +29,7 @@ class TaakRService(BasisService):
                     "taakapplicatie_basis_url": taakapplicatie_basis_urls,
                     "taaktype_actief": taaktype_actief,
                 },
-                cache_timeout=0,  # Back to 60*60
+                cache_timeout=60 * 60,
                 raw_response=False,
                 force_cache=not use_cache,
             )
@@ -43,7 +43,7 @@ class TaakRService(BasisService):
         url = f"{self._base_url}/api/v1/afdeling/{afdeling_uuid}"
         afdeling = self.do_request(
             url,
-            cache_timeout=0,  # Back to 60*60
+            cache_timeout=60 * 60,
             raw_response=False,
         )
 
@@ -52,7 +52,7 @@ class TaakRService(BasisService):
     def get_afdeling_by_url(self, afdeling_url):
         afdeling = self.do_request(
             afdeling_url,
-            cache_timeout=0,  # Back to 60*60
+            cache_timeout=60 * 60,
             raw_response=False,
         )
 
