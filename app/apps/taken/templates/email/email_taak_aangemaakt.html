@@ -60,10 +60,9 @@
                 text-decoration: none;
                 color: #404B4F;
             }
-            .btn-action {
-                background-color: #C93675;
+            .btn-secondary {
+                background-color: #000000;
                 color: #ffffff;
-                border-color: transparent;
             }
             a {
                 color: #00811f;
@@ -168,7 +167,7 @@
                 </tr>
                 <tr>
                     <td align="left" class="p-0-20">
-                        <h1>Taak aanvraag: {{ taaktype.omschrijving }}</h1>
+                        <h1>De gemeente Rotterdam verzoekt uw organisatie om een taak op te pakken</h1>
                     </td>
                 </tr>
                 <tr>
@@ -180,9 +179,10 @@
                             {% else %}
                                 {{ taaktype.externe_instantie }}
                             {% endif %}
+                            ,
                         </p>
                         <p>
-                            Via MeldR heeft de gemeente Rotterdam een melding binnengekregen, waarvan 1 of meer taken onder de verantwoordelijkheid van {{ taaktype.externe_instantie }} vallen.
+                            De gemeente Rotterdam heeft een melding ontvangen, waarvan de afhandeling (deels) onder de verantwoordelijkheid van uw organisatie valt. In deze mail vindt u alle informatie zoals deze door de melder is ingediend.
                         </p>
                         {% if taaktype.omschrijving %}
                             <h3>Omschrijving taak</h3>
@@ -192,16 +192,16 @@
                             <h3>Toelichting</h3>
                             <p>{{ taaktype.toelichting }}</p>
                         {% endif %}
-                        {% if taak.taakgebeurtenissen_voor_taak.first %}
-                            <h3>Bericht (omschrijving intern)</h3>
+                        {% if taak.taakgebeurtenissen_voor_taak.first.omschrijving_intern %}
+                            <h3>Interne opmerking midoffice</h3>
                             <p>{{ taak.taakgebeurtenissen_voor_taak.first.omschrijving_intern }}</p>
                         {% endif %}
-                        <h3>De taak is automatisch afgehandeleld in onze systemen.</h3>
+                        <h3>Kan de taak niet worden opgelost?</h3>
                         <p>
-                            Valt de taak niet onder uw verantwoordelijkheid of heeft u de taak om een andere reden niet op kunnen lossen, klik dan op onderstaande knop.
+                            Wij gaan er vanuit dat de taak door uw organisatie wordt opgepakt. Daarom handelen we de taak bij deze af in ons systeem. Lukt het uw organisatie niet om de taak af te handelen, dan kunt u dit zelf aangeven.
                         </p>
                         <p class="p-20-0">
-                            <a href="{{ niet_opgelost_url }}" class="btn btn-secondary">De taak is niet opgelost</a>
+                            <a href="{{ niet_opgelost_url }}" class="btn btn-secondary">De taak kan niet worden opgelost</a>
                         </p>
                     </td>
                 </tr>
@@ -215,21 +215,60 @@
                         <table class="email-table">
                             <tr>
                                 <td colspan="2">
-                                    <h2 class="no-margin-bottom">{{ taak.adres }}</h2>
+                                    <h2 class="no-margin-bottom">Informatie over de taak</h2>
                                 </td>
                             </tr>
-                            {% if bijlagen %}
-                                <tr>
-                                    <td class="p-4-16" colspan="2">
-                                        <h2 class="no-margin-bottom">Bijlage(n)</h2>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="p-4-16 va-top" colspan="2">
-                                        {% for bijlage in bijlagen %}<img src="cid:{{ bijlage }}" width="300" alt="bijlage" />{% endfor %}
-                                    </td>
-                                </tr>
-                            {% endif %}
+                            <tr>
+                                <td colspan="2">
+                                    <h2 class="p-50-0-0">
+                                        <img alt=""
+                                             src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjYiIHZpZXdCb3g9IjAgMCAyMCAyNiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICAgIDxwYXRoIGQ9Ik0xNy42MzQ5IDMuNjEyODFDMTYuNzA5IDIuNDgzNDIgMTUuNTQ0IDEuNTczNTUgMTQuMjI0IDAuOTQ4ODAyQzEyLjkwMzkgMC4zMjQwNTUgMTEuNDYxNyAwIDEwLjAwMTMgMEM4LjU0MDg0IDAgNy4wOTg2MSAwLjMyNDA1NSA1Ljc3ODU2IDAuOTQ4ODAyQzQuNDU4NSAxLjU3MzU1IDMuMjkzNTIgMi40ODM0MiAyLjM2NzYgMy42MTI4MUMwLjgzNzY3NyA1LjQ2ODM4IDAuMDAwOTc2NTYzIDcuNzk4NDIgMC4wMDA5NzY1NjIgMTAuMjAzNEMwLjAwMDk3NjU2MyAxMi42MDgzIDAuODM3Njc3IDE0LjkzODQgMi4zNjc2IDE2Ljc5MzlMMTAuMDAxMyAyNi4wMDAyTDE3LjYzNjEgMTYuNzkzOUMxOS4xNjUyIDE0LjkzOCAyMC4wMDEzIDEyLjYwOCAyMC4wMDExIDEwLjIwMzJDMjAuMDAwOSA3Ljc5ODM5IDE5LjE2NDQgNS40Njg1MyAxNy42MzQ5IDMuNjEyODFaTTEwLjAwMDEgMTMuOTk4OEM5LjExMDE2IDEzLjk5ODggOC4yNDAxNyAxMy43MzQ4IDcuNTAwMTcgMTMuMjQwNEM2Ljc2MDE4IDEyLjc0NiA2LjE4MzQzIDEyLjA0MzIgNS44NDI4NSAxMS4yMjA5QzUuNTAyMjcgMTAuMzk4NyA1LjQxMzE2IDkuNDkzOTQgNS41ODY3OCA4LjYyMTA2QzUuNzYwNDEgNy43NDgxOCA2LjE4ODk4IDYuOTQ2MzkgNi44MTgyOSA2LjMxNzA4QzcuNDQ3NiA1LjY4Nzc3IDguMjQ5MzkgNS4yNTkyIDkuMTIyMjcgNS4wODU1N0M5Ljk5NTE1IDQuOTExOTUgMTAuODk5OSA1LjAwMTA2IDExLjcyMjIgNS4zNDE2NEMxMi41NDQ0IDUuNjgyMjIgMTMuMjQ3MiA2LjI1ODk3IDEzLjc0MTYgNi45OTg5N0MxNC4yMzYxIDcuNzM4OTYgMTQuNSA4LjYwODk1IDE0LjUgOS40OTg5M0MxNC41IDEwLjY5MjUgMTQuMDI1OSAxMS44MzcxIDEzLjE4MjEgMTIuNjgxMkMxMi4zMzgyIDEzLjUyNTIgMTEuMTkzNyAxMy45OTk2IDEwLjAwMDEgMTMuOTk5OVYxMy45OTg4WiIgZmlsbD0iIzAwODExRiIvPgo8L3N2Zz4K" />
+                                        <span>Locatie</span>
+                                    </h2>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">
+                                    <hr>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="va-top">
+                                    <dl>
+                                        <dt>
+                                            <strong>Adres</strong>
+                                        </dt>
+                                        <dd class="p-0-0-12">
+                                            {{ taak.adres }}
+                                        </dd>
+                                    </dl>
+                                    {% comment %} TODO link to google maps {% endcomment %}
+                                </td>
+                                <td>
+                                    <dl>
+                                        <dt>
+                                            <strong>Wijk</strong>
+                                        </dt>
+                                        <dd class="p-0-0-12">
+                                            {% if taak.taak_zoek_data.wijknaam %}
+                                                {{ taak.taak_zoek_data.wijknaam }}
+                                            {% else %}
+                                                -
+                                            {% endif %}
+                                        </dd>
+                                        <dt>
+                                            <strong>Buurt</strong>
+                                        </dt>
+                                        <dd class="p-0-0-12">
+                                            {% if taak.taak_zoek_data.buurtnaam %}
+                                                {{ taak.taak_zoek_data.buurtnaam }}
+                                            {% else %}
+                                                -
+                                            {% endif %}
+                                        </dd>
+                                    </dl>
+                                </td>
+                            </tr>
                             <tr>
                                 <td colspan="2">
                                     <h2 class="p-50-0-0">
@@ -259,6 +298,16 @@
                                         <dd class="p-0-0-12">
                                             {{ melding.aangemaakt_op|to_datetime|date:'d-m-Y H:m' }}
                                         </dd>
+                                    </dl>
+                                </td>
+                                <td class="va-top">
+                                    <dl>
+                                        <dt>
+                                            <strong>Omschrijving</strong>
+                                        </dt>
+                                        <dd class="p-0-0-12">
+                                            {{ melding.signalen_voor_melding.0.omschrijving_melder }}
+                                        </dd>
                                         {% if melding.onderwerpen %}
                                             <dt>
                                                 <strong>Onderwerp</strong>
@@ -272,61 +321,6 @@
                                         {% endif %}
                                     </dl>
                                 </td>
-                                <td class="va-top">
-                                    <dl>
-                                        <dt>
-                                            <strong>Omschrijving</strong>
-                                        </dt>
-                                        <dd class="p-0-0-12">
-                                            {{ melding.signalen_voor_melding.0.omschrijving_melder }}
-                                        </dd>
-                                    </dl>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td colspan="2">
-                                    <h2 class="p-50-0-0">
-                                        <img alt=""
-                                             src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjYiIHZpZXdCb3g9IjAgMCAyMCAyNiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICAgIDxwYXRoIGQ9Ik0xNy42MzQ5IDMuNjEyODFDMTYuNzA5IDIuNDgzNDIgMTUuNTQ0IDEuNTczNTUgMTQuMjI0IDAuOTQ4ODAyQzEyLjkwMzkgMC4zMjQwNTUgMTEuNDYxNyAwIDEwLjAwMTMgMEM4LjU0MDg0IDAgNy4wOTg2MSAwLjMyNDA1NSA1Ljc3ODU2IDAuOTQ4ODAyQzQuNDU4NSAxLjU3MzU1IDMuMjkzNTIgMi40ODM0MiAyLjM2NzYgMy42MTI4MUMwLjgzNzY3NyA1LjQ2ODM4IDAuMDAwOTc2NTYzIDcuNzk4NDIgMC4wMDA5NzY1NjIgMTAuMjAzNEMwLjAwMDk3NjU2MyAxMi42MDgzIDAuODM3Njc3IDE0LjkzODQgMi4zNjc2IDE2Ljc5MzlMMTAuMDAxMyAyNi4wMDAyTDE3LjYzNjEgMTYuNzkzOUMxOS4xNjUyIDE0LjkzOCAyMC4wMDEzIDEyLjYwOCAyMC4wMDExIDEwLjIwMzJDMjAuMDAwOSA3Ljc5ODM5IDE5LjE2NDQgNS40Njg1MyAxNy42MzQ5IDMuNjEyODFaTTEwLjAwMDEgMTMuOTk4OEM5LjExMDE2IDEzLjk5ODggOC4yNDAxNyAxMy43MzQ4IDcuNTAwMTcgMTMuMjQwNEM2Ljc2MDE4IDEyLjc0NiA2LjE4MzQzIDEyLjA0MzIgNS44NDI4NSAxMS4yMjA5QzUuNTAyMjcgMTAuMzk4NyA1LjQxMzE2IDkuNDkzOTQgNS41ODY3OCA4LjYyMTA2QzUuNzYwNDEgNy43NDgxOCA2LjE4ODk4IDYuOTQ2MzkgNi44MTgyOSA2LjMxNzA4QzcuNDQ3NiA1LjY4Nzc3IDguMjQ5MzkgNS4yNTkyIDkuMTIyMjcgNS4wODU1N0M5Ljk5NTE1IDQuOTExOTUgMTAuODk5OSA1LjAwMTA2IDExLjcyMjIgNS4zNDE2NEMxMi41NDQ0IDUuNjgyMjIgMTMuMjQ3MiA2LjI1ODk3IDEzLjc0MTYgNi45OTg5N0MxNC4yMzYxIDcuNzM4OTYgMTQuNSA4LjYwODk1IDE0LjUgOS40OTg5M0MxNC41IDEwLjY5MjUgMTQuMDI1OSAxMS44MzcxIDEzLjE4MjEgMTIuNjgxMkMxMi4zMzgyIDEzLjUyNTIgMTEuMTkzNyAxMy45OTk2IDEwLjAwMDEgMTMuOTk5OVYxMy45OTg4WiIgZmlsbD0iIzAwODExRiIvPgo8L3N2Zz4K" />
-                                        <span>Locatie</span>
-                                    </h2>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td colspan="2">
-                                    <hr>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="va-top">
-                                    <dl>
-                                        <dt>
-                                            <strong>Adres</strong>
-                                        </dt>
-                                        <dd class="p-0-0-12">
-                                            {{ taak.adres }}
-                                        </dd>
-                                        <dt>
-                                            <strong>Wijk</strong>
-                                        </dt>
-                                        <dd class="p-0-0-12">
-                                            {{ taak.taak_zoek_data.wijknaam }}
-                                        </dd>
-                                    </dl>
-                                </td>
-                                <td>
-                                    <dl>
-                                        <dt>
-                                            <strong>Buurt</strong>
-                                        </dt>
-                                        <dd class="p-0-0-12">
-                                            {{ taak.taak_zoek_data.buurtnaam }}
-                                        </dd>
-                                    </dl>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td colspan="2">Kaart hier</td>
                             </tr>
                             <tr>
                                 <td colspan="2">
@@ -354,7 +348,7 @@
                                                         </dd>
                                                     {% else %}
                                                         <dd class="p-0-0-12">
-                                                            Geen naam opgegeven
+                                                            <small>Geen naam opgegeven</small>
                                                         </dd>
                                                     {% endif %}
                                                     {% if signaal.melder.telefoonnummer and signaal.melder.telefoonnummer != "Anoniem" %}
@@ -387,14 +381,6 @@
                                                             <small>Geen e-mailadres opgegeven</small>
                                                         </dd>
                                                     {% endif %}
-                                                    {% if signaal.bron %}
-                                                        <dt>
-                                                            <strong>Ingediend via</strong>
-                                                        </dt>
-                                                        <dd class="p-0-0-12">
-                                                            {{ signaal.bron }}
-                                                        </dd>
-                                                    {% endif %}
                                                 </div>
                                             {% endfor %}
                                         {% else %}
@@ -404,6 +390,51 @@
                                         {% endif %}
                                     </dl>
                                 </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">
+                                    <h2 class="p-50-0-0">
+                                        <img alt=""
+                                             src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAyMCAyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xMCAxOS43NUMxNS4zODQ4IDE5Ljc1IDE5Ljc1IDE1LjM4NDggMTkuNzUgMTBDMTkuNzUgNC42MTUyMiAxNS4zODQ4IDAuMjUgMTAgMC4yNUM0LjYxNTIyIDAuMjUgMC4yNSA0LjYxNTIyIDAuMjUgMTBDMC4yNSAxNS4zODQ4IDQuNjE1MjIgMTkuNzUgMTAgMTkuNzVaTTE2LjgyNjMgMTQuNjM0NEMxNy43MjQ4IDEzLjMxMzUgMTguMjUgMTEuNzE4MSAxOC4yNSAxMEMxOC4yNSA1LjQ0MzY1IDE0LjU1NjMgMS43NSAxMCAxLjc1QzUuNDQzNjUgMS43NSAxLjc1IDUuNDQzNjUgMS43NSAxMEMxLjc1IDExLjc0NDIgMi4yOTEyOSAxMy4zNjIgMy4yMTUwNSAxNC42OTQ2QzMuMjAxMTkgMTQuNjc0NiAzLjE4NzQxIDE0LjY1NDUgMy4xNzM3MyAxNC42MzQ0QzQuMjE3NzMgMTMuNDIwNSA1LjU3OTk2IDEyLjQ4ODIgNy4xMzA5OCAxMS45NjdDNi4xMzQ2NiAxMS4xNDE1IDUuNSA5Ljg5NDg5IDUuNSA4LjVDNS41IDYuMDE0NzIgNy41MTQ3MiA0IDEwIDRDMTIuNDg1MyA0IDE0LjUgNi4wMTQ3MiAxNC41IDguNUMxNC41IDkuODk0OSAxMy44NjUzIDExLjE0MTYgMTIuODY5IDExLjk2N0MxNC40MiAxMi40ODgzIDE1Ljc4MjMgMTMuNDIwNiAxNi44MjYzIDE0LjYzNDRaTTE1Ljg1NDkgMTUuODEyM0MxNC40ODA0IDE0LjA5NzggMTIuMzY4NCAxMyA5Ljk5OTk4IDEzQzcuNjMxNTkgMTMgNS41MTk2IDE0LjA5NzggNC4xNDUxMSAxNS44MTIzQzUuNjM5NzIgMTcuMzE3OCA3LjcxMDk5IDE4LjI1IDEwIDE4LjI1QzEyLjI4OSAxOC4yNSAxNC4zNjAzIDE3LjMxNzggMTUuODU0OSAxNS44MTIzWk0xMCA1LjVDOC4zNDMxNSA1LjUgNyA2Ljg0MzE1IDcgOC41QzcgMTAuMTU2OSA4LjM0MzE1IDExLjUgMTAgMTEuNUMxMS42NTY5IDExLjUgMTMgMTAuMTU2OSAxMyA4LjVDMTMgNi44NDMxNSAxMS42NTY5IDUuNSAxMCA1LjVaIiBmaWxsPSIjMDA4MTFGIi8+Cjwvc3ZnPgo=" />
+                                        <span>Taak aangemaakt door</span>
+                                    </h2>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">
+                                    <hr>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="va-top" colspan="2">
+                                    <dl>
+                                        {% if signaal.bron %}
+                                            <dd class="p-0-0-12">
+                                                {{ signaal.bron }}
+                                            </dd>
+                                        {% endif %}
+                                    </dl>
+                                </td>
+                            </tr>
+                            {% if bijlagen %}
+                                <tr>
+                                    <td class="p-4-16" colspan="2">
+                                        <h2 class="no-margin-bottom">Bijlage(n)</h2>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2">
+                                        <hr>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="p-4-16 va-top" colspan="2">
+                                        {% for bijlage in bijlagen %}<img src="cid:{{ bijlage }}" width="300" alt="bijlage" />{% endfor %}
+                                    </td>
+                                </tr>
+                            {% endif %}
+                            <tr>
+                                <td colspan="2">Kaart hier</td>
                             </tr>
                         </table>
                     </td>
