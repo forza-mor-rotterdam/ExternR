@@ -1,5 +1,7 @@
 {% load to_datetime from main_tags %}
 {% load render_onderwerp from melding_tags %}
+{% load replace_comma_by_dot from main_tags %}
+{% load get_gebruiker_object_middels_email from gebruikers_tags %}
 <!DOCTYPE html>
 <html lang="nl"
       xmlns="http://www.w3.org/1999/xhtml"
@@ -31,7 +33,6 @@
                 max-width: 800px;
                 margin: 0 auto;
             }
-            /*table, td {border:2px solid #000000 !important;}*/
             h2 {
                 font-size: 1.25rem;
                 margin-bottom: 0;
@@ -49,6 +50,10 @@
             dd {
                 margin-left: 0;
             }
+
+            a {
+                color: #00811f;
+            }
             .btn {
                 border: 1px solid #7C8B90;
                 display: inline-block;
@@ -62,10 +67,7 @@
             }
             .btn-secondary {
                 background-color: #000000;
-                color: #ffffff;
-            }
-            a {
-                color: #00811f;
+                color: #ffffff !important;
             }
             a img {
                 margin-right: 8px;
@@ -192,9 +194,17 @@
                             <h3>Toelichting</h3>
                             <p>{{ taaktype.toelichting }}</p>
                         {% endif %}
-                        {% if taak.taakgebeurtenissen_voor_taak.first.omschrijving_intern %}
+                        {% if taak.taakgebeurtenissen_voor_taak.exists %}
                             <h3>Interne opmerking midoffice</h3>
                             <p>{{ taak.taakgebeurtenissen_voor_taak.first.omschrijving_intern }}</p>
+                            Door {{ taak.taakgebeurtenissen_voor_taak.first.gebruiker }}
+                            {% with gebruiker=taak.taakgebeurtenissen_voor_taak.first.gebruiker|get_gebruiker_object_middels_email %}
+                                <p>{{ gebruiker }}</p>
+                                <p>{{ gebruiker.first_name }}</p>
+                                <p>{{ gebruiker.last_name }}</p>
+                                <p>{{ gebruiker.full_name }}</p>
+                                <p>{{ gebruiker.email }}</p>
+                            {% endwith %}
                         {% endif %}
                         <h3>Kan de taak niet worden opgelost?</h3>
                         <p>
@@ -242,7 +252,13 @@
                                             {{ taak.adres }}
                                         </dd>
                                     </dl>
-                                    {% comment %} TODO link to google maps {% endcomment %}
+                                    <p>
+                                        <a href="https://www.google.com/maps/dir/?api=1&destination={{ taak.taak_zoek_data.geometrie.1|replace_comma_by_dot }},{{ taak.taak_zoek_data.geometrie.0|replace_comma_by_dot }}">
+                                            <img alt=""
+                                                 src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTgiIGhlaWdodD0iMjEiIHZpZXdCb3g9IjAgMCAxOCAyMSIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xMy43NzI3IDMuNzI3MDRDMTEuMTUgMS4xMDQzMyA2Ljg0OTUxIDEuMTA0MzMgNC4yMjY4IDMuNzI3MDRDMS42MDQwOSA2LjM0OTc1IDEuNjA0MDkgMTAuNjUwMyA0LjIyNjggMTMuMjczTDguOTk5NzcgMTguMDQ2TDEzLjc3MjcgMTMuMjczQzE2LjM5NTUgMTAuNjUwMyAxNi4zOTU1IDYuMzQ5NzUgMTMuNzcyNyAzLjcyNzA0Wk04Ljk5OTc3IDIwLjE2NzNMMy4xNjYxNCAxNC4zMzM2Qy0wLjA0MjM1ODYgMTEuMTI1MSAtMC4wNDIzNTg1IDUuODc0ODggMy4xNjYxNCAyLjY2NjM4QzYuMzc0NjMgLTAuNTQyMTE0IDExLjYyNDkgLTAuNTQyMTE0IDE0LjgzMzQgMi42NjYzOEMxOC4wNDE5IDUuODc0ODggMTguMDQxOSAxMS4xMjUxIDE0LjgzMzQgMTQuMzMzNkw4Ljk5OTc3IDIwLjE2NzNaTTExLjk5OTcgOC40OTk5OUMxMS45OTk3IDEwLjE1NjggMTAuNjU2NSAxMS41IDguOTk5NjYgMTEuNUM3LjM0MjgxIDExLjUgNS45OTk2NiAxMC4xNTY4IDUuOTk5NjYgOC40OTk5OUM1Ljk5OTY2IDYuODQzMTQgNy4zNDI4MSA1LjQ5OTk5IDguOTk5NjYgNS40OTk5OUMxMC42NTY1IDUuNDk5OTkgMTEuOTk5NyA2Ljg0MzE0IDExLjk5OTcgOC40OTk5OVpNMTAuNDk5NyA4LjQ5OTk5QzEwLjQ5OTcgOS4zMjg0MiA5LjgyODA5IDkuOTk5OTkgOC45OTk2NiA5Ljk5OTk5QzguMTcxMjMgOS45OTk5OSA3LjQ5OTY2IDkuMzI4NDIgNy40OTk2NiA4LjQ5OTk5QzcuNDk5NjYgNy42NzE1NyA4LjE3MTIzIDYuOTk5OTkgOC45OTk2NiA2Ljk5OTk5QzkuODI4MDkgNi45OTk5OSAxMC40OTk3IDcuNjcxNTcgMTAuNDk5NyA4LjQ5OTk5WiIgZmlsbD0iIzAwODExRiIvPgo8L3N2Zz4K" />
+                                            Toon in Google Maps
+                                        </a>
+                                    </p>
                                 </td>
                                 <td>
                                     <dl>
@@ -408,9 +424,13 @@
                             <tr>
                                 <td class="va-top" colspan="2">
                                     <dl>
-                                        {% if signaal.bron %}
+                                        {% if signaal %}
                                             <dd class="p-0-0-12">
-                                                {{ signaal.bron }}
+                                                1{{ signaal }}
+                                                <br>
+                                                2{{ signaal.gebruiker }}
+                                                <br>
+                                                3{{ signaal.bron }}
                                             </dd>
                                         {% endif %}
                                     </dl>
@@ -429,7 +449,13 @@
                                 </tr>
                                 <tr>
                                     <td class="p-4-16 va-top" colspan="2">
-                                        {% for bijlage in bijlagen %}<img src="cid:{{ bijlage }}" width="300" alt="bijlage" />{% endfor %}
+                                        {% for bijlage in bijlagen %}
+                                            <p>
+                                                <img src="cid:{{ bijlage }}"
+                                                     width="300"
+                                                     alt="bijlage bij {{ taaktype.omschrijving }}" />
+                                            </p>
+                                        {% endfor %}
                                     </td>
                                 </tr>
                             {% endif %}

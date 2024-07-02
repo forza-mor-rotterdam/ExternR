@@ -5,28 +5,30 @@
 {% endblock title %}
 {% block body %}
     <turbo-frame id="feedback">
-    <h1>
-        <span class="green">Bedankt</span> voor het doorgeven!
-    </h1>
-    <h2>Deze taak is reeds voltooid!</h2>
-    <dl>
-        <div>
-            <dt>
-                <strong>Taak:</strong>
-            </dt>
-            <dd>
-                {{ taak.taaktype }}
-            </dd>
-        </div>
-        <div>
-            <dt>
-                <strong>Adres:</strong>
-            </dt>
-            <dd>
-                {{ taak.adres }}
-            </dd>
-        </div>
-    </dl>
-    <p>U kunt nu dit scherm sluiten, de gemeente neemt het vanaf hier weer over.</p>
+    <div class="taak-feedback">
+        <h1>
+            <span class="green">Bedankt</span> voor het doorgeven!
+        </h1>
+        <h2>Deze taak is reeds voltooid!</h2>
+        <dl>
+            <div>
+                <dt>
+                    <strong>Taak:</strong>
+                </dt>
+                <dd>
+                    {{ taak.taaktype }}
+                </dd>
+            </div>
+            <div>
+                <dt>
+                    <strong>Adres:</strong>
+                </dt>
+                <dd>
+                    {{ taak.adres }}
+                </dd>
+            </div>
+        </dl>
+        <p>U kunt nu dit scherm sluiten, de gemeente neemt het vanaf hier weer over.</p>
+    </div>
     </turbo-frame>
 {% endblock body %}
