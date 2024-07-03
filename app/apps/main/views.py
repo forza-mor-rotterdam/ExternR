@@ -1,5 +1,7 @@
 import json
 import logging
+import operator
+from functools import reduce
 
 import requests
 from apps.context.filters import FilterManager
@@ -14,6 +16,7 @@ from apps.main.utils import (
     set_actieve_filters,
     set_kaart_modus,
     set_sortering,
+    to_base64,
 )
 from apps.meldingen.service import MeldingenService
 from apps.services.pdok import PDOKService
@@ -35,9 +38,14 @@ from django.core.cache import cache
 from django.core.files.storage import default_storage
 from django.core.paginator import Paginator
 from django.db import models
-from django.db.models import Q, Value
-from django.db.models.functions import Concat
-from django.http import HttpResponse, JsonResponse, StreamingHttpResponse
+from django.db.models import Case, F, Q, Value, When
+from django.db.models.functions import Cast, Concat
+from django.http import (
+    HttpResponse,
+    HttpResponsePermanentRedirect,
+    JsonResponse,
+    StreamingHttpResponse,
+)
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 
@@ -163,7 +171,42 @@ def taken_filter(request):
 
     taken_gefilterd = filter_manager.filter_taken()
 
-    # request.session["taken_gefilterd"] = taken_gefilterd
+    taken_gefilterd = taken_gefilterd.annotate(
+        huisnr_huisltr_toev=Concat(
+            Cast(F("taak_zoek_data__huisnummer"), output_field=models.CharField()),
+            "taak_zoek_data__huisletter",
+            Case(
+                When(
+                    Q(taak_zoek_data__toevoeging__isnull=False)
+                    & ~Q(taak_zoek_data__toevoeging=""),
+                    then=Concat(
+                        Value("-"),
+                        "taak_zoek_data__toevoeging",
+                    ),
+                )
+            ),
+        )
+    )
+    taken_gefilterd = taken_gefilterd.annotate(
+        adres=Concat(
+            "taak_zoek_data__straatnaam",
+            Value(" "),
+            "huisnr_huisltr_toev",
+        )
+    )
+    # zoeken
+    if request.session.get("q"):
+        q = [qp.strip() for qp in request.session.get("q").split(" ") if qp.strip(" ")]
+        q_list = [
+            Q(taak_zoek_data__bron_signaal_ids__icontains=qp)
+            | Q(taak_zoek_data__straatnaam__iregex=qp)
+            | Q(taak_zoek_data__huisnummer__iregex=qp)
+            if len(qp) > 3
+            else Q(taak_zoek_data__straatnaam__iregex=qp)
+            | Q(taak_zoek_data__huisnummer__iregex=qp)
+            for qp in q
+        ]
+        taken_gefilterd = taken_gefilterd.filter(reduce(operator.and_, q_list))
 
     taken_aantal = taken_gefilterd.count()
     return render(
@@ -189,12 +232,15 @@ def taken_lijst(request):
     except Exception:
         pnt = Point(0, 0, srid=4326)
 
+    if request.GET.get("toon_alle_taken"):
+        request.session["toon_alle_taken"] = True
+
     sortering = get_sortering(request.user)
     sort_reverse = len(sortering.split("-")) > 1
     sortering = sortering.split("-")[0]
     sorting_fields = {
         "Postcode": "taak_zoek_data__postcode",
-        "Adres": "zoekadres",
+        "Adres": "adres",
         "Datum": "taakstatus__aangemaakt_op",
         "Afstand": "afstand",
     }
@@ -214,24 +260,43 @@ def taken_lijst(request):
     filter_manager = FilterManager(taken, actieve_filters, profiel=request.user.profiel)
     taken_gefilterd = filter_manager.filter_taken()
 
+    taken_gefilterd = taken_gefilterd.annotate(
+        huisnr_huisltr_toev=Concat(
+            Cast(F("taak_zoek_data__huisnummer"), output_field=models.CharField()),
+            "taak_zoek_data__huisletter",
+            Case(
+                When(
+                    Q(taak_zoek_data__toevoeging__isnull=False)
+                    & ~Q(taak_zoek_data__toevoeging=""),
+                    then=Concat(
+                        Value("-"),
+                        "taak_zoek_data__toevoeging",
+                    ),
+                )
+            ),
+        )
+    )
+    taken_gefilterd = taken_gefilterd.annotate(
+        adres=Concat(
+            "taak_zoek_data__straatnaam",
+            Value(" "),
+            "huisnr_huisltr_toev",
+        )
+    )
     # zoeken
     if request.session.get("q"):
-        taken_gefilterd = taken_gefilterd.filter(
-            Q(taak_zoek_data__straatnaam__iregex=request.session.get("q"))
-            | Q(taak_zoek_data__huisnummer__iregex=request.session.get("q"))
-            | Q(taak_zoek_data__bron_signaal_ids__icontains=request.session.get("q"))
-        )
+        q = [qp.strip() for qp in request.session.get("q").split(" ") if qp.strip(" ")]
+        q_list = [
+            Q(taak_zoek_data__bron_signaal_ids__icontains=qp)
+            | Q(taak_zoek_data__straatnaam__iregex=qp)
+            | Q(taak_zoek_data__huisnummer__iregex=qp)
+            if len(qp) > 3
+            else Q(taak_zoek_data__straatnaam__iregex=qp)
+            | Q(taak_zoek_data__huisnummer__iregex=qp)
+            for qp in q
+        ]
+        taken_gefilterd = taken_gefilterd.filter(reduce(operator.and_, q_list))
 
-    # sorteren
-    if sortering == "Adres":
-        taken_gefilterd = taken_gefilterd.annotate(
-            zoekadres=Concat(
-                "taak_zoek_data__straatnaam",
-                Value(" "),
-                "taak_zoek_data__huisnummer",
-                output_field=models.CharField(),
-            )
-        )
     if sortering == "Afstand":
         taken_gefilterd = taken_gefilterd.annotate(
             afstand=Distance("taak_zoek_data__geometrie", pnt)
@@ -246,6 +311,7 @@ def taken_lijst(request):
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
     taken_paginated = page_obj.object_list
+    taken_gefilterd_total = taken_gefilterd.count()
     if request.session.get("taken_gefilterd"):
         del request.session["taken_gefilterd"]
 
@@ -253,8 +319,10 @@ def taken_lijst(request):
         request,
         "taken/taken_lijst.html",
         {
+            "taken_gefilterd_total": taken_gefilterd_total,
             "taken": taken_paginated,
             "page_obj": page_obj,
+            "toon_alle_taken": request.session.get("toon_alle_taken", False),
         },
     )
 
@@ -357,7 +425,6 @@ def taak_afhandelen(request, id):
     taaktypes = TaakRService().get_taaktypes(
         params={
             "taakapplicatie_taaktype_url": taak.taaktype.taaktype_url(request),
-            "actief": True,
         },
         force_cache=True,
     )
