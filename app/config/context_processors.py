@@ -44,7 +44,6 @@ def general_settings(context):
         "SESSION_CHECK_INTERVAL_SECONDS": settings.SESSION_CHECK_INTERVAL_SECONDS,
         "LOGOUT_URL": reverse("oidc_logout"),
         "LOGIN_URL": f"{reverse('oidc_authentication_init')}?next={absolute(context).get('FULL_URL')}",
-        "APP_MERCURE_PUBLIC_URL": settings.APP_MERCURE_PUBLIC_URL,
         "GIT_SHA": settings.GIT_SHA,
         "APP_ENV": settings.APP_ENV,
         "TAAKR_URL": taakr_basis_url,
