@@ -3,10 +3,7 @@ from urllib.parse import urlencode, urlparse
 
 import requests
 from apps.instellingen.models import Instelling
-from django.conf import settings
 from django.core.cache import cache
-from django.core.exceptions import ValidationError
-from django.core.validators import validate_email
 from requests import Request, Response
 
 logger = logging.getLogger(__name__)
@@ -27,23 +24,17 @@ class MeldingenService:
         ...
 
     def __init__(self, *args, **kwargs: dict):
-        instelling = Instelling.acieve_instelling()
-        self._use_token = (
-            True
-            if not instelling
-            else (
-                instelling.mor_core_gebruiker_email
-                and instelling.mor_core_gebruiker_wachtwoord
+        instelling = Instelling.actieve_instelling()
+        if not instelling:
+            raise Exception(
+                "De MOR-Core instellingen kunnen niet worden gevonden, Er zijn nog geen instellingen aangemaakt"
             )
+        self._use_token = (
+            instelling.mor_core_gebruiker_email
+            and instelling.mor_core_gebruiker_wachtwoord
         )
-        self._token_timeout = (
-            settings.MELDINGEN_TOKEN_TIMEOUT
-            if not instelling
-            else instelling.mor_core_token_timeout
-        )
-        self._base_url = (
-            settings.MELDINGEN_URL if not instelling else instelling.mor_core_basis_url
-        )
+        self._token_timeout = instelling.mor_core_token_timeout
+        self._base_url = instelling.mor_core_basis_url
         super().__init__(*args, **kwargs)
 
     def get_url(self, url):
@@ -60,28 +51,16 @@ class MeldingenService:
             cache.delete("meldingen_token")
 
         if not meldingen_token:
-            instelling = Instelling.acieve_instelling()
-            logger.warning(instelling)
-            email = (
-                settings.MELDINGEN_USERNAME
-                if not instelling
-                else instelling.mor_core_gebruiker_email
-            )
-            try:
-                validate_email(email)
-            except ValidationError:
-                email = (
-                    f"{settings.MELDINGEN_USERNAME}@forzamor.nl"
-                    if not instelling
-                    else instelling.mor_core_gebruiker_email
+            instelling = Instelling.actieve_instelling()
+            if not instelling:
+                raise Exception(
+                    "De MOR-Core instellingen kunnen niet worden gevonden, Er zijn nog geen instellingen aangemaakt"
                 )
             token_response = requests.post(
                 f"{self._base_url}{self._token_api}",
                 json={
-                    "username": email,
-                    "password": settings.MELDINGEN_PASSWORD
-                    if not instelling
-                    else instelling.mor_core_gebruiker_wachtwoord,
+                    "username": instelling.mor_core_gebruiker_email,
+                    "password": instelling.mor_core_gebruiker_wachtwoord,
                 },
             )
             if token_response.status_code == 200:
@@ -218,7 +197,7 @@ class MeldingenService:
         return self.do_request(
             f"{self._api_path}/gebruiker/{gebruiker_email}/",
             method="get",
-            cache_timeout=120,
+            cache_timeout=60 * 60 * 24,
         )
 
     def set_gebruiker(self, gebruiker):

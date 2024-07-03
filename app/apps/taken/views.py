@@ -1,6 +1,7 @@
 import hashlib
 import logging
 
+from apps.instellingen.models import Instelling
 from apps.meldingen.service import MeldingenService
 from apps.taken.forms import (
     TaakFeedbackHandleForm,
@@ -55,10 +56,18 @@ class TaaktypeAanpassenView(TaaktypeAanmakenAanpassenView, UpdateView):
     form_class = TaaktypeAanpassenForm
 
     def get_initial(self):
+        instelling = Instelling.actieve_instelling()
+        if not instelling:
+            raise Exception(
+                "De TaakR url kan niet worden gevonden, Er zijn nog geen instellingen aangemaakt"
+            )
+
         initial = self.initial.copy()
         initial["redirect_field"] = (
             self.request.GET.get("redirect_url", "")
-            if self.request.GET.get("redirect_url", "").startswith(settings.TAAKR_URL)
+            if self.request.GET.get("redirect_url", "").startswith(
+                instelling.taakr_basis_url
+            )
             else None
         )
         return initial
@@ -73,8 +82,16 @@ class TaaktypeAanpassenView(TaaktypeAanmakenAanpassenView, UpdateView):
         return context
 
     def form_valid(self, form):
+        instelling = Instelling.actieve_instelling()
+        if not instelling:
+            raise Exception(
+                "De TaakR url kan niet worden gevonden, Er zijn nog geen instellingen aangemaakt"
+            )
+
         response = super().form_valid(form)
-        if form.cleaned_data.get("redirect_field", "").startswith(settings.TAAKR_URL):
+        if form.cleaned_data.get("redirect_field", "").startswith(
+            instelling.taakr_basis_url
+        ):
             taaktype_url = drf_reverse(
                 "v1:taaktype-detail",
                 kwargs={"uuid": self.object.uuid},
@@ -102,17 +119,33 @@ class TaaktypeAanmakenView(TaaktypeAanmakenAanpassenView, CreateView):
         return super().get(request, *args, **kwargs)
 
     def get_initial(self):
+        instelling = Instelling.actieve_instelling()
+        if not instelling:
+            raise Exception(
+                "De TaakR url kan niet worden gevonden, Er zijn nog geen instellingen aangemaakt"
+            )
+
         initial = self.initial.copy()
         initial["redirect_field"] = (
             self.request.GET.get("redirect_url", "")
-            if self.request.GET.get("redirect_url", "").startswith(settings.TAAKR_URL)
+            if self.request.GET.get("redirect_url", "").startswith(
+                instelling.taakr_basis_url
+            )
             else None
         )
         return initial
 
     def form_valid(self, form):
+        instelling = Instelling.actieve_instelling()
+        if not instelling:
+            raise Exception(
+                "De TaakR url kan niet worden gevonden, Er zijn nog geen instellingen aangemaakt"
+            )
+
         response = super().form_valid(form)
-        if form.cleaned_data.get("redirect_field", "").startswith(settings.TAAKR_URL):
+        if form.cleaned_data.get("redirect_field", "").startswith(
+            instelling.taakr_basis_url
+        ):
             taaktype_url = drf_reverse(
                 "v1:taaktype-detail",
                 kwargs={"uuid": self.object.uuid},
@@ -180,14 +213,6 @@ def taak_feedback_handle(request, taak_id: int, email_hash: str):
         "taken/taak_externe_instantie_feedback.html",
         {
             "form": form,
-            "taak": taak,
-        },
-    )
-
-    return render(
-        request,
-        "taken/taak_externe_instantie_bedankt.html",
-        {
             "taak": taak,
         },
     )

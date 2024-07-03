@@ -49,39 +49,9 @@ LANGUAGES = [("nl", "Dutch")]
 DEFAULT_ALLOWED_HOSTS = ".forzamor.nl,localhost,127.0.0.1,.mor.local"
 ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", DEFAULT_ALLOWED_HOSTS).split(",")
 
-MELDINGEN_URL = os.getenv("MELDINGEN_URL", "https://mor-core-acc.forzamor.nl")
-MELDINGEN_TOKEN_TIMEOUT = 60 * 60
-MELDINGEN_USERNAME = os.getenv("MELDINGEN_USERNAME")
-MELDINGEN_PASSWORD = os.getenv("MELDINGEN_PASSWORD")
-
 DEV_SOCKET_PORT = os.getenv("DEV_SOCKET_PORT", "9000")
 
 UI_SETTINGS = {"fontsizes": ["fz-medium", "fz-large", "fz-xlarge"]}
-
-onderwerpen_urls = {
-    PRODUCTIE: "https://onderwerpen.forzamor.nl",
-    ACCEPTATIE: "https://onderwerpen-acc.forzamor.nl",
-    TEST: "https://onderwerpen-test.forzamor.nl",
-}
-ONDERWERPEN_URL = (
-    "https://onderwerpen-acc.forzamor.nl"
-    if DEBUG
-    else os.getenv(
-        "ONDERWERPEN_URL", onderwerpen_urls.get(APP_ENV, onderwerpen_urls[ACCEPTATIE])
-    )
-)
-
-taakr_urls = {
-    PRODUCTIE: "https://taakr.forzamor.nl",
-    ACCEPTATIE: "https://taakr-acc.forzamor.nl",
-    TEST: "https://taakr-test.forzamor.nl",
-}
-TAAKR_URL = (
-    "http://taakr.mor.local:8009"
-    if DEBUG
-    else os.getenv("TAAKR_URL", taakr_urls.get(APP_ENV, taakr_urls[ACCEPTATIE]))
-)
-
 
 INSTALLED_APPS = (
     # templates override
@@ -327,7 +297,8 @@ CSP_IMG_SRC = (
     "cdn.jsdelivr.net",
     "ows.gis.rotterdam.nl",
     "www.gis.rotterdam.nl",
-    TAAKR_URL,
+    "forzamor.nl",
+    "mor.local",
 )
 CSP_STYLE_SRC = (
     "'self'",

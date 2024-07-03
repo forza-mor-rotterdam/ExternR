@@ -17,8 +17,6 @@ def general_settings(context):
     if session_expiry_timestamp:
         session_expiry_timestamp += settings.SESSION_EXPIRE_SECONDS
 
-    getattr(context, "user", None)
-
     deploy_date_formatted = None
     if settings.DEPLOY_DATE:
         deploy_date = timezone.datetime.strptime(
@@ -26,14 +24,16 @@ def general_settings(context):
         )
         deploy_date_formatted = deploy_date.strftime("%d-%m-%Y %H:%M:%S")
 
-    instelling = Instelling.acieve_instelling()
-    MELDINGEN_URL = (
-        settings.MELDINGEN_URL if not instelling else instelling.mor_core_basis_url
-    )
-    TAAKR_URL = settings.TAAKR_URL if not instelling else instelling.taakr_basis_url
+    instelling = Instelling.actieve_instelling()
+    taakr_basis_url = None
+    if instelling:
+        taakr_basis_url = instelling.taakr_basis_url
+    else:
+        logger.warning(
+            "De TaakR url kan niet worden gevonden, Er zijn nog geen instellingen aangemaakt"
+        )
 
     return {
-        "MELDINGEN_URL": MELDINGEN_URL,
         "UI_SETTINGS": settings.UI_SETTINGS,
         "DEBUG": settings.DEBUG,
         "DEV_SOCKET_PORT": settings.DEV_SOCKET_PORT,
@@ -42,15 +42,12 @@ def general_settings(context):
         "SESSION_EXPIRY_MAX_TIMESTAMP": session_expiry_max_timestamp,
         "SESSION_EXPIRY_TIMESTAMP": session_expiry_timestamp,
         "SESSION_CHECK_INTERVAL_SECONDS": settings.SESSION_CHECK_INTERVAL_SECONDS,
-        "LOGOUT_URL": reverse("oidc_logout")
-        if settings.OIDC_ENABLED
-        else "/admin/logout/",
-        "LOGIN_URL": f"{reverse('oidc_authentication_init')}?next={absolute(context).get('FULL_URL')}"
-        if settings.OIDC_ENABLED
-        else "/admin/login/",
+        "LOGOUT_URL": reverse("oidc_logout"),
+        "LOGIN_URL": f"{reverse('oidc_authentication_init')}?next={absolute(context).get('FULL_URL')}",
+        "APP_MERCURE_PUBLIC_URL": settings.APP_MERCURE_PUBLIC_URL,
         "GIT_SHA": settings.GIT_SHA,
         "APP_ENV": settings.APP_ENV,
-        "TAAKR_URL": TAAKR_URL,
+        "TAAKR_URL": taakr_basis_url,
         "DEPLOY_DATE": deploy_date_formatted,
         "MOR_CORE_URL_PREFIX": settings.MOR_CORE_URL_PREFIX,
         "MOR_CORE_PROTECTED_URL_PREFIX": settings.MOR_CORE_PROTECTED_URL_PREFIX,

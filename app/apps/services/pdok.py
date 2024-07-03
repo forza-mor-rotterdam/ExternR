@@ -80,7 +80,7 @@ class PDOKService(BasisService):
         cache.set(
             settings.WIJKEN_EN_BUURTEN_CACHE_KEY,
             results_grouped,
-            settings.MELDINGEN_TOKEN_TIMEOUT,
+            60 * 60 * 24,
         )
         return results_grouped
 

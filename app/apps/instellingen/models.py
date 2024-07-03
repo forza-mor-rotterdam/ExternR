@@ -12,5 +12,5 @@ class Instelling(BasisModel):
     onderwerpen_basis_url = models.URLField(default="http://onderwerpen.mor.local:8006")
 
     @classmethod
-    def acieve_instelling(cls):
+    def actieve_instelling(cls):
         return cls.objects.first()

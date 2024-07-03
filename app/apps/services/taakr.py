@@ -2,7 +2,6 @@ import logging
 
 from apps.instellingen.models import Instelling
 from apps.services.basis import BasisService
-from django.conf import settings
 
 logger = logging.getLogger(__name__)
 
@@ -11,10 +10,13 @@ class TaakRService(BasisService):
     _default_error_message = "Er ging iets mis met het ophalen van data van TaakR"
 
     def __init__(self, *args, **kwargs: dict):
-        instelling = Instelling.acieve_instelling()
-        self._base_url = (
-            settings.TAAKR_URL if not instelling else instelling.taakr_basis_url
-        )
+        instelling = Instelling.actieve_instelling()
+        if not instelling:
+            raise Exception(
+                "De TaakR url kan niet worden gevonden, Er zijn nog geen instellingen aangemaakt"
+            )
+        self._base_url = instelling.taakr_basis_url
+
         super().__init__(*args, **kwargs)
 
     def get_afdelingen(

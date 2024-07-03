@@ -3,7 +3,6 @@ from urllib.parse import urlparse
 
 from apps.instellingen.models import Instelling
 from apps.services.basis import BasisService
-from django.conf import settings
 from django.template.loader import get_template
 from django.utils.safestring import mark_safe
 
@@ -33,12 +32,12 @@ class OnderwerpenService(BasisService):
         ...
 
     def __init__(self, *args, **kwargs: dict):
-        instelling = Instelling.acieve_instelling()
-        self._base_url = (
-            settings.ONDERWERPEN_URL
-            if not instelling
-            else instelling.onderwerpen_basis_url
-        )
+        instelling = Instelling.actieve_instelling()
+        if not instelling:
+            raise Exception(
+                "De Onderwerpen url kan niet worden gevonden, Er zijn nog geen instellingen aangemaakt"
+            )
+        self._base_url = instelling.onderwerpen_basis_url
         super().__init__(*args, **kwargs)
 
     def get_url(self, url):
@@ -53,20 +52,20 @@ class OnderwerpenService(BasisService):
 
     def get_onderwerp(self, url) -> dict:
         try:
-            return self.do_request(url, cache_timeout=60 * 10, raw_response=False)
+            return self.do_request(url, cache_timeout=60 * 60 * 24, raw_response=False)
         except OnderwerpenService.BasisUrlFout:
             return {"name": "Onderwerp onbekend"}
 
     def get_groep(self, group_uuid) -> dict:
         return self.do_request(
             f"{self._base_url}{self._api_path}/group/{group_uuid}",
-            cache_timeout=60 * 10,
+            cache_timeout=60 * 60 * 24,
             raw_response=False,
         )
 
     def get_onderwerpen(self) -> dict:
         return self.do_request(
             f"{self._base_url}{self._api_path}/category?limit=1000",
-            cache_timeout=60 * 10,
+            cache_timeout=60 * 60 * 24,
             raw_response=False,
         )
