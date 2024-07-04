@@ -50,8 +50,8 @@
                                             {% if row_data.mg.taakgebeurtenis.taakstatus.naam != "nieuw" %}
                                                 :
                                                 {% if row_data.mg.taakgebeurtenis.taakstatus.naam == "voltooid" %}
-                                                    {{ taakopdracht.resolutie|vertaal }}
-                                                    <span class="visually-hidden" data-datetime-target="resolutie">{{ taakopdracht.resolutie }}</span>
+                                                    {{ row_data.mg.taakgebeurtenis.resolutie|vertaal }}
+                                                    <span class="visually-hidden" data-datetime-target="resolutie">{{ row_data.mg.taakgebeurtenis.resolutie }}</span>
                                                 {% else %}
                                                     {{ row_data.mg.taakgebeurtenis.taakstatus.naam }}
                                                 {% endif %}
@@ -85,9 +85,7 @@
                                             {% include "incident/part_gebruiker_telefoon_met_tekst.html" with gebruiker=row_data.mg.gebruiker|get_gebruiker_object_middels_email %}
                                             <dt>Status</dt>
                                             <dd>
-                                                {% with taakopdracht=taak.melding.response_json|taakopdracht:row_data.mg.taakgebeurtenis.taakopdracht %}
-                                                    {{ taakopdracht.resolutie|vertaal }}
-                                                {% endwith %}
+                                                {{ row_data.mg.taakgebeurtenis.resolutie|vertaal }}
                                             </dd>
                                         {% else %}
                                             {% if row_data.mg.taakgebeurtenis.aangemaakt_op %}

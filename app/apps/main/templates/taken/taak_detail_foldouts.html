@@ -22,52 +22,50 @@
                     {% if taak.spoed %}<span><span class="icon icon--warning">Spoed</span></span>{% endif %}
                 </h2>
             </summary>
-            {% if taak.id %}
-                <h3 class="h5">Taaknummer</h3>
-                <p>{{ taak.id }}</p>
-            {% endif %}
-            {% if taak.titel %}
-                <h3 class="h5">Omschrijving</h3>
-                <p>{{ taak.titel }}</p>
-            {% endif %}
-            {% if taak.bericht %}
-                <h3 class="h5">Interne opmerking</h3>
-                <p>{{ taak.bericht }}</p>
-            {% endif %}
-            {% if taak.aangemaakt_op %}
-                <h3 class="h5">Aangemaakt</h3>
-                <p>
-                    {{ taak.aangemaakt_op|to_datetime|date:'d-m-Y H:i' }}
-                    <br>
-                    {% with taakgebeurtenis=taak.taakgebeurtenissen_voor_taak|get_taakgebeurtenis_voor_taakstatus:'nieuw' %}
-                        {% include "incident/part_gebruiker_telefoon.html" with gebruiker=taakgebeurtenis.gebruiker|get_gebruiker_object_middels_email %}
-                    {% endwith %}
-                </p>
-            {% endif %}
-            {% if taak.aangepast_op %}
-                {% if taak.aangepast_op|to_datetime|date:'d-m-Y H:i' != taak.aangemaakt_op|to_datetime|date:'d-m-Y H:i' and taak.aangepast_op|to_datetime|date:'d-m-Y H:i' != taak.afgesloten_op|to_datetime|date:'d-m-Y H:i' %}
-                    <h3 class="h5">Aangepast</h3>
-                    <p>{{ taak.aangepast_op|to_datetime|date:'d-m-Y H:i' }}</p>
+            {% with taakgebeurtenis=taak.taakgebeurtenissen_voor_taak|get_taakgebeurtenis_voor_taakstatus:'nieuw' %}
+                {% if taak.id %}
+                    <h3 class="h5">Taaknummer</h3>
+                    <p>{{ taak.id }}</p>
                 {% endif %}
-            {% endif %}
-            {% if taak.afgesloten_op %}
-                <h3 class="h5">Afgesloten</h3>
-                <p>
-                    {{ taak.afgesloten_op|to_datetime|date:'d-m-Y H:i' }}
-                    <br>
-                    {% with taakgebeurtenis=taak.taakgebeurtenissen_voor_taak|get_taakgebeurtenis_voor_taakstatus:'voltooid' %}
+                {% if taak.titel %}
+                    <h3 class="h5">Omschrijving</h3>
+                    <p>{{ taak.titel }}</p>
+                {% endif %}
+                {% if taak.bericht %}
+                    <h3 class="h5">Interne opmerking</h3>
+                    <p>{{ taak.bericht }}</p>
+                {% endif %}
+                {% if taak.aangemaakt_op %}
+                    <h3 class="h5">Aangemaakt</h3>
+                    <p>
+                        {{ taak.aangemaakt_op|to_datetime|date:'d-m-Y H:i' }}
+                        <br>
                         {% include "incident/part_gebruiker_telefoon.html" with gebruiker=taakgebeurtenis.gebruiker|get_gebruiker_object_middels_email %}
-                    {% endwith %}
-                </p>
-            {% endif %}
-            {% if taak.taakstatus %}
-                <h3 class="h5">Status</h3>
-                <p>{{ taak.taakstatus.naam }}</p>
-            {% endif %}
-            {% if taak.resolutie %}
-                <h3 class="h5">Resolutie</h3>
-                <p>{{ taak.resolutie }}</p>
-            {% endif %}
+                    </p>
+                {% endif %}
+                {% if taak.aangepast_op %}
+                    {% if taak.aangepast_op|to_datetime|date:'d-m-Y H:i' != taak.aangemaakt_op|to_datetime|date:'d-m-Y H:i' and taak.aangepast_op|to_datetime|date:'d-m-Y H:i' != taak.afgesloten_op|to_datetime|date:'d-m-Y H:i' %}
+                        <h3 class="h5">Aangepast</h3>
+                        <p>{{ taak.aangepast_op|to_datetime|date:'d-m-Y H:i' }}</p>
+                    {% endif %}
+                {% endif %}
+                {% if taak.afgesloten_op %}
+                    <h3 class="h5">Afgesloten</h3>
+                    <p>
+                        {{ taak.afgesloten_op|to_datetime|date:'d-m-Y H:i' }}
+                        <br>
+                        {% include "incident/part_gebruiker_telefoon.html" with gebruiker=taakgebeurtenis.gebruiker|get_gebruiker_object_middels_email %}
+                    </p>
+                {% endif %}
+                {% if taak.taakstatus %}
+                    <h3 class="h5">Status</h3>
+                    <p>{{ taak.taakstatus.naam }}</p>
+                {% endif %}
+                {% if taakgebeurtenis.resolutie %}
+                    <h3 class="h5">Resolutie</h3>
+                    <p>{{ taakgebeurtenis.resolutie }}</p>
+                {% endif %}
+            {% endwith %}
         </details>
         <details data-action="toggle->detail#toggleDetailLocatie">
             <summary>

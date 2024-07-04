@@ -18,7 +18,7 @@ class TaakAdmin(admin.ModelAdmin):
         "taaktype",
         "melding",
         "taakstatus",
-        "resolutie",
+        "get_resolutie",
         "aangemaakt_op",
         "aangepast_op",
         "taakopdracht",
@@ -29,6 +29,7 @@ class TaakAdmin(admin.ModelAdmin):
         "aangemaakt_op",
         "aangepast_op",
         "afgesloten_op",
+        "get_resolutie",
     )
     fieldsets = (
         (
@@ -40,7 +41,7 @@ class TaakAdmin(admin.ModelAdmin):
                     "melding",
                     "taaktype",
                     "taakstatus",
-                    "resolutie",
+                    "get_resolutie",
                     "bericht",
                     "additionele_informatie",
                     "taakopdracht",
@@ -87,7 +88,7 @@ class TaakAdmin(admin.ModelAdmin):
             "taaktype",
             "taakstatus",
             "taak_zoek_data",
-        )
+        ).prefetch_related("taakgebeurtenissen_voor_taak")
 
     def compare_taakopdracht_status(self, request, queryset):
         voltooid_taak_ids = queryset.filter(taakstatus__naam="voltooid").values_list(
@@ -102,6 +103,17 @@ class TaakAdmin(admin.ModelAdmin):
     compare_taakopdracht_status.short_description = (
         "Compare taak and taakopdracht status"
     )
+
+    def get_resolutie(self, obj):
+        taakgebeurtenis = (
+            obj.taakgebeurtenissen_voor_taak.filter(taakstatus__naam="voltooid")
+            .order_by("-id")
+            .first()
+        )
+        return taakgebeurtenis.resolutie if taakgebeurtenis else "-"
+
+    get_resolutie.short_description = "Resolutie"
+    get_resolutie.admin_order_field = "taakgebeurtenissen_voor_taak__resolutie"
 
 
 class TaaktypeAdmin(admin.ModelAdmin):
@@ -170,6 +182,8 @@ class TaakgebeurtenisAdmin(admin.ModelAdmin):
     list_display = (
         "id",
         "gebruiker",
+        "taakstatus",
+        "resolutie",
     )
 
 

@@ -106,7 +106,7 @@ def compare_and_update_status(self, taak_id):
                 update_data = {
                     "taakopdracht_url": taak.taakopdracht,
                     "status": {"naam": taak.taakstatus.naam},
-                    "resolutie": taak.resolutie,
+                    "resolutie": taakgebeurtenis.resolutie,
                     "omschrijving_intern": taakgebeurtenis.omschrijving_intern,
                     "gebruiker": taakgebeurtenis.gebruiker,
                     "bijlagen": [],

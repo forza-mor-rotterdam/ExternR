@@ -13,6 +13,12 @@ class Taakgebeurtenis(BasisModel):
     Taakgebeurtenissen bouwen de history op van een taak
     """
 
+    class ResolutieOpties(models.TextChoices):
+        OPGELOST = "opgelost", "Opgelost"
+        NIET_OPGELOST = "niet_opgelost", "Niet opgelost"
+        GEANNULEERD = "geannuleerd", "Geannuleerd"
+        NIET_GEVONDEN = "niet_gevonden", "Niets aangetroffen"
+
     taakstatus = models.OneToOneField(
         to="taken.Taakstatus",
         related_name="taakgebeurtenis_voor_taakstatus",
@@ -26,6 +32,12 @@ class Taakgebeurtenis(BasisModel):
         to="taken.Taak",
         related_name="taakgebeurtenissen_voor_taak",
         on_delete=models.CASCADE,
+    )
+    resolutie = models.CharField(
+        max_length=50,
+        choices=ResolutieOpties.choices,
+        blank=True,
+        null=True,
     )
 
     class Meta:
@@ -79,6 +91,7 @@ class Taakstatus(BasisModel):
         TOEGEWEZEN = "toegewezen", "Toegewezen"
         OPENSTAAND = "openstaand", "Openstaand"
         VOLTOOID = "voltooid", "Voltooid"
+        VOLTOOID_MET_FEEDBACK = "voltooid_met_feedback", "Voltooid met feedback"
 
     naam = models.CharField(
         max_length=50,
@@ -122,6 +135,10 @@ class Taakstatus(BasisModel):
                 return [
                     Taakstatus.NaamOpties.TOEGEWEZEN,
                     Taakstatus.NaamOpties.VOLTOOID,
+                ]
+            case Taakstatus.NaamOpties.VOLTOOID:
+                return [
+                    Taakstatus.NaamOpties.VOLTOOID_MET_FEEDBACK,
                 ]
             case _:
                 return []
@@ -200,12 +217,6 @@ class TaakZoekData(BasisModel):
 
 
 class Taak(BasisModel):
-    class ResolutieOpties(models.TextChoices):
-        OPGELOST = "opgelost", "Opgelost"
-        NIET_OPGELOST = "niet_opgelost", "Niet opgelost"
-        GEANNULEERD = "geannuleerd", "Geannuleerd"
-        NIET_GEVONDEN = "niet_gevonden", "Niets aangetroffen"
-
     afgesloten_op = models.DateTimeField(null=True, blank=True)
     melding = models.ForeignKey(
         to="aliassen.MeldingAlias",
@@ -224,12 +235,6 @@ class Taak(BasisModel):
         to="taken.Taakstatus",
         related_name="taak_voor_taakstatus",
         on_delete=models.SET_NULL,
-        blank=True,
-        null=True,
-    )
-    resolutie = models.CharField(
-        max_length=50,
-        choices=ResolutieOpties.choices,
         blank=True,
         null=True,
     )
@@ -267,11 +272,11 @@ class Taak(BasisModel):
     def behandel_opties(cls):
         return (
             (
-                Taak.ResolutieOpties.OPGELOST,
+                Taakgebeurtenis.ResolutieOpties.OPGELOST,
                 "De taak is afgerond",
             ),
             (
-                Taak.ResolutieOpties.NIET_OPGELOST,
+                Taakgebeurtenis.ResolutieOpties.NIET_OPGELOST,
                 "Kan niet worden uitgevoerd",
             ),
         )

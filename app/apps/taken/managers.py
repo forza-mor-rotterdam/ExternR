@@ -58,7 +58,7 @@ class TaakManager(models.Manager):
 
     def status_aanpassen(self, serializer, taak, db="default"):
         from apps.aliassen.tasks import task_maak_bijlagealias
-        from apps.taken.models import Taak
+        from apps.taken.models import Taak, Taakgebeurtenis, Taakstatus
 
         with transaction.atomic():
             try:
@@ -85,10 +85,17 @@ class TaakManager(models.Manager):
             locked_taak.taakstatus = taakgebeurtenis.taakstatus
             locked_taak.additionele_informatie["uitvoerder"] = uitvoerder
 
-            if not locked_taak.taakstatus.volgende_statussen():
+            if (
+                Taakstatus.NaamOpties.VOLTOOID_MET_FEEDBACK
+                in locked_taak.taakstatus.volgende_statussen()
+                or not locked_taak.taaktstatus.volgende_statussen()
+            ):
                 locked_taak.afgesloten_op = timezone.now().isoformat()
-                if resolutie in [ro[0] for ro in Taak.ResolutieOpties.choices]:
-                    locked_taak.resolutie = resolutie
+                if resolutie in [
+                    ro[0] for ro in Taakgebeurtenis.ResolutieOpties.choices
+                ]:
+                    taakgebeurtenis.resolutie = resolutie
+                    taakgebeurtenis.save()
             locked_taak.bezig_met_verwerken = False
             locked_taak.save()
 
