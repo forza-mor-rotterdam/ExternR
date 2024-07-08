@@ -10,6 +10,7 @@ class Instelling(BasisModel):
     mor_core_token_timeout = models.PositiveIntegerField(default=0)
     taakr_basis_url = models.URLField(default="http://taakr.mor.local:8009")
     onderwerpen_basis_url = models.URLField(default="http://onderwerpen.mor.local:8006")
+    email_beheer = models.EmailField()
 
     @classmethod
     def actieve_instelling(cls):

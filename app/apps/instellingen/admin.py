@@ -9,6 +9,7 @@ class InstellingAdmin(admin.ModelAdmin):
         "mor_core_token_timeout",
         "taakr_basis_url",
         "onderwerpen_basis_url",
+        "email_beheer",
     )
 
 
