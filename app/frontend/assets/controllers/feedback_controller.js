@@ -6,13 +6,12 @@ export default class extends Controller {
   static targets = ['toelichting']
 
   initialize() {
-    this.toelichtingTarget.querySelector('textarea').setAttribute('required', true)
+    this.toelichtingTarget.querySelector('textarea').setAttribute('required', '')
   }
 
   connect() {}
 
   onChangeReden(e) {
-    this.checkValids()
     if (e.target.value === '3') {
       const row = document.querySelector('textarea').closest('.form-row')
       const error = row.getElementsByClassName('invalid-text')[0]
@@ -26,14 +25,16 @@ export default class extends Controller {
 
   hideField(e) {
     this.toelichtingTarget.querySelector('textarea').value =
-      e.target.parentNode.childNodes[1].nodeValue.trim()
-    this.toelichtingTarget.classList.add('hidden')
+      e.target.parentNode.querySelector('label').innerText
+    this.toelichtingTarget.classList.add('hidden-for-form')
+    this.toelichtingTarget.querySelector('textarea').removeAttribute('required')
   }
 
   showField() {
     const field = this.toelichtingTarget.querySelector('textarea')
     field.value = null
-    this.toelichtingTarget.classList.remove('hidden')
+    this.toelichtingTarget.classList.remove('hidden-for-form')
+    this.toelichtingTarget.querySelector('textarea').setAttribute('required', '')
     field.focus()
   }
 

@@ -6,9 +6,7 @@
 {% block body %}
     <turbo-frame id="feedback">
     <div class="taak-feedback">
-        <h1>
-            <span class="green">Bedankt</span> voor het doorgeven!
-        </h1>
+        <h1>De taak kon niet worden opgelost</h1>
         <h2>Kunt u aangeven waarom u de taak niet heeft kunnen afhandelen?</h2>
         <dl>
             <div>
@@ -37,7 +35,9 @@
             {% csrf_token %}
             <fieldset>
                 {{ form.omschrijving_intern_opties|render_rotterdam_formulier }}
-                <div class="hidden" data-feedback-target="toelichting">{{ form.omschrijving_intern|render_rotterdam_formulier }}</div>
+                <div class="hidden-for-form" data-feedback-target="toelichting">
+                    {{ form.omschrijving_intern|render_rotterdam_formulier }}
+                </div>
             </fieldset>
             <div class="form-row container__button">
                 <div class="form-row btn-row">
