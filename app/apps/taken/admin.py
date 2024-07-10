@@ -18,11 +18,11 @@ class TaakAdmin(admin.ModelAdmin):
         "taaktype",
         "melding",
         "taakstatus",
+        "get_resolutie",
         "aangemaakt_op",
         "aangepast_op",
         "taakopdracht",
         "taak_zoek_data",
-        "get_resolutie",
     )
     readonly_fields = (
         "uuid",

@@ -170,10 +170,12 @@ class MeldingenService:
             "bijlagen": bijlagen,
             "gebruiker": gebruiker,
         }
+        if naar_niet_opgelost:
+            data.update({"externr_niet_opgelost", True})
         if uitvoerder:
             data.update({"uitvoerder": uitvoerder})
         return self.do_request(
-            f"{taakopdracht_url}{'externr-' if naar_niet_opgelost else ''}status-aanpassen/",
+            f"{taakopdracht_url}status-aanpassen/",
             method="patch",
             data=data,
         )
