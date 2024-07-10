@@ -18,11 +18,11 @@ class TaakAdmin(admin.ModelAdmin):
         "taaktype",
         "melding",
         "taakstatus",
-        "get_resolutie",
         "aangemaakt_op",
         "aangepast_op",
         "taakopdracht",
         "taak_zoek_data",
+        "get_resolutie",
     )
     readonly_fields = (
         "uuid",
@@ -91,9 +91,9 @@ class TaakAdmin(admin.ModelAdmin):
         ).prefetch_related("taakgebeurtenissen_voor_taak")
 
     def compare_taakopdracht_status(self, request, queryset):
-        voltooid_taak_ids = queryset.filter(taakstatus__naam="voltooid").values_list(
-            "id", flat=True
-        )
+        voltooid_taak_ids = queryset.filter(
+            taakstatus__naam__in=["voltooid", "voltooid_met_feedback"]
+        ).values_list("id", flat=True)
         for taak_id in voltooid_taak_ids:
             compare_and_update_status.delay(taak_id)
         self.message_user(
@@ -106,7 +106,9 @@ class TaakAdmin(admin.ModelAdmin):
 
     def get_resolutie(self, obj):
         taakgebeurtenis = (
-            obj.taakgebeurtenissen_voor_taak.filter(taakstatus__naam="voltooid")
+            obj.taakgebeurtenissen_voor_taak.filter(
+                taakstatus__naam__in=["voltooid", "voltooid_met_feedback"]
+            )
             .order_by("-id")
             .first()
         )

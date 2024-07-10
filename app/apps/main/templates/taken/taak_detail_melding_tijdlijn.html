@@ -49,7 +49,7 @@
                                             {{ taakopdracht.titel }}
                                             {% if row_data.mg.taakgebeurtenis.taakstatus.naam != "nieuw" %}
                                                 :
-                                                {% if row_data.mg.taakgebeurtenis.taakstatus.naam == "voltooid" %}
+                                                {% if row_data.mg.taakgebeurtenis.taakstatus.naam == "voltooid" or row_data.mg.taakgebeurtenis.taakstatus.naam == "voltooid_met_feedback" %}
                                                     {{ row_data.mg.taakgebeurtenis.resolutie|vertaal }}
                                                     <span class="visually-hidden" data-datetime-target="resolutie">{{ row_data.mg.taakgebeurtenis.resolutie }}</span>
                                                 {% else %}

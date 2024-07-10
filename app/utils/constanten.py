@@ -17,6 +17,7 @@ VERTALINGEN = {
     "nieuw": "Nieuw",
     "bezig": "Bezig",
     "voltooid": "Voltooid",
+    "voltooid_met_feedback": "Voltooid met feedback",
     "toegewezen": "Toegewezen",
     "adres": "Ter hoogte van",
     "lichtmast": "Lichtmast",

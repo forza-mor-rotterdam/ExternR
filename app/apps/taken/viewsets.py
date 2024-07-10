@@ -100,6 +100,7 @@ class TaakViewSet(
             data=data,
             context={"request": request},
         )
+
         if serializer.is_valid():
             Taak.acties.status_aanpassen(serializer, self.get_object())
 

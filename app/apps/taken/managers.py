@@ -88,7 +88,7 @@ class TaakManager(models.Manager):
             if (
                 Taakstatus.NaamOpties.VOLTOOID_MET_FEEDBACK
                 in locked_taak.taakstatus.volgende_statussen()
-                or not locked_taak.taaktstatus.volgende_statussen()
+                or not locked_taak.taakstatus.volgende_statussen()
             ):
                 locked_taak.afgesloten_op = timezone.now().isoformat()
                 if resolutie in [

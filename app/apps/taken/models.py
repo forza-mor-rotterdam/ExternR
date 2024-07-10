@@ -109,7 +109,11 @@ class Taakstatus(BasisModel):
         return [
             choice[0]
             for choice in Taakstatus.NaamOpties.choices
-            if choice[0] != Taakstatus.NaamOpties.VOLTOOID
+            if choice[0]
+            not in [
+                Taakstatus.NaamOpties.VOLTOOID,
+                Taakstatus.NaamOpties.VOLTOOID_MET_FEEDBACK,
+            ]
         ]
 
     def volgende_statussen(self):

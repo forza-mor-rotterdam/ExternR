@@ -159,6 +159,7 @@ class MeldingenService:
         bijlagen=[],
         gebruiker=None,
         uitvoerder=None,
+        naar_niet_opgelost=False,
     ):
         data = {
             "taakstatus": {
@@ -172,7 +173,9 @@ class MeldingenService:
         if uitvoerder:
             data.update({"uitvoerder": uitvoerder})
         return self.do_request(
-            f"{taakopdracht_url}status-aanpassen/", method="patch", data=data
+            f"{taakopdracht_url}{'externr-' if naar_niet_opgelost else ''}status-aanpassen/",
+            method="patch",
+            data=data,
         )
 
     def taak_gebeurtenis_toevoegen(
