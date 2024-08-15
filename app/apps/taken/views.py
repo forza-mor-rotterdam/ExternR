@@ -191,10 +191,11 @@ def taak_feedback_handle(request, taak_id: int, email_hash: str):
         if form.is_valid():
             taak_status_aanpassen_response = MeldingenService().taak_status_aanpassen(
                 taakopdracht_url=taak.taakopdracht,
-                status="voltooid",
+                status="voltooid_met_feedback",
                 resolutie="niet_opgelost",
                 omschrijving_intern=form.cleaned_data.get("omschrijving_intern"),
                 gebruiker=taak.taaktype.externe_instantie_email,
+                naar_niet_opgelost=True,
             )
             if taak_status_aanpassen_response.status_code != 200:
                 logger.error(

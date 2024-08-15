@@ -70,24 +70,27 @@ def melding_naar_tijdlijn(melding: dict):
     for mg in reversed(melding.get("meldinggebeurtenissen", [])):
         row = [0 for t in t_ids]
 
-        tg = mg.get("taakgebeurtenis", {}) if mg.get("taakgebeurtenis", {}) else {}
+        taakgebeurtenis = (
+            mg.get("taakgebeurtenis", {}) if mg.get("taakgebeurtenis", {}) else {}
+        )
         taakstatus_is_voltooid = (
-            tg
-            and tg.get("taakstatus")
-            and tg.get("taakstatus", {}).get("naam") == "voltooid"
+            taakgebeurtenis
+            and taakgebeurtenis.get("taakstatus")
+            and taakgebeurtenis.get("taakstatus", {}).get("naam")
+            in ["voltooid", "voltooid_met_feedback"]
         )
         taakstatus_event = (
-            tg
-            and tg.get("taakstatus")
-            and tg.get("taakstatus", {}).get("naam")
+            taakgebeurtenis
+            and taakgebeurtenis.get("taakstatus")
+            and taakgebeurtenis.get("taakstatus", {}).get("naam")
             in [
                 "toegewezen",
                 "openstaand",
             ]
-            or tg
-            and tg.get("gebeurtenis_type") == "gedeeld"
+            or taakgebeurtenis
+            and taakgebeurtenis.get("gebeurtenis_type") == "gedeeld"
         )
-        t_id = tg.get("taakopdracht")
+        t_id = taakgebeurtenis.get("taakopdracht")
         if t_id and t_id not in t_ids:
             try:
                 i = t_ids.index(-1)
@@ -106,7 +109,7 @@ def melding_naar_tijdlijn(melding: dict):
         for i, t in enumerate(t_ids):
             row[i] = -1 if t == -1 else row[i]
 
-        row.insert(0, 0 if tg else 1)
+        row.insert(0, 0 if taakgebeurtenis else 1)
 
         if taakstatus_is_voltooid:
             index = t_ids.index(t_id)

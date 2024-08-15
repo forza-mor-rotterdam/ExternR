@@ -1,3 +1,7 @@
+import ast
+import importlib
+import json
+
 from apps.taken.admin_filters import (
     AfgeslotenOpFilter,
     ResolutieFilter,
@@ -6,8 +10,44 @@ from apps.taken.admin_filters import (
 )
 from apps.taken.models import Taak, Taakgebeurtenis, Taakstatus, Taaktype, TaakZoekData
 from apps.taken.tasks import compare_and_update_status
-from django.contrib import admin
+from django.contrib import admin, messages
 from django.db.models import Count
+from django.utils.safestring import mark_safe
+from django_celery_results.admin import TaskResultAdmin
+from django_celery_results.models import TaskResult
+
+
+def retry_celery_task_admin_action(modeladmin, request, queryset):
+    msg = ""
+    for task_res in queryset:
+        if task_res.status != "FAILURE":
+            msg += f'{task_res.task_id} => Skipped. Not in "FAILURE" State<br>'
+            continue
+        try:
+            task_actual_name = task_res.task_name.split(".")[-1]
+            module_name = ".".join(task_res.task_name.split(".")[:-1])
+            args = json.loads(task_res.task_args)
+            kwargs = json.loads(task_res.task_kwargs)
+            if isinstance(kwargs, str) and isinstance(args, str):
+                kwargs = kwargs.replace("'", '"')
+                args = ast.literal_eval(ast.literal_eval(task_res.task_args))
+                kwargs = json.loads(kwargs)
+                if kwargs or args:
+                    getattr(
+                        importlib.import_module(module_name), task_actual_name
+                    ).apply_async(args=args, kwargs=kwargs, task_id=task_res.task_id)
+            if not kwargs:
+                args = ast.literal_eval(ast.literal_eval(task_res.task_args))
+                getattr(
+                    importlib.import_module(module_name), task_actual_name
+                ).apply_async(args, task_id=task_res.task_id)
+            msg += f"{task_res.task_id} => Successfully sent to queue for retry.<br>"
+        except Exception as ex:
+            msg += f"{task_res.task_id} => Unable to process. Error: {ex}<br>"
+    messages.info(request, mark_safe(msg))
+
+
+retry_celery_task_admin_action.short_description = "Retry Task"
 
 
 class TaakAdmin(admin.ModelAdmin):
@@ -87,12 +127,12 @@ class TaakAdmin(admin.ModelAdmin):
             "taaktype",
             "taakstatus",
             "taak_zoek_data",
-        )
+        ).prefetch_related("taakgebeurtenissen_voor_taak")
 
     def compare_taakopdracht_status(self, request, queryset):
-        voltooid_taak_ids = queryset.filter(taakstatus__naam="voltooid").values_list(
-            "id", flat=True
-        )
+        voltooid_taak_ids = queryset.filter(
+            taakstatus__naam__in=["voltooid", "voltooid_met_feedback"]
+        ).values_list("id", flat=True)
         for taak_id in voltooid_taak_ids:
             compare_and_update_status.delay(taak_id)
         self.message_user(
@@ -170,6 +210,8 @@ class TaakgebeurtenisAdmin(admin.ModelAdmin):
     list_display = (
         "id",
         "gebruiker",
+        "taakstatus",
+        "resolutie",
     )
 
 
@@ -182,6 +224,23 @@ class TaakstatusAdmin(admin.ModelAdmin):
         "aangemaakt_op",
         "aangepast_op",
     )
+
+
+class CustomTaskResultAdmin(TaskResultAdmin):
+    list_filter = (
+        "status",
+        "date_created",
+        "date_done",
+        "periodic_task_name",
+        "task_name",
+    )
+    actions = [
+        retry_celery_task_admin_action,
+    ]
+
+
+admin.site.unregister(TaskResult)
+admin.site.register(TaskResult, CustomTaskResultAdmin)
 
 
 admin.site.register(TaakZoekData, TaakZoekDataAdmin)

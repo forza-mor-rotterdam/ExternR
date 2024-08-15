@@ -55,7 +55,7 @@
                 <p>
                     {{ taak.afgesloten_op|to_datetime|date:'d-m-Y H:i' }}
                     <br>
-                    {% with taakgebeurtenis=taak.taakgebeurtenissen_voor_taak|get_taakgebeurtenis_voor_taakstatus:'voltooid' %}
+                    {% with taakgebeurtenis=taak.taakgebeurtenissen_voor_taak|get_laatste_taakgebeurtenis %}
                         {% include "incident/part_gebruiker_telefoon.html" with gebruiker=taakgebeurtenis.gebruiker|get_gebruiker_object_middels_email %}
                     {% endwith %}
                 </p>
