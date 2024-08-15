@@ -167,7 +167,7 @@ def taak_afsluiten_zonder_feedback_task(self, taak_id):
 @shared_task(bind=True, base=BaseTaskWithRetry)
 def send_taak_aangemaakt_email_task(self, taak_id, base_url=None):
     taak = Taak.objects.get(id=taak_id)
-    
+
     MailService().taak_aangemaakt_email(
         taak,
         verzenden=True,

@@ -10,14 +10,11 @@ from apps.taken.admin_filters import (
 )
 from apps.taken.models import Taak, Taakgebeurtenis, Taakstatus, Taaktype, TaakZoekData
 from apps.taken.tasks import compare_and_update_status
-from django.contrib import admin
-from django.db.models import Count
 from django.contrib import admin, messages
 from django.db.models import Count
 from django.utils.safestring import mark_safe
 from django_celery_results.admin import TaskResultAdmin
 from django_celery_results.models import TaskResult
-
 
 
 def retry_celery_task_admin_action(modeladmin, request, queryset):
@@ -227,7 +224,6 @@ class TaakstatusAdmin(admin.ModelAdmin):
         "aangemaakt_op",
         "aangepast_op",
     )
-
 
 
 class CustomTaskResultAdmin(TaskResultAdmin):

@@ -157,11 +157,6 @@ class TaaktypeAanmakenView(TaaktypeAanmakenAanpassenView, CreateView):
 
 def taak_feedback_handle(request, taak_id: int, email_hash: str):
     taak = get_object_or_404(Taak, pk=taak_id)
-    taakgebeurtenis = (
-        taak.taakgebeurtenissen_voor_taak.filter(taakstatus=taak.taakstatus)
-        .order_by("-aangemaakt_op")
-        .first()
-    )
     form = None
     try:
         verwachte_hash = hashlib.sha256(

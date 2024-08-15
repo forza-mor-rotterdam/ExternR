@@ -1,6 +1,5 @@
-from apps.taken.models import Taak, Taakgebeurtenis
+from apps.taken.models import Taak
 from django.contrib import admin
-from django.db.models import F, OuterRef, Subquery
 from django.utils.translation import gettext_lazy as _
 
 
