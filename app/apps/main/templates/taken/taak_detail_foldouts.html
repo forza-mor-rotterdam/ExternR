@@ -64,12 +64,10 @@
                 <h3 class="h5">Status</h3>
                 <p>{{ taak.taakstatus.naam }}</p>
             {% endif %}
-            {% with taakgebeurtenis=taak.taakgebeurtenissen_voor_taak|get_laatste_taakgebeurtenis %}
-                {% if taakgebeurtenis.resolutie %}
-                    <h3 class="h5">Resolutie</h3>
-                    <p>{{ taakgebeurtenis.resolutie }}</p>
-                {% endif %}
-            {% endwith %}
+            {% if taak.resolutie %}
+                <h3 class="h5">Resolutie</h3>
+                <p>{{ taak.resolutie }}</p>
+            {% endif %}
         </details>
         <details data-action="toggle->detail#toggleDetailLocatie">
             <summary>

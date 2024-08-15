@@ -106,7 +106,7 @@ def compare_and_update_status(self, taak_id):
                 update_data = {
                     "taakopdracht_url": taak.taakopdracht,
                     "status": {"naam": taak.taakstatus.naam},
-                    "resolutie": taakgebeurtenis.resolutie,
+                    "resolutie": taak.resolutie,
                     "omschrijving_intern": taakgebeurtenis.omschrijving_intern,
                     "gebruiker": taakgebeurtenis.gebruiker,
                     "bijlagen": [],
@@ -147,26 +147,21 @@ def compare_and_update_status(self, taak_id):
 
 @shared_task(bind=True, base=BaseTaskWithRetry)
 def taak_afsluiten_zonder_feedback_task(self, taak_id):
-    try:
-        taak = Taak.objects.get(id=taak_id)
-        taak_status_aanpassen_response = MeldingenService().taak_status_aanpassen(
-            taakopdracht_url=taak.taakopdracht,
-            status="voltooid",
-            resolutie="opgelost",
-            gebruiker=taak.taaktype.externe_instantie_email,
+    taak = Taak.objects.get(id=taak_id)
+    taak_status_aanpassen_response = MeldingenService().taak_status_aanpassen(
+        taakopdracht_url=taak.taakopdracht,
+        status="voltooid",
+        resolutie="opgelost",
+        gebruiker=taak.taaktype.externe_instantie_email,
+    )
+    if taak_status_aanpassen_response.status_code != 200:
+        logger.error(
+            f"close_task_no_feedback_required: status_code={taak_status_aanpassen_response.status_code}, taak_id={taak_id}, repsonse_text={taak_status_aanpassen_response.text}"
         )
-        if taak_status_aanpassen_response.status_code != 200:
-            logger.error(
-                f"close_task_no_feedback_required: status_code={taak_status_aanpassen_response.status_code}, taak_id={taak_id}, repsonse_text={taak_status_aanpassen_response.text}"
-            )
-            # Raise an exception to trigger retry
-            raise Exception(
-                f"Task status code is not 200: {taak_status_aanpassen_response.status_code}"
-            )
-    except Exception as e:
-        logger.error(f"Error in taak_afsluiten_zonder_feedback task: {e}")
         # Raise an exception to trigger retry
-        raise e
+        raise Exception(
+            f"Task status code is not 200: {taak_status_aanpassen_response.status_code}"
+        )
 
 
 @shared_task(bind=True, base=BaseTaskWithRetry)
@@ -178,19 +173,3 @@ def send_taak_aangemaakt_email_task(self, taak_id, base_url=None):
         verzenden=True,
         base_url=base_url,
     )
-
-
-def _send_taak_aangemaakt_email_task(taak_id, base_url=None):
-    taak = Taak.objects.get(id=taak_id)
-    if not taak:
-        raise ValueError("Taak is none")
-    try:
-        # Use the base_url and user_email in your mail service if needed
-        MailService().taak_aangemaakt_email(
-            taak,
-            verzenden=True,
-            base_url=base_url,
-        )
-    except Exception as e:
-        logger.error(f"Error in send_taak_aangemaakt_email task: {e}")
-        raise e

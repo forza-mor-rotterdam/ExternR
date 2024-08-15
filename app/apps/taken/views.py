@@ -181,7 +181,7 @@ def taak_feedback_handle(request, taak_id: int, email_hash: str):
             status=500,
         )
     # Taak is eerder veranderd naar niet_opgelost
-    if taakgebeurtenis.resolutie == "niet_opgelost":
+    if taak.resolutie == "niet_opgelost":
         return render(
             request,
             "taken/taak_externe_instantie_eerder_voltooid.html",

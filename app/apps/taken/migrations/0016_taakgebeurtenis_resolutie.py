@@ -40,8 +40,4 @@ class Migration(migrations.Migration):
         # Step 2: Data migration to move values from Taak.resolutie to Taakgebeurtenis.resolutie
         migrations.RunPython(move_resolutie_to_taakgebeurtenis),
         # Step 3: Remove the resolutie field from Taak
-        migrations.RemoveField(
-            model_name="taak",
-            name="resolutie",
-        ),
     ]
