@@ -171,7 +171,7 @@ class MeldingenService:
             "gebruiker": gebruiker,
         }
         if naar_niet_opgelost:
-            data.update({"externr_niet_opgelost", True})
+            data.update({"externr_niet_opgelost": True})
         if uitvoerder:
             data.update({"uitvoerder": uitvoerder})
         return self.do_request(

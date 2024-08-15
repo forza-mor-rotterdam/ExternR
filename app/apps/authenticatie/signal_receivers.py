@@ -14,6 +14,6 @@ def create_user_profile(sender, instance, created, **kwargs):
     if not hasattr(instance, "profiel"):
         Profiel.objects.create(gebruiker=instance)
 
-    MeldingenService().set_gebruiker(
-        gebruiker=instance.serialized_instance(),
-    )
+    # MeldingenService().set_gebruiker(
+    #     gebruiker=instance.serialized_instance(),
+    # )
