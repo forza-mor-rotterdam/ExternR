@@ -16,7 +16,6 @@ from apps.main.utils import (
     set_actieve_filters,
     set_kaart_modus,
     set_sortering,
-    to_base64,
 )
 from apps.meldingen.service import MeldingenService
 from apps.services.pdok import PDOKService
@@ -40,12 +39,7 @@ from django.core.paginator import Paginator
 from django.db import models
 from django.db.models import Case, F, Q, Value, When
 from django.db.models.functions import Cast, Concat
-from django.http import (
-    HttpResponse,
-    HttpResponsePermanentRedirect,
-    JsonResponse,
-    StreamingHttpResponse,
-)
+from django.http import HttpResponse, JsonResponse, StreamingHttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 
@@ -430,7 +424,7 @@ def taak_afhandelen(request, id):
     )
     volgende_taaktypes = []
     actieve_vervolg_taken = []
-    if taak.taakstatus.naam == "voltooid":
+    if taak.taakstatus.naam in ["voltooid", "voltooid_met_feedback"]:
         messages.warning(request, "Deze taak is ondertussen al afgerond.")
         return render(
             request,
@@ -447,9 +441,11 @@ def taak_afhandelen(request, id):
 
     if taaktypes:
         openstaande_taaktype_urls_voor_melding = [
-            to.get("taaktype")
-            for to in taak.melding.response_json.get("taakopdrachten_voor_melding", [])
-            if to.get("status", {}).get("naam") == "nieuw"
+            taakopdracht.get("taaktype")
+            for taakopdracht in taak.melding.response_json.get(
+                "taakopdrachten_voor_melding", []
+            )
+            if taakopdracht.get("status", {}).get("naam") == "nieuw"
         ]
         alle_volgende_taaktypes = [
             (

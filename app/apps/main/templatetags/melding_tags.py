@@ -10,7 +10,8 @@ logger = logging.getLogger(__name__)
 @register.filter
 def taakopdracht(melding, taakopdracht_id):
     taakopdracht = {
-        to.get("id"): to for to in melding.get("taakopdrachten_voor_melding", [])
+        taakopdracht.get("id"): taakopdracht
+        for taakopdracht in melding.get("taakopdrachten_voor_melding", [])
     }.get(taakopdracht_id, {})
     return taakopdracht
 

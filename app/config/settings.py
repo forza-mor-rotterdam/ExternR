@@ -490,8 +490,6 @@ if OPENID_CONFIG and OIDC_RP_CLIENT_ID:
     LOGOUT_REDIRECT_URL = OIDC_OP_LOGOUT_ENDPOINT
     LOGIN_URL = "/oidc/authenticate/"
 
-EMAIL_BEHEER = os.getenv("EMAIL_BEHEER", "ForzaMOR@rotterdam.nl")
-
 APP_ENV = os.getenv("APP_ENV", "productie")  # acceptatie/test/productie
 
 SIGNED_DATA_MAX_AGE_SECONDS = int(
