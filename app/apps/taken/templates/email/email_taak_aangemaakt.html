@@ -387,9 +387,9 @@
                                     {% if taak.taakgebeurtenissen_voor_taak.exists %}
                                         <dl>
                                             {% with gebruiker=taak.taakgebeurtenissen_voor_taak.first.gebruiker|get_gebruiker_object_middels_email %}
-                                                {% if gebruiker.first_name or gebruiker.last_name %}
+                                                {% if gebruiker.first_name or gebruiker.last_name or gebruiker.rol %}
                                                     <dd>
-                                                        {{ gebruiker.first_name }}
+                                                        {% if gebruiker.first_name %}{{ gebruiker.first_name }}{% endif %}
                                                         {% if gebruiker.last_name %}{{ gebruiker.last_name }}{% endif %}
                                                         {% if gebruiker.rol %}, {{ gebruiker.rol }}{% endif %}
                                                     </dd>
