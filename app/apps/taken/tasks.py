@@ -173,3 +173,19 @@ def send_taak_aangemaakt_email_task(self, taak_id, base_url=None):
         verzenden=True,
         base_url=base_url,
     )
+
+
+def _send_taak_aangemaakt_email_task(taak_id, base_url=None):
+    taak = Taak.objects.get(id=taak_id)
+    if not taak:
+        raise ValueError("Taak is none")
+    try:
+        # Use the base_url and user_email in your mail service if needed
+        MailService().taak_aangemaakt_email(
+            taak,
+            verzenden=True,
+            base_url=base_url,
+        )
+    except Exception as e:
+        logger.error(f"Error in send_taak_aangemaakt_email task: {e}")
+        raise e
