@@ -29,6 +29,8 @@ DEPLOY_DATE = os.getenv("DEPLOY_DATE", "")
 ENVIRONMENT = os.getenv("ENVIRONMENT")
 APP_ENV = os.getenv("APP_ENV", PRODUCTIE)  # acceptatie/test/productie
 DEBUG = ENVIRONMENT == "development"
+PROTOCOL = "https" if not DEBUG else "http"
+PORT = "" if not DEBUG else ":8008"
 
 # Fernet Key
 FIELD_ENCRYPTION_KEY = os.getenv(

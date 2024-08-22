@@ -7,6 +7,7 @@ import magic
 from apps.main.templatetags.melding_tags import get_bijlagen
 from apps.meldingen.service import MeldingenService
 from django.conf import settings
+from django.contrib.sites.models import Site
 from django.core.mail import EmailMultiAlternatives, SafeMIMEMultipart
 from django.template.loader import get_template
 from django.urls import reverse
@@ -97,6 +98,9 @@ class MailService:
         base_url=None,
     ):
         send_to = []
+
+        domain = Site.objects.get_current().domain
+        url_basis = f"{settings.PROTOCOL}://{domain}{settings.PORT}"
         # @ TODO retrieve taaktype data from taakr
         taaktype = taak.taaktype
 
@@ -114,6 +118,7 @@ class MailService:
             "taak": taak,
             "taaktype": taaktype,
             "bijlagen": [b.split("/")[-1].replace(" ", "_") for b in bijlagen_flat],
+            "url_basis": url_basis,
         }
 
         taak_id_hash = hashlib.sha256(

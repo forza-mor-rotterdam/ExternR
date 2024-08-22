@@ -41,7 +41,7 @@ repos:
     hooks:
       - id: djlint-reformat-django
       - id: djlint-django
-        args: ["--ignore", "H006,H008,H013,H023,D004,D018"]
+        args: ["--ignore", "H006,H008,H013,H021,H023,D004,D018"]
   - repo: https://github.com/pre-commit/mirrors-eslint
     rev: 'v9.8.0'
     hooks:

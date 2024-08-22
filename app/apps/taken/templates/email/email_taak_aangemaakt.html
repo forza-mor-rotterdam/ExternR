@@ -129,7 +129,7 @@
             {% with melding=taak.melding.response_json %}
                 <tr>
                     <td align="left" class="p-40-0-20">
-                        <img src="https://externr-test.forzamor.nl/static/images/logo-organisatie.png"
+                        <img src="{{ url_basis }}/static/images/logo-organisatie.png"
                              width="264"
                              height="48"
                              alt="Logo Gemeente Rotterdam" />
@@ -176,7 +176,7 @@
                             Wij gaan er vanuit dat de taak door uw organisatie wordt opgepakt. Daarom handelen we de taak bij deze af in ons systeem. Lukt het uw organisatie niet om de taak af te handelen, dan kunt u dit zelf aangeven.
                         </p>
                         <p class="p-20-0">
-                            <a href="{{ niet_opgelost_url }}" class="btn">De taak kan niet worden opgelost</a>
+                            <a href="{{ niet_opgelost_url }}" class="btn" style="color: #404B4F;">De taak kan niet worden opgelost</a>
                         </p>
                     </td>
                 </tr>
@@ -196,8 +196,7 @@
                             <tr>
                                 <td colspan="2">
                                     <h3 class="p-50-0-0">
-                                        <img alt=""
-                                             src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAIhSURBVHgB7VY7chNBEH29Jrd0AKPhBIiMzCsiQnMCiRvgC6BZIjJDRoZ8AuQTeJ1BhG/ArIuAcJ3jbXpWqgIzn52xi6Jc5Velra2e/rzt6Tca4B7/GZTlrdUIuCpRFHMwpmJR25VzyWTAvMby4hgZSCeg9w5AxdEfRUMwAOtUIjspTnijlsL1g7yNErzFhw7wbBc4vTwbch4mYIuzfFE2qEwhEd8CvbeQtn/EbcBXM+jvdWi5iMVK8aU/KWowzeQ3xrKh/t0OojfHTvQDwh3YDN0ntzgfQ18s/DEPVyCauzHhLkQ6IIPkwkiIDscUr+TRuuZiHoxAsD49dm1cQxsTjNGmlQ6dOHaWgcwmgP6guY4ODYZhPDaFGxDweU8SvBQyECPg7iXLXPTHcQBaKdm6/aRcCQR8shqh6I6CEUVnZascOwckKngQWkBHJyi4dJPRAtVkKtI67KXVd+TnVPQuJyZKby6iVahM5ByQxMTfkHb+x8H0KKSe8Bb0kqL3uHVxrmLSHVLBO/hllQojp6aOOcQJbLoww81ImG1sFGkXEq1kyPgrcsD0RD7gfMgt7UJStz+wP74Uus+T/Ds6RGXWKa5pBCzO2s8od8ciqadRPzt0VfMWici7lFpUk1N5loFsa7xuXiADef8FFky2gPGsGGn9S2Qin8BvZbTXilubXfvnBDYkzLYTG7B8eeyeEEH6EP6NujW9MsBfoJsV7nFX8Qt4a68GbybbFwAAAABJRU5ErkJggg==" />
+                                        <img alt="" src="{{ url_basis }}/static/icons/email-pin.png" />
                                         <span>Locatie</span>
                                     </h3>
                                 </td>
@@ -218,9 +217,9 @@
                                         </dd>
                                     </dl>
                                     <p>
-                                        <a href="https://www.google.com/maps/search/?api=1&query={{ taak.taak_zoek_data.geometrie.1|replace_comma_by_dot }},{{ taak.taak_zoek_data.geometrie.0|replace_comma_by_dot }}">
-                                            <img alt=""
-                                                 src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAHvSURBVHgB5VXNVeMwEP6kcMd73+cVHXgrIG8rSAewFQQa2CjZAggVEDoIN26YCjAVIFKBcwcPo1EA24l/eJx4zHuKldE33yfPjGTgq5vqRFgTAc8j6MEhiIz4iO458g6T1eXnBP6bMQqyPGMR5CA4jsh5nmx8jtVsm1CzwCy+AKljJk0ZNoV1KapvNmTyMTOMoGiOf6tT9LaZmWD6i2Bj24m1xgp2Fp+hl1ljepO/xcTzEPNzWF/a20YXllPiAD2vCUdQxZHMSV9xytz7ouYYOoIaTPhPWg7TW/xKMZBSJshL5An7HnhxLkPRnfje1hlL5AudhK5rEngNIr2sitIFpIvUgQw/V1TLOWUInWWaBQKAsU/rmj+RHfq0+BF2O6xCBi48nypvUK/BJi3K1PyppM6aRVgmX4usCnmOwn738rY3cEFEJRUvKd/jkdRBasFzUn+roWokD+uyZoFQ2Gyz26jkz5jwN5OcyPB1KBNJh6lDFl+gZtttSnxqFd1AF77lTksijn/Pscs0xnziDQo9rS8NtsBp7jDc/yE7/bMP3Kxv0Wb+1BPfR0R8nTwuuwVEZH3NIgedIu/k3GGrk12Q3QJBZNkqUiU/bqJpFmgT6UnurfuD483Gi80VYqXxepL3FyiLeOtJ/nHzIn58K3sBwZXg95FOqgoAAAAASUVORK5CYII=" />
+                                        <a href="https://www.google.com/maps/search/?api=1&query={{ taak.taak_zoek_data.geometrie.1|replace_comma_by_dot }},{{ taak.taak_zoek_data.geometrie.0|replace_comma_by_dot }}"
+                                           style="color: #00811f">
+                                            <img alt="" src="{{ url_basis }}/static/icons/email-pin-open.png" />
                                             Toon in Google Maps
                                         </a>
                                     </p>
@@ -253,8 +252,7 @@
                             <tr>
                                 <td colspan="2">
                                     <h3 class="p-50-0-0">
-                                        <img alt=""
-                                             src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAABjSURBVHgB7ZbBCcAgDADT0j06aumoTqIICiJKBIUQuPsqaI57RATAmGt68r9RTvKF4Vu3GPOoNyY/X0Yx6cBApZ0kW9EaWTTnyEA/0W4bBRqgARqgARqgAQcGTu+GHeYGAMxJwawq56MIoGQAAAAASUVORK5CYII=" />
+                                        <img alt="" src="{{ url_basis }}/static/icons/email-lijst.png" />
                                         <span>Melding</span>
                                     </h3>
                                 </td>
@@ -306,8 +304,7 @@
                             <tr>
                                 <td colspan="2">
                                     <h3 class="p-50-0-0">
-                                        <img alt=""
-                                             src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAMpSURBVHgB7VdNWttADJUm7Bv2BdwTALvumNwATgCcALhAPW4P0LDrDnIC6AlwT0B6g4G26+YAjafSjJw49thx2LQL3vcF2/MjPWkkjQB4xT8GbrTavNWg1BE41PSVyI8xo98UnPsOML8F82vaV2Q/AqwYBym9aeiHHNw8A/MzX7ewm4BJhqCKlCy+lJEZWTkBUDmwxcZaWZeA90ZxBohHUHoG3RgKRUTsbHMCLBTdHb0dBMV4Tc9xl7DKXkN7U/mio8GTBdleBNhydA+i3JKAUZsA6DaAZSRCYhQjvxXdHNweVx6O5UICUcsoBR25O32eLNfRHpOMFoawTICruiqMMNeyiWTiu5ryqlUxxAjznkd6G1JgjuqBqRoiyrNzLmu4fak8KHK4DekT+jPmMZ7jNewlqHgixA9IJkE7AZOw27UXZp7N6tzOWUX5IQnOF2dq7L0fK0lAcVnTM4ZQK7RP6VYCnEbB0hzqQHUhL5fRTOAxh+dhiU/F2pyT+FC6nQDifuBRTKCJA/83tV+hHWUF1M0pMapGTkWVwJaFNlTPtzHXVSMGJbkEOggMRZBtCqDy6vHnAFoJ7BzL2zRCzvYh0A6H3/wTBzdRL/jipT6HDxxDT9QJWBGWRNaOYZlqjwtrWbG/rHyuJ35NaicRgqXM2XoCCPtNAT7KT+SLSKg7yPYcKf5NXlkWJzc/hzhkfvV4VgmUbnbFCOrss70HsbIbTObj7k3Ti5LiwD1DG4Ey0BBPF+f8KbkQxRrCdXztPcFlmqtgqISHYUxy3eGZ35PuLgvSIv3U7QpfqIMtZWVcipVy9DSy8h4KKjTrrmNveWG8EX4f71fg5Tgy0DyNuglUL6MSBV5BZntHtsip9gQBkcto0NiYzyzoN9tkwXuxgJqQpww2RT7LQW8jmaiDcjo68+NLfVlLHVAGymLi8LglLbsRruFT+ZqKzAb6tmThLD88r/fEsmHhABzCi1qyqrAQUHITUp3gm9JfVnRfrDSlcyJKXVIIvpBB7Ha2/EVN6SoRLQGle63naAfMfM+wBhv+Y8INi2+9uVLy0YilvoLSzxeyvI/iV/w3+Au3LGqYd7nRvwAAAABJRU5ErkJggg==" />
+                                        <img alt="" src="{{ url_basis }}/static/icons/email-gebruiker.png" />
                                         <span>Melder</span>
                                     </h3>
                                 </td>
@@ -336,9 +333,9 @@
                                                         <dd class="p-0-0-12">
                                                             <a href="tel:{{ signaal.melder.telefoonnummer }}"
                                                                target="_blank"
-                                                               class="link link--phone">
-                                                                <img alt=""
-                                                                     src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAADrSURBVHgB7VXRDYIwEH3XOIALGOsmbqAjsAITUFxARpAR3IARcAKRCZiA8yB+ABZzGomJ4aVNer3evZd+vAMmBo1m3CqQtIWuyxVRmfpTPhxsBGaHd1BziLhMhtfG+5h5C0aG6Ebthpyf3vTyOYh2vlYLaMAUisT9QNupE1RjpToCV+RoVH4Ag4kxE8wEM8E/EOi8qIGzS5FzFNOTZULxp+q7BIxAbDxoRwjXF7lJNGX6L6KOm5JRO6t50XDZi12RyVzYtLs5K+H/oprOMHxEvOZ+4hHGa08Rx/DqHIOzgTBZaEBGhn6R4he4A5BvQvd+/tGpAAAAAElFTkSuQmCC" />
+                                                               class="link link--phone"
+                                                               style="color: #00811f">
+                                                                <img alt="" src="{{ url_basis }}/static/icons/email-telefoon.png" />
                                                                 {{ signaal.melder.telefoonnummer }}
                                                             </a>
                                                         </dd>
@@ -351,9 +348,9 @@
                                                         <dd class="p-0-0-12">
                                                             <a href="mailto:{{ signaal.melder.email }}"
                                                                target="_blank"
-                                                               class="link link--email">
-                                                                <img alt=""
-                                                                     src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAEqSURBVHgB7VSLVYMwFL0PGKADaMkm4iTGCRyB0AncwHQCRzBu0A2ITtAFSrzAsUL1gFq07Tm95/Dyecm97yUvAGccGrLtmUvNocIUkKhE7pd1N+lM3tBmmAIhONodgcYBB/NyjX1QpE/dYYQ/Rl9AoGCUwm9hLjJa1Z1KdpYoSCiZpuN5WeSvS4ySqhmwyXiHd/i4Q//u7mcQsEKQ2zYKsRQqsZg/fJlVTbyY501AEj1y74x7C3pWQxmsYbxla0mQAZWmkCaJJplFVbUZSZwzmoyEbWGAxMa7xlekV0MCnQibDawqZSjET3gMsd4G0kZ7z3VrDCDBGIz3tLrtK7YbEsZujPj7An0xix/in9/BKQr070D4UIo0YH+4zwKhrnF5xhSof9dnHA3eAN2AWOI2/yy3AAAAAElFTkSuQmCC" />
+                                                               class="link link--email"
+                                                               style="color: #00811f">
+                                                                <img alt="" src="{{ url_basis }}/static/icons/email-mail.png" />
                                                                 {{ signaal.melder.email }}
                                                             </a>
                                                         </dd>
@@ -375,8 +372,7 @@
                             <tr>
                                 <td colspan="2">
                                     <h3 class="p-50-0-0">
-                                        <img alt=""
-                                             src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAMpSURBVHgB7VdNWttADJUm7Bv2BdwTALvumNwATgCcALhAPW4P0LDrDnIC6AlwT0B6g4G26+YAjafSjJw49thx2LQL3vcF2/MjPWkkjQB4xT8GbrTavNWg1BE41PSVyI8xo98UnPsOML8F82vaV2Q/AqwYBym9aeiHHNw8A/MzX7ewm4BJhqCKlCy+lJEZWTkBUDmwxcZaWZeA90ZxBohHUHoG3RgKRUTsbHMCLBTdHb0dBMV4Tc9xl7DKXkN7U/mio8GTBdleBNhydA+i3JKAUZsA6DaAZSRCYhQjvxXdHNweVx6O5UICUcsoBR25O32eLNfRHpOMFoawTICruiqMMNeyiWTiu5ryqlUxxAjznkd6G1JgjuqBqRoiyrNzLmu4fak8KHK4DekT+jPmMZ7jNewlqHgixA9IJkE7AZOw27UXZp7N6tzOWUX5IQnOF2dq7L0fK0lAcVnTM4ZQK7RP6VYCnEbB0hzqQHUhL5fRTOAxh+dhiU/F2pyT+FC6nQDifuBRTKCJA/83tV+hHWUF1M0pMapGTkWVwJaFNlTPtzHXVSMGJbkEOggMRZBtCqDy6vHnAFoJ7BzL2zRCzvYh0A6H3/wTBzdRL/jipT6HDxxDT9QJWBGWRNaOYZlqjwtrWbG/rHyuJ35NaicRgqXM2XoCCPtNAT7KT+SLSKg7yPYcKf5NXlkWJzc/hzhkfvV4VgmUbnbFCOrss70HsbIbTObj7k3Ti5LiwD1DG4Ey0BBPF+f8KbkQxRrCdXztPcFlmqtgqISHYUxy3eGZ35PuLgvSIv3U7QpfqIMtZWVcipVy9DSy8h4KKjTrrmNveWG8EX4f71fg5Tgy0DyNuglUL6MSBV5BZntHtsip9gQBkcto0NiYzyzoN9tkwXuxgJqQpww2RT7LQW8jmaiDcjo68+NLfVlLHVAGymLi8LglLbsRruFT+ZqKzAb6tmThLD88r/fEsmHhABzCi1qyqrAQUHITUp3gm9JfVnRfrDSlcyJKXVIIvpBB7Ha2/EVN6SoRLQGle63naAfMfM+wBhv+Y8INi2+9uVLy0YilvoLSzxeyvI/iV/w3+Au3LGqYd7nRvwAAAABJRU5ErkJggg==" />
+                                        <img alt="" src="{{ url_basis }}/static/icons/email-gebruiker.png" />
                                         <span>Taak aangemaakt door</span>
                                     </h3>
                                 </td>
@@ -389,30 +385,40 @@
                             <tr>
                                 <td class="va-top" colspan="2">
                                     {% if taak.taakgebeurtenissen_voor_taak.exists %}
-                                        {% with gebruiker=taak.taakgebeurtenissen_voor_taak.first.gebruiker|get_gebruiker_object_middels_email %}
-                                            {% if gebruiker.telefoonnummer %}
-                                                <p>
-                                                    <a href="tel:{{ signaal.melder.telefoonnummer }}"
-                                                       target="_blank"
-                                                       class="link link--phone">
-                                                        <img alt=""
-                                                             src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAADrSURBVHgB7VXRDYIwEH3XOIALGOsmbqAjsAITUFxARpAR3IARcAKRCZiA8yB+ABZzGomJ4aVNer3evZd+vAMmBo1m3CqQtIWuyxVRmfpTPhxsBGaHd1BziLhMhtfG+5h5C0aG6Ebthpyf3vTyOYh2vlYLaMAUisT9QNupE1RjpToCV+RoVH4Ag4kxE8wEM8E/EOi8qIGzS5FzFNOTZULxp+q7BIxAbDxoRwjXF7lJNGX6L6KOm5JRO6t50XDZi12RyVzYtLs5K+H/oprOMHxEvOZ+4hHGa08Rx/DqHIOzgTBZaEBGhn6R4he4A5BvQvd+/tGpAAAAAElFTkSuQmCC" />
-                                                        {{ gebruiker.telefoonnummer }}
-                                                    </a>
-                                                </p>
-                                            {% endif %}
-                                            {% if gebruiker.email %}
-                                                <p>
-                                                    <a href="mailto:{{ signaal.melder.email }}"
-                                                       target="_blank"
-                                                       class="link link--email">
-                                                        <img alt=""
-                                                             src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAEqSURBVHgB7VSLVYMwFL0PGKADaMkm4iTGCRyB0AncwHQCRzBu0A2ITtAFSrzAsUL1gFq07Tm95/Dyecm97yUvAGccGrLtmUvNocIUkKhE7pd1N+lM3tBmmAIhONodgcYBB/NyjX1QpE/dYYQ/Rl9AoGCUwm9hLjJa1Z1KdpYoSCiZpuN5WeSvS4ySqhmwyXiHd/i4Q//u7mcQsEKQ2zYKsRQqsZg/fJlVTbyY501AEj1y74x7C3pWQxmsYbxla0mQAZWmkCaJJplFVbUZSZwzmoyEbWGAxMa7xlekV0MCnQibDawqZSjET3gMsd4G0kZ7z3VrDCDBGIz3tLrtK7YbEsZujPj7An0xix/in9/BKQr070D4UIo0YH+4zwKhrnF5xhSof9dnHA3eAN2AWOI2/yy3AAAAAElFTkSuQmCC" />
-                                                        {{ gebruiker.email }}
-                                                    </a>
-                                                </p>
-                                            {% endif %}
-                                        {% endwith %}
+                                        <dl>
+                                            {% with gebruiker=taak.taakgebeurtenissen_voor_taak.first.gebruiker|get_gebruiker_object_middels_email %}
+                                                1{{ gebruiker }}
+                                                2{{ gebruiker.naam }}
+                                                {% if gebruiker.first_name or gebruiker.last_name %}
+                                                    <dd>
+                                                        {{ gebruiker.first_name }}
+                                                        {% if gebruiker.last_name %}{{ gebruiker.last_name }}{% endif %}
+                                                    </dd>
+                                                {% endif %}
+                                                {% if gebruiker.telefoonnummer %}
+                                                    <dd>
+                                                        <a href="tel:{{ gebruiker.telefoonnummer }}"
+                                                           target="_blank"
+                                                           class="link link--phone"
+                                                           style="color: #00811f">
+                                                            <img alt="" src="{{ url_basis }}/static/icons/email-telefoon.png" />
+                                                            {{ gebruiker.telefoonnummer }}
+                                                        </a>
+                                                    </dd>
+                                                {% endif %}
+                                                {% if gebruiker.email %}
+                                                    <dd>
+                                                        <a href="mailto:{{ gebruiker.email }}"
+                                                           target="_blank"
+                                                           class="link link--email"
+                                                           style="color: #00811f">
+                                                            <img alt="" src="{{ url_basis }}/static/icons/email-mail.png" />
+                                                            {{ gebruiker.email }}
+                                                        </a>
+                                                    </dd>
+                                                {% endif %}
+                                            {% endwith %}
+                                        </dl>
                                     {% endif %}
                                 </td>
                             </tr>
@@ -420,8 +426,7 @@
                                 <tr>
                                     <td colspan="2">
                                         <h3 class="no-margin-bottom">
-                                            <img alt=""
-                                                 src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAFNSURBVHgB7ZXtbcIwEIbvaAfoAJVIN6AbwAjdoN2gG+CM0AmqTtARYARGMEzABofPH7Ej/CUUlB/4kUKwk9z7+u7iADQajXvTL0kfCRYwM7MbwNEok6oi2yNWxwnunT0DYwoNc4+Yz1CD6DpA+lX/1uo4AOEHCClhAupKgPRvxZmVNTMJdRlgUYZwo8R3gZk4LmOEX7CVmLu1tgn3+teIMwfIixuTfObxzQb44X65UyvpgawoKTPcA3nxzs50JROLjPgqWImquRLl91ccN4NYWlzqcvG5YCK+ERG+22AvwVUX1JeCx/w2xMSv58ebVTYDTtyk+w1MzU0wH9Cu7HUdFddZkd50glQJlDj96XT7IMaEExrS+xQXdxT2i7gBoh8Qp88gyNk2nhyEfI0hKV5B3IA4fV/PSS+s6+vGukw3iTPTfQ1rqG7CRqPxSFwAbQOvQWVQAaMAAAAASUVORK5CYII=" />
+                                            <img alt="" src="{{ url_basis }}/static/icons/email-foto.png" />
                                             <span>Foto's</span>
                                         </h3>
                                     </td>
