@@ -196,7 +196,7 @@
                             <tr>
                                 <td colspan="2">
                                     <h3 class="p-50-0-0">
-                                        <img alt="" src="{{ url_basis }}/static/icons/email-pin.png" />
+                                        <img alt="" src="{{ url_basis }}/static/images/email-pin.png" />
                                         <span>Locatie</span>
                                     </h3>
                                 </td>
@@ -219,7 +219,7 @@
                                     <p>
                                         <a href="https://www.google.com/maps/search/?api=1&query={{ taak.taak_zoek_data.geometrie.1|replace_comma_by_dot }},{{ taak.taak_zoek_data.geometrie.0|replace_comma_by_dot }}"
                                            style="color: #00811f">
-                                            <img alt="" src="{{ url_basis }}/static/icons/email-pin-open.png" />
+                                            <img alt="" src="{{ url_basis }}/static/images/email-pin-open.png" />
                                             Toon in Google Maps
                                         </a>
                                     </p>
@@ -252,7 +252,7 @@
                             <tr>
                                 <td colspan="2">
                                     <h3 class="p-50-0-0">
-                                        <img alt="" src="{{ url_basis }}/static/icons/email-lijst.png" />
+                                        <img alt="" src="{{ url_basis }}/static/images/email-lijst.png" />
                                         <span>Melding</span>
                                     </h3>
                                 </td>
@@ -304,7 +304,7 @@
                             <tr>
                                 <td colspan="2">
                                     <h3 class="p-50-0-0">
-                                        <img alt="" src="{{ url_basis }}/static/icons/email-gebruiker.png" />
+                                        <img alt="" src="{{ url_basis }}/static/images/email-gebruiker.png" />
                                         <span>Melder</span>
                                     </h3>
                                 </td>
@@ -335,7 +335,7 @@
                                                                target="_blank"
                                                                class="link link--phone"
                                                                style="color: #00811f">
-                                                                <img alt="" src="{{ url_basis }}/static/icons/email-telefoon.png" />
+                                                                <img alt="" src="{{ url_basis }}/static/images/email-telefoon.png" />
                                                                 {{ signaal.melder.telefoonnummer }}
                                                             </a>
                                                         </dd>
@@ -350,7 +350,7 @@
                                                                target="_blank"
                                                                class="link link--email"
                                                                style="color: #00811f">
-                                                                <img alt="" src="{{ url_basis }}/static/icons/email-mail.png" />
+                                                                <img alt="" src="{{ url_basis }}/static/images/email-mail.png" />
                                                                 {{ signaal.melder.email }}
                                                             </a>
                                                         </dd>
@@ -372,7 +372,7 @@
                             <tr>
                                 <td colspan="2">
                                     <h3 class="p-50-0-0">
-                                        <img alt="" src="{{ url_basis }}/static/icons/email-gebruiker.png" />
+                                        <img alt="" src="{{ url_basis }}/static/images/email-gebruiker.png" />
                                         <span>Taak aangemaakt door</span>
                                     </h3>
                                 </td>
@@ -387,12 +387,11 @@
                                     {% if taak.taakgebeurtenissen_voor_taak.exists %}
                                         <dl>
                                             {% with gebruiker=taak.taakgebeurtenissen_voor_taak.first.gebruiker|get_gebruiker_object_middels_email %}
-                                                1{{ gebruiker }}
-                                                2{{ gebruiker.naam }}
                                                 {% if gebruiker.first_name or gebruiker.last_name %}
                                                     <dd>
                                                         {{ gebruiker.first_name }}
                                                         {% if gebruiker.last_name %}{{ gebruiker.last_name }}{% endif %}
+                                                        {% if gebruiker.rol %}, {{ gebruiker.rol }}{% endif %}
                                                     </dd>
                                                 {% endif %}
                                                 {% if gebruiker.telefoonnummer %}
@@ -401,7 +400,7 @@
                                                            target="_blank"
                                                            class="link link--phone"
                                                            style="color: #00811f">
-                                                            <img alt="" src="{{ url_basis }}/static/icons/email-telefoon.png" />
+                                                            <img alt="" src="{{ url_basis }}/static/images/email-telefoon.png" />
                                                             {{ gebruiker.telefoonnummer }}
                                                         </a>
                                                     </dd>
@@ -412,7 +411,7 @@
                                                            target="_blank"
                                                            class="link link--email"
                                                            style="color: #00811f">
-                                                            <img alt="" src="{{ url_basis }}/static/icons/email-mail.png" />
+                                                            <img alt="" src="{{ url_basis }}/static/images/email-mail.png" />
                                                             {{ gebruiker.email }}
                                                         </a>
                                                     </dd>
@@ -426,7 +425,7 @@
                                 <tr>
                                     <td colspan="2">
                                         <h3 class="no-margin-bottom">
-                                            <img alt="" src="{{ url_basis }}/static/icons/email-foto.png" />
+                                            <img alt="" src="{{ url_basis }}/static/images/email-foto.png" />
                                             <span>Foto's</span>
                                         </h3>
                                     </td>
