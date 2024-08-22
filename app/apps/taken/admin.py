@@ -9,7 +9,7 @@ from apps.taken.admin_filters import (
     TitelFilter,
 )
 from apps.taken.models import Taak, Taakgebeurtenis, Taakstatus, Taaktype, TaakZoekData
-from apps.taken.tasks import compare_and_update_status
+from apps.taken.tasks import _send_taak_aangemaakt_email_task, compare_and_update_status
 from django.contrib import admin, messages
 from django.db.models import Count
 from django.utils.safestring import mark_safe
@@ -118,7 +118,40 @@ class TaakAdmin(admin.ModelAdmin):
         "taakstatus",
         "taak_zoek_data",
     )
-    actions = ["compare_taakopdracht_status"]
+    actions = ["compare_taakopdracht_status", "send_taak_aangemaakt_email"]
+
+    def send_taak_aangemaakt_email(self, request, queryset):
+        base_url = request.build_absolute_uri("/")[:-1]  # Remove trailing slash
+        success_count = 0
+        error_count = 0
+
+        for taak in queryset:
+            try:
+                _send_taak_aangemaakt_email_task(taak.id, base_url=base_url)
+                success_count += 1
+            except Exception as e:
+                error_count += 1
+                self.message_user(
+                    request,
+                    f"Error sending email for Taak {taak.id}: {str(e)}",
+                    level=messages.ERROR,
+                )
+
+        if success_count > 0:
+            self.message_user(
+                request,
+                f"Successfully sent {success_count} email(s) for selected Taak(s).",
+                level=messages.SUCCESS,
+            )
+
+        if error_count > 0:
+            self.message_user(
+                request,
+                f"Failed to send {error_count} email(s). Check the error messages above.",
+                level=messages.WARNING,
+            )
+
+    send_taak_aangemaakt_email.short_description = "Send Taak aangemaakt email"
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
