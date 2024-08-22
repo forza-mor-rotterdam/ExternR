@@ -391,7 +391,10 @@
                                                     <dd>
                                                         {% if gebruiker.first_name %}{{ gebruiker.first_name }}{% endif %}
                                                         {% if gebruiker.last_name %}{{ gebruiker.last_name }}{% endif %}
-                                                        {% if gebruiker.rol %}, {{ gebruiker.rol }}{% endif %}
+                                                        {% if gebruiker.rol %}
+                                                            <br>
+                                                            {{ gebruiker.rol }}
+                                                        {% endif %}
                                                     </dd>
                                                 {% endif %}
                                                 {% if gebruiker.telefoonnummer %}
