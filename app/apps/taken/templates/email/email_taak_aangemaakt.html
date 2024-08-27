@@ -152,9 +152,8 @@
                             {% if taaktype.externe_instantie_naam_verantwoordelijke %}
                                 {{ taaktype.externe_instantie_naam_verantwoordelijke }},
                             {% else %}
-                                {{ taaktype.externe_instantie }}
+                                {{ taaktype.externe_instantie }},
                             {% endif %}
-                            ,
                         </p>
                         <p>
                             De gemeente Rotterdam heeft een melding ontvangen, waarvan de afhandeling (deels) onder de verantwoordelijkheid van uw organisatie valt. In deze mail vindt u alle informatie zoals deze door de melder is ingediend.
@@ -386,38 +385,41 @@
                                 <td class="va-top" colspan="2">
                                     {% if taak.taakgebeurtenissen_voor_taak.exists %}
                                         <dl>
-                                            {% with gebruiker=taak.taakgebeurtenissen_voor_taak.first.gebruiker|get_gebruiker_object_middels_email %}
-                                                {% if gebruiker.first_name or gebruiker.last_name or gebruiker.rol %}
-                                                    <dd>
-                                                        {% if gebruiker.first_name %}{{ gebruiker.first_name }}{% endif %}
-                                                        {% if gebruiker.last_name %}{{ gebruiker.last_name }}{% endif %}
-                                                        <br>
-                                                        Midoffice Gemeente Rotterdam
-                                                    </dd>
-                                                {% endif %}
-                                                {% if gebruiker.telefoonnummer %}
-                                                    <dd>
-                                                        <a href="tel:{{ gebruiker.telefoonnummer }}"
-                                                           target="_blank"
-                                                           class="link link--phone"
-                                                           style="color: #00811f">
-                                                            <img alt="" src="{{ url_basis }}/static/images/email-telefoon.png" />
-                                                            {{ gebruiker.telefoonnummer }}
-                                                        </a>
-                                                    </dd>
-                                                {% endif %}
-                                                {% if gebruiker.email %}
-                                                    <dd>
-                                                        <a href="mailto:{{ gebruiker.email }}"
-                                                           target="_blank"
-                                                           class="link link--email"
-                                                           style="color: #00811f">
-                                                            <img alt="" src="{{ url_basis }}/static/images/email-mail.png" />
-                                                            {{ gebruiker.email }}
-                                                        </a>
-                                                    </dd>
-                                                {% endif %}
-                                            {% endwith %}
+                                            <div class="margin-bottom">
+                                                {% with gebruiker=taak.taakgebeurtenissen_voor_taak.first.gebruiker|get_gebruiker_object_middels_email %}
+                                                    {% if gebruiker.first_name or gebruiker.last_name or gebruiker.rol %}
+                                                        <dd class="p-0-0-12">
+                                                            {% if gebruiker.first_name %}{{ gebruiker.first_name }}{% endif %}
+                                                            {% if gebruiker.last_name %}{{ gebruiker.last_name }}{% endif %}
+                                                        </dd>
+                                                        <dd class="p-0-0-12">
+                                                            Midoffice Gemeente Rotterdam
+                                                        </dd>
+                                                    {% endif %}
+                                                    {% if gebruiker.telefoonnummer %}
+                                                        <dd class="p-0-0-12">
+                                                            <a href="tel:{{ gebruiker.telefoonnummer }}"
+                                                               target="_blank"
+                                                               class="link link--phone"
+                                                               style="color: #00811f">
+                                                                <img alt="" src="{{ url_basis }}/static/images/email-telefoon.png" />
+                                                                {{ gebruiker.telefoonnummer }}
+                                                            </a>
+                                                        </dd>
+                                                    {% endif %}
+                                                    {% if gebruiker.email %}
+                                                        <dd class="p-0-0-12">
+                                                            <a href="mailto:{{ gebruiker.email }}"
+                                                               target="_blank"
+                                                               class="link link--email"
+                                                               style="color: #00811f">
+                                                                <img alt="" src="{{ url_basis }}/static/images/email-mail.png" />
+                                                                {{ gebruiker.email }}
+                                                            </a>
+                                                        </dd>
+                                                    {% endif %}
+                                                {% endwith %}
+                                            </div>
                                         </dl>
                                     {% endif %}
                                 </td>
