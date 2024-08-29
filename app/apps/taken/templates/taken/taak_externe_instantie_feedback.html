@@ -6,8 +6,8 @@
 {% block body %}
     <turbo-frame id="feedback">
     <div class="taak-feedback">
-        <h1>De taak kon niet worden opgelost</h1>
-        <h2>Kunt u aangeven waarom u de taak niet heeft kunnen afhandelen?</h2>
+        <h1>Deze taak is niet voor u</h1>
+        <h2>Kunt u een toelichting geven?</h2>
         <dl>
             <div>
                 <dt>
@@ -33,9 +33,7 @@
               novalidate
               data-action="submit->feedback#onSubmit">
             {% csrf_token %}
-            <fieldset>
-                <div>{{ form.omschrijving_intern|render_rotterdam_formulier }}</div>
-            </fieldset>
+            <div>{{ form.omschrijving_intern|render_rotterdam_formulier }}</div>
             <div class="form-row container__button">
                 <div class="form-row btn-row">
                     <button type="submit" class="btn btn-action">
