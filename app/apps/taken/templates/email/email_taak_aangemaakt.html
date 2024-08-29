@@ -156,7 +156,7 @@
                             {% endif %}
                         </p>
                         <p>
-                            De gemeente Rotterdam heeft een melding ontvangen, waarvan de afhandeling (deels) onder de verantwoordelijkheid van uw organisatie valt. In deze mail vindt u alle informatie zoals deze door de melder is ingediend.
+                            De gemeente Rotterdam heeft een melding ontvangen, waarvan de afhandeling (deels) onder de verantwoordelijkheid van uw organisatie valt. In deze mail vindt u alle informatie zoals deze door de melder is ingediend. Wij gaan ervan uit dat de taak door uw organisatie wordt opgepakt. Daarom handelen we de taak bij deze af in ons systeem.
                         </p>
                         {% if taaktype.omschrijving %}
                             <h3>Omschrijving taak</h3>
@@ -170,12 +170,9 @@
                             <h3>Interne opmerking midoffice</h3>
                             <p>{{ taak.taakgebeurtenissen_voor_taak.first.omschrijving_intern }}</p>
                         {% endif %}
-                        <h3>Kan de taak niet worden opgelost?</h3>
-                        <p>
-                            Wij gaan er vanuit dat de taak door uw organisatie wordt opgepakt. Daarom handelen we de taak bij deze af in ons systeem. Lukt het uw organisatie niet om de taak af te handelen, dan kunt u dit zelf aangeven.
-                        </p>
+                        <h3>Is deze melding niet voor uw organisatie?</h3>
                         <p class="p-20-0">
-                            <a href="{{ niet_opgelost_url }}" class="btn" style="color: #404B4F;">De taak kan niet worden opgelost</a>
+                            <a href="{{ niet_opgelost_url }}" class="btn" style="color: #404B4F;">Deze taak is niet voor ons</a>
                         </p>
                     </td>
                 </tr>

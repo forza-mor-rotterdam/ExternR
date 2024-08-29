@@ -65,22 +65,22 @@ class TaaktypeAanmakenForm(TaaktypeAanpassenForm):
 
 
 class TaakFeedbackHandleForm(forms.Form):
-    REDEN_CHOICES = (
-        ("1", "De taak valt niet onder onze verantwoordelijkheid."),
-        ("2", "We konden de locatie niet bereiken."),
-        ("3", "Andere reden."),
-    )
-    omschrijving_intern_opties = forms.ChoiceField(
-        label="Reden",
-        widget=forms.RadioSelect(
-            attrs={
-                "data-action": "change->feedback#onChangeReden",
-                "class": "list--form-radio-input",
-            }
-        ),
-        choices=REDEN_CHOICES,
-        required=True,
-    )
+    # REDEN_CHOICES = (
+    #     ("1", "De taak valt niet onder onze verantwoordelijkheid."),
+    #     ("2", "We konden de locatie niet bereiken."),
+    #     ("3", "Andere reden."),
+    # )
+    # omschrijving_intern_opties = forms.ChoiceField(
+    #     label="Reden",
+    #     widget=forms.RadioSelect(
+    #         attrs={
+    #             "data-action": "change->feedback#onChangeReden",
+    #             "class": "list--form-radio-input",
+    #         }
+    #     ),
+    #     choices=REDEN_CHOICES,
+    #     required=True,
+    # )
 
     omschrijving_intern = forms.CharField(
         label="Toelichting",
@@ -89,7 +89,7 @@ class TaakFeedbackHandleForm(forms.Form):
                 "class": "hidden",
                 "data-testid": "information",
                 "rows": "4",
-                "placeholder": "Omschrijf hier de reden",
+                "placeholder": "Toelichting",
             }
         ),
         required=True,
