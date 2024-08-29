@@ -34,10 +34,7 @@
               data-action="submit->feedback#onSubmit">
             {% csrf_token %}
             <fieldset>
-                {{ form.omschrijving_intern_opties|render_rotterdam_formulier }}
-                <div class="hidden-for-form" data-feedback-target="toelichting">
-                    {{ form.omschrijving_intern|render_rotterdam_formulier }}
-                </div>
+                <div>{{ form.omschrijving_intern|render_rotterdam_formulier }}</div>
             </fieldset>
             <div class="form-row container__button">
                 <div class="form-row btn-row">
