@@ -51,8 +51,6 @@
                              data-detail-taak-object-value="{{ taak }}"
                              data-detail-incident-y-value="{{ geometrie.x|replace_comma_by_dot }}"
                              data-detail-incident-x-value="{{ geometrie.y|replace_comma_by_dot }}"
-                             data-detail-mercure-public-url-value="{{ APP_MERCURE_PUBLIC_URL }}"
-                             {% if not DEBUG %}data-detail-mercure-subscriber-token-value="{{ MERCURE_SUBSCRIBER_TOKEN }}"{% endif %}
                              {% if taak.magAfhandelen %}class="has-sticky-footer"{% endif %}>
                             <div class="taak-detail">
                                 <div class="container__header-taaknavigatie">

@@ -34,6 +34,7 @@ from apps.main.views import (
     sorteer_filter,
     taak_afhandelen,
     taak_detail,
+    taak_detail_melding_tijdlijn,
     taak_zoeken,
     taken,
     taken_filter,
@@ -98,9 +99,9 @@ urlpatterns = [
         taken_lijst,
         name="taken_lijst",
     ),
-    # URL pattern for https://externr.forzamor.nl/taak-feedback-externe-instantie/{taak_id}/{email_hash}/1
+    # URL pattern for https://externr.forzamor.nl/taak-feedback-externe-instantie/{taak_id}/{email_hash}/
     path(
-        "taak-feedback-externe-instantie/<int:taak_id>/<str:email_hash>/<int:email_feedback_type>/",
+        "taak-feedback-externe-instantie/<int:taak_id>/<str:email_hash>/",
         taak_feedback_handle,
         name="feedback",
     ),
@@ -108,6 +109,11 @@ urlpatterns = [
     path("taak-zoeken/", taak_zoeken, name="taak_zoeken"),
     path("kaart-modus/", kaart_modus, name="kaart_modus"),
     path("taak/<int:id>/", taak_detail, name="taak_detail"),
+    path(
+        "taak/<int:id>/melding-tijdlijn",
+        taak_detail_melding_tijdlijn,
+        name="taak_detail_melding_tijdlijn",
+    ),
     # Gebruikers
     path(
         "gebruiker/profiel/",

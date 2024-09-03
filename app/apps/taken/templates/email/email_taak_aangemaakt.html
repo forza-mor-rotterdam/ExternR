@@ -1,4 +1,7 @@
 {% load to_datetime from main_tags %}
+{% load render_onderwerp from melding_tags %}
+{% load replace_comma_by_dot from main_tags %}
+{% load get_gebruiker_object_middels_email from gebruikers_tags %}
 <!DOCTYPE html>
 <html lang="nl"
       xmlns="http://www.w3.org/1999/xhtml"
@@ -30,15 +33,15 @@
                 max-width: 800px;
                 margin: 0 auto;
             }
-            /*table, td {border:2px solid #000000 !important;}*/
-            h2 {
-                font-size: 1.25rem;
+            h1, h2 {
+                font-size: 1.5rem;
                 margin-bottom: 0;
             }
-            h2 img {
+            h3 img {
                 vertical-align: middle;
             }
             h3 {
+                font-size: 1.25rem;
                 margin-top: 2rem;
                 margin-bottom: 0.5rem;
             }
@@ -48,24 +51,25 @@
             dd {
                 margin-left: 0;
             }
+
+            a {
+                color: #00811f;
+            }
             .btn {
-                border: 1px solid #7C8B90;
+                border: 1px solid #EAEAEA;
                 display: inline-block;
-                padding: 11px 16px 13px 16px;
+                padding: 11px 32px 13px 32px;
                 line-height: 24px;
                 font-size: 1em;
-                font-weight: 700;
+                font-weight: 400;
                 margin-bottom: 0.5em;
                 text-decoration: none;
                 color: #404B4F;
             }
-            .btn-action {
-                background-color: #C93675;
-                color: #ffffff;
-                border-color: transparent;
-            }
-            a {
-                color: #00811f;
+
+            .btn:hover {
+                border-color: #000000;
+                text-decoration: none;
             }
             a img {
                 margin-right: 8px;
@@ -125,39 +129,10 @@
             {% with melding=taak.melding.response_json %}
                 <tr>
                     <td align="left" class="p-40-0-20">
-                        <?xml version="1.0" standalone="no"?>
-                        <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 20010904//EN" "http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd">
-                        <svg version="1.0"
-                             xmlns="http://www.w3.org/2000/svg"
-                             width="220"
-                             height="40"
-                             viewBox="0 0 1320.000000 240.000000"
-                             preserveAspectRatio="xMidYMid meet">
-                            <g transform="translate(0.000000,240.000000) scale(0.100000,-0.100000)" fill="#00811f" stroke="none">
-                            <path d="M4764 2307 c130 -193 141 -519 25 -749 -36 -72 -116 -168 -180 -215 -27 -21 -49 -41 -49 -46 0 -6 74 -138 164 -296 90 -157 170 -300 179 -317 l16 -30 -83 -2 c-99 -1 -194 -22 -278 -61 -117 -53 -121 -39 58 -192 211 -179 186 -165 242 -139 144 68 275 94 467 93 83 0 172 -5 200 -11 27 -6 51 -10 52 -9 1 1 -124 175 -277 387 -154 212 -279 388 -280 393 0 4 39 -13 88 -37 184 -92 518 -208 827 -287 128 -33 161 -45 135 -47 -47 -5 -239 15 -325 34 -146 32 -180 30 -137 -9 24 -22 175 -87 292 -126 238 -80 528 -85 720 -12 92 35 213 142 194 173 -4 6 -80 7 -203 3 -156 -6 -216 -4 -291 9 -110 18 -253 57 -325 90 l-49 22 196 12 c458 29 789 112 878 221 25 29 30 45 30 86 0 58 -32 115 -79 139 -27 15 -29 14 -72 -30 -59 -60 -173 -138 -263 -179 -178 -83 -354 -111 -626 -102 -201 7 -318 25 -479 74 -120 36 -359 127 -386 147 -13 10 -9 23 33 106 54 108 71 169 79 291 8 112 -10 207 -54 297 -61 123 -139 188 -435 355 l-46 27 42 -63z" />
-                            <path d="M3200 2274 c-65 -28 -101 -80 -69 -100 6 -4 47 -13 90 -20 213 -37 533 -173 1004 -428 87 -48 165 -84 171 -82 7 2 25 31 40 63 25 51 29 68 29 153 0 109 -13 155 -55 195 -47 45 -98 44 -302 -4 -97 -22 -182 -41 -191 -41 -8 0 -60 30 -114 66 -254 170 -490 247 -603 198z" />
-                            <path d="M1214 2200 c-168 -84 -244 -168 -244 -268 0 -96 84 -178 274 -268 51 -24 99 -44 107 -44 8 0 9 -3 4 -9 -17 -17 -234 -34 -335 -26 -52 3 -160 18 -240 32 -233 41 -220 41 -220 2 0 -27 11 -44 63 -94 48 -48 88 -74 177 -117 261 -127 530 -184 835 -176 160 4 176 6 265 37 91 31 274 116 314 146 11 8 16 18 12 22 -15 15 -124 4 -201 -21 -157 -51 -294 -42 -367 23 l-32 28 25 8 c13 4 88 34 167 67 803 332 1118 366 1766 188 146 -40 243 -74 186 -65 -75 12 -220 14 -330 5 -329 -27 -593 -102 -925 -265 -185 -90 -335 -183 -378 -234 -53 -64 -24 -83 66 -45 128 54 189 74 226 74 52 0 130 -24 236 -73 102 -47 194 -59 294 -38 100 22 245 102 416 231 198 149 300 203 394 208 51 2 75 -1 103 -16 l38 -20 142 36 c79 19 146 38 151 42 10 9 -356 186 -518 251 -523 208 -944 264 -1345 178 -52 -12 -178 -48 -280 -81 -102 -33 -214 -66 -250 -74 -127 -27 -298 -11 -397 37 -100 48 -128 147 -79 283 14 41 26 77 26 80 0 18 -57 0 -146 -44z" />
-                            <path d="M8252 2189 c-156 -27 -268 -149 -292 -317 -20 -144 26 -311 105 -381 64 -56 112 -74 206 -79 101 -5 141 6 204 54 l45 34 0 -40 0 -40 65 0 65 0 0 210 0 210 -185 0 -185 0 0 -60 0 -60 104 0 c58 0 108 -4 111 -10 10 -16 -14 -88 -41 -119 -36 -43 -109 -64 -176 -50 -109 24 -175 137 -166 283 5 78 29 135 75 178 80 76 222 77 321 2 l34 -26 44 43 c24 24 44 48 44 54 0 18 -86 75 -143 95 -66 23 -167 31 -235 19z" />
-                            <path d="M12243 2134 l-63 -36 0 -64 0 -64 -50 0 -50 0 0 -60 0 -60 50 0 50 0 0 -175 c0 -199 7 -227 65 -251 34 -14 150 -19 179 -8 12 5 16 20 16 60 l0 54 -43 0 c-72 0 -77 13 -77 178 l0 142 55 0 55 0 0 60 0 60 -55 0 -55 0 0 100 c0 55 -3 100 -7 100 -5 -1 -36 -17 -70 -36z" />
-                            <path d="M53 2040 c-26 -11 -43 -40 -43 -74 0 -30 51 -84 88 -92 69 -15 155 -48 207 -79 32 -19 59 -35 61 -35 22 0 -51 144 -100 198 -65 71 -154 105 -213 82z" />
-                            <path d="M8957 1979 c-90 -14 -170 -89 -197 -183 -8 -28 -11 -78 -8 -128 7 -123 46 -187 148 -239 36 -18 61 -23 131 -23 75 0 92 3 144 29 81 41 86 53 46 104 l-33 41 -46 -27 c-62 -37 -142 -38 -190 -5 -31 22 -62 68 -62 92 0 6 66 10 195 10 l195 0 0 58 c0 122 -47 209 -134 247 -61 27 -123 35 -189 24z m137 -128 c20 -17 48 -79 41 -91 -8 -13 -232 -13 -240 0 -7 12 17 60 43 83 39 35 119 39 156 8z" />
-                            <path d="M10509 1979 c-90 -14 -146 -57 -195 -149 -14 -27 -19 -58 -19 -135 0 -92 2 -104 30 -155 70 -128 244 -175 391 -106 27 13 58 30 68 38 19 15 18 16 -9 54 -16 21 -32 42 -35 47 -4 4 -26 -3 -51 -17 -64 -36 -111 -42 -164 -21 -44 16 -76 49 -89 93 l-7 22 197 0 197 0 -5 83 c-3 57 -11 94 -26 123 -50 97 -155 143 -283 123z m128 -130 c22 -19 45 -69 39 -85 -4 -11 -31 -14 -120 -14 -63 0 -117 4 -120 8 -6 11 22 67 44 87 38 34 118 36 157 4z" />
-                            <path d="M11107 1979 c-142 -23 -227 -149 -215 -319 12 -167 151 -277 322 -256 51 7 132 39 170 68 19 15 18 17 -14 62 -18 25 -35 46 -38 46 -2 0 -17 -9 -33 -20 -15 -12 -53 -26 -82 -32 -48 -10 -58 -9 -99 11 -46 22 -69 46 -82 89 l-7 22 195 0 196 0 0 73 c0 181 -129 286 -313 256z m130 -130 c18 -16 43 -63 43 -84 0 -13 -18 -15 -118 -15 -65 0 -121 3 -125 6 -8 8 27 76 47 93 36 30 116 30 153 0z" />
-                            <path d="M12705 1980 c-128 -21 -205 -116 -213 -266 -11 -195 93 -308 283 -308 66 0 90 5 135 26 30 15 63 34 74 42 18 14 17 17 -15 58 -18 24 -34 44 -34 46 -1 1 -22 -9 -46 -23 -64 -36 -117 -41 -173 -17 -43 20 -86 69 -86 100 0 9 46 12 195 12 l195 0 0 68 c-1 77 -16 127 -54 177 -50 65 -161 101 -261 85z m124 -126 c25 -18 55 -79 46 -94 -7 -11 -228 -14 -238 -4 -11 11 15 64 45 89 36 30 110 35 147 9z" />
-                            <path d="M9595 1968 c-11 -6 -35 -24 -52 -41 l-33 -31 0 37 0 37 -65 0 -65 0 0 -275 0 -275 70 0 70 0 0 170 c0 218 13 254 94 267 30 5 40 1 66 -25 l30 -30 0 -191 0 -191 75 0 75 0 0 180 c0 197 6 226 55 248 34 16 50 15 84 -3 43 -22 51 -60 51 -251 l0 -174 70 0 70 0 0 221 c0 211 -1 223 -22 261 -29 52 -80 78 -152 78 -67 0 -93 -10 -138 -49 l-35 -30 -24 25 c-13 14 -36 32 -51 40 -32 17 -144 18 -173 2z" />
-                            <path d="M11730 1959 c-19 -11 -43 -31 -52 -42 -17 -22 -18 -22 -18 16 l0 37 -70 0 -70 0 0 -275 0 -275 74 0 75 0 3 190 3 190 28 27 c37 37 105 39 139 5 22 -22 23 -30 26 -217 l3 -195 75 0 74 0 0 188 c-1 258 -11 295 -90 350 -45 30 -149 31 -200 1z" />
-                            <path d="M4013 1123 l-103 -26 0 -347 0 -347 -57 -31 c-90 -47 -163 -65 -254 -60 -72 3 -77 2 -60 -12 11 -8 90 -76 177 -150 l158 -135 106 1 c115 0 172 16 263 74 l47 30 0 375 0 375 -70 140 c-52 103 -75 140 -88 139 -9 -1 -63 -13 -119 -26z" />
-                            <path d="M11490 1004 l0 -146 -30 26 c-92 77 -246 50 -317 -57 -78 -116 -66 -314 25 -411 38 -41 98 -66 159 -66 65 0 99 13 141 53 l32 31 0 -32 0 -32 65 0 65 0 0 390 0 390 -70 0 -70 0 0 -146z m-71 -208 c59 -31 89 -119 70 -208 -36 -164 -218 -157 -245 10 -23 142 73 250 175 198z" />
-                            <path d="M8010 745 l0 -375 70 0 69 0 3 137 3 138 53 3 c31 2 60 -2 68 -9 7 -6 50 -69 95 -140 l81 -129 85 0 c65 0 82 3 77 13 -5 6 -45 69 -91 139 -46 71 -83 130 -83 133 0 3 6 5 13 5 33 0 99 63 124 117 22 47 25 65 21 124 -7 94 -43 152 -117 191 l-53 28 -209 0 -209 0 0 -375z m380 237 c66 -33 81 -118 31 -174 l-29 -33 -119 0 -118 0 -3 99 c-1 55 0 106 2 113 8 21 191 18 236 -5z" />
-                            <path d="M9428 1081 l-67 -36 -3 -65 -3 -65 -47 -3 -48 -3 0 -54 0 -54 48 -3 47 -3 5 -187 c5 -186 5 -188 31 -214 32 -32 94 -45 172 -37 l57 6 0 56 0 57 -39 -4 c-30 -3 -44 1 -60 17 -19 19 -21 32 -21 166 l0 145 55 0 55 0 0 55 0 55 -55 0 -54 0 -3 104 -3 104 -67 -37z" />
-                            <path d="M9838 1081 l-67 -36 -3 -65 -3 -65 -47 -3 -48 -3 0 -54 0 -54 48 -3 47 -3 5 -187 c5 -186 5 -188 31 -214 32 -32 94 -45 172 -37 l57 6 0 56 0 57 -39 -4 c-30 -3 -44 1 -60 17 -19 19 -21 32 -21 166 l0 145 55 0 55 0 0 55 0 55 -55 0 -54 0 -3 104 -3 104 -67 -37z" />
-                            <path d="M8860 921 c-136 -42 -210 -159 -197 -313 10 -121 86 -221 190 -249 60 -16 173 -7 223 19 120 61 175 223 127 373 -24 74 -92 142 -164 163 -55 17 -136 20 -179 7z m157 -143 c35 -32 53 -78 53 -138 0 -140 -115 -218 -204 -139 -110 96 -46 322 87 305 22 -2 50 -15 64 -28z" />
-                            <path d="M10270 921 c-123 -40 -190 -139 -190 -279 0 -132 43 -212 141 -261 52 -26 74 -31 133 -31 87 0 128 11 189 50 l48 30 -32 45 c-18 25 -35 45 -37 45 -3 0 -29 -12 -59 -26 -44 -22 -63 -26 -109 -22 -47 4 -61 10 -89 39 -18 19 -36 44 -40 57 l-6 22 197 0 197 0 -5 83 c-6 116 -46 184 -133 229 -43 23 -161 34 -205 19z m161 -138 c15 -15 31 -40 34 -55 l7 -28 -126 0 c-69 0 -126 2 -126 5 0 27 57 95 90 108 33 14 93 -1 121 -30z" />
-                            <path d="M11895 917 c-52 -14 -130 -50 -139 -65 -4 -8 50 -92 59 -92 1 0 29 12 61 27 67 31 150 37 179 13 21 -18 38 -61 28 -71 -4 -4 -51 -17 -103 -29 -177 -39 -240 -89 -240 -190 0 -100 71 -160 187 -160 69 0 133 25 155 60 18 28 28 25 28 -10 l0 -30 95 0 95 0 0 55 0 55 -34 0 -34 0 -4 168 c-3 190 -11 213 -81 252 -48 28 -177 36 -252 17z m195 -334 c0 -40 -31 -96 -60 -110 -40 -20 -107 -16 -130 7 -44 44 -15 83 82 111 92 26 108 25 108 -8z" />
-                            <path d="M12604 911 c-22 -10 -50 -31 -62 -46 l-22 -28 0 37 0 36 -70 0 -70 0 0 -270 0 -270 75 0 75 0 0 175 c0 186 7 222 49 245 36 19 86 12 112 -16 23 -25 24 -30 27 -215 l3 -189 70 0 69 0 0 169 c0 93 4 181 9 194 15 39 51 67 87 67 85 0 94 -23 94 -250 l0 -180 76 0 76 0 -4 223 c-3 201 -5 225 -23 255 -58 97 -217 108 -300 22 l-28 -29 -20 26 c-27 34 -92 63 -142 63 -22 0 -58 -9 -81 -19z" />
-                            <path d="M10935 906 c-17 -7 -45 -31 -63 -52 l-31 -39 -1 48 0 47 -65 0 -65 0 0 -270 0 -270 69 0 68 0 5 138 c7 205 38 260 154 270 l54 4 0 69 0 69 -47 0 c-27 -1 -62 -7 -78 -14z" />
-                            </g>
-                        </svg>
+                        <img src="{{ url_basis }}/static/images/logo-organisatie.png"
+                             width="264"
+                             height="48"
+                             alt="Logo Gemeente Rotterdam" />
                     </td>
                 </tr>
                 <tr>
@@ -167,7 +142,7 @@
                 </tr>
                 <tr>
                     <td align="left" class="p-0-20">
-                        <h1>Taak aanvraag: {{ taaktype.omschrijving }}</h1>
+                        <h1>De gemeente Rotterdam verzoekt uw organisatie om een taak op te pakken</h1>
                     </td>
                 </tr>
                 <tr>
@@ -177,29 +152,28 @@
                             {% if taaktype.externe_instantie_naam_verantwoordelijke %}
                                 {{ taaktype.externe_instantie_naam_verantwoordelijke }},
                             {% else %}
-                                {{ taaktype.externe_instantie_naam }}
+                                {{ taaktype.externe_instantie }},
                             {% endif %}
                         </p>
                         <p>
-                            Via MeldR heeft de gemeente Rotterdam een melding binnengekregen, waarvan 1 of meer taken onder de verantwoordelijkheid van {{ taaktype.externe_instantie_naam }} vallen.
+                            De gemeente Rotterdam heeft een melding ontvangen, waarvan de afhandeling (deels) onder de verantwoordelijkheid van uw organisatie valt. In deze mail vindt u alle informatie zoals deze door de melder is ingediend. Wij gaan ervan uit dat de taak door uw organisatie wordt opgepakt. Daarom handelen we de taak bij deze af in ons systeem.
                         </p>
-                        <h3>Omschrijving taak</h3>
-                        <p>{{ taaktype.omschrijving }}</p>
-                        <h3>Toelichting</h3>
-                        <p>{{ taak.bericht }}</p>
-                        {% if taaktype.externe_instantie_feedback_vereist %}
-                            <h3>Afhandelen</h3>
-                            <p>
-                                Is de taak afgehandeld? Dan kunt u dit zelf aangeven. Hieronder vindt u alle informatie over de melding zoals deze door de melder is ingediend. Ook vindt u alle taak gegevens.
-                            </p>
-                            <p class="p-20-0">
-                                <a href="{{ opgelost_url }}" class="btn btn-action">De taak is opgelost</a>
-                                <a href="{{ niet_opgelost_url }}" class="btn btn-secondary">De taak is niet opgelost</a>
-                            </p>
-                        {% elif not taaktype_externe_instantie_feedback_vereist %}
-                            {% comment %} @Remco @TODO Onderstaande tekst moet nog aangepast worden. {% endcomment %}
-                            <p>De taak is automatisch afgehandeleld in onze systemen.</p>
+                        {% if taaktype.omschrijving %}
+                            <h3>Omschrijving taak</h3>
+                            <p>{{ taaktype.omschrijving }}</p>
                         {% endif %}
+                        {% if taaktype.toelichting %}
+                            <h3>Toelichting</h3>
+                            <p>{{ taaktype.toelichting }}</p>
+                        {% endif %}
+                        {% if taak.taakgebeurtenissen_voor_taak.exists %}
+                            <h3>Interne opmerking midoffice</h3>
+                            <p>{{ taak.taakgebeurtenissen_voor_taak.first.omschrijving_intern }}</p>
+                        {% endif %}
+                        <h3>Is deze melding niet voor uw organisatie?</h3>
+                        <p class="p-20-0">
+                            <a href="{{ niet_opgelost_url }}" class="btn" style="color: #404B4F;">Deze taak is niet voor ons</a>
+                        </p>
                     </td>
                 </tr>
                 <tr>
@@ -212,19 +186,71 @@
                         <table class="email-table">
                             <tr>
                                 <td colspan="2">
-                                    <h2 class="no-margin-bottom">{{ taak.adres }}</h2>
+                                    <h2 class="no-margin-bottom">Extra informatie</h2>
                                 </td>
                             </tr>
                             <tr>
-                                <td colspan="2">Fotos hier</td>
+                                <td colspan="2">
+                                    <h3 class="p-50-0-0">
+                                        <img alt="" src="{{ url_basis }}/static/images/email-pin.png" />
+                                        <span>Locatie</span>
+                                    </h3>
+                                </td>
                             </tr>
                             <tr>
                                 <td colspan="2">
-                                    <h2 class="p-50-0-0">
-                                        <img alt=""
-                                             src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjIiIHZpZXdCb3g9IjAgMCAyMCAyMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICAgIDxwYXRoIGQ9Ik00IDRIN1Y2SDRWNFoiIGZpbGw9IiMwMDgxMUYiLz4KICAgIDxwYXRoIGQ9Ik03IDhINFYxMEg3VjhaIiBmaWxsPSIjMDA4MTFGIi8+CiAgICA8cGF0aCBkPSJNNCAxMkg3VjE0SDRWMTJaIiBmaWxsPSIjMDA4MTFGIi8+CiAgICA8cGF0aCBkPSJNNyAxNkg0VjE4SDdWMTZaIiBmaWxsPSIjMDA4MTFGIi8+CiAgICA8cGF0aCBkPSJNOCA0SDE2VjZIOFY0WiIgZmlsbD0iIzAwODExRiIvPgogICAgPHBhdGggZD0iTTE2IDhIOFYxMEgxNlY4WiIgZmlsbD0iIzAwODExRiIvPgogICAgPHBhdGggZD0iTTggMTJIMTZWMTRIOFYxMloiIGZpbGw9IiMwMDgxMUYiLz4KICAgIDxwYXRoIGQ9Ik0xNiAxNkg4VjE4SDE2VjE2WiIgZmlsbD0iIzAwODExRiIvPgogICAgPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0wIDBWMjJIMjBWMEgwWk0xOCAySDJWMjBIMThWMloiIGZpbGw9IiMwMDgxMUYiLz4KPC9zdmc+Cg==" />
+                                    <hr>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="va-top">
+                                    <dl>
+                                        <dt>
+                                            <strong>Adres</strong>
+                                        </dt>
+                                        <dd class="p-0-0-12">
+                                            {{ taak.adres }}
+                                        </dd>
+                                    </dl>
+                                    <p>
+                                        <a href="https://www.google.com/maps/search/?api=1&query={{ taak.taak_zoek_data.geometrie.1|replace_comma_by_dot }},{{ taak.taak_zoek_data.geometrie.0|replace_comma_by_dot }}"
+                                           style="color: #00811f">
+                                            <img alt="" src="{{ url_basis }}/static/images/email-pin-open.png" />
+                                            Toon in Google Maps
+                                        </a>
+                                    </p>
+                                </td>
+                                <td>
+                                    <dl>
+                                        <dt>
+                                            <strong>Wijk</strong>
+                                        </dt>
+                                        <dd class="p-0-0-12">
+                                            {% if taak.taak_zoek_data.wijknaam %}
+                                                {{ taak.taak_zoek_data.wijknaam }}
+                                            {% else %}
+                                                -
+                                            {% endif %}
+                                        </dd>
+                                        <dt>
+                                            <strong>Buurt</strong>
+                                        </dt>
+                                        <dd class="p-0-0-12">
+                                            {% if taak.taak_zoek_data.buurtnaam %}
+                                                {{ taak.taak_zoek_data.buurtnaam }}
+                                            {% else %}
+                                                -
+                                            {% endif %}
+                                        </dd>
+                                    </dl>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">
+                                    <h3 class="p-50-0-0">
+                                        <img alt="" src="{{ url_basis }}/static/images/email-lijst.png" />
                                         <span>Melding</span>
-                                    </h2>
+                                    </h3>
                                 </td>
                             </tr>
                             <tr>
@@ -247,12 +273,6 @@
                                         <dd class="p-0-0-12">
                                             {{ melding.aangemaakt_op|to_datetime|date:'d-m-Y H:m' }}
                                         </dd>
-                                        <dt>
-                                            <strong>Onderwerp</strong>
-                                        </dt>
-                                        <dd class="p-0-0-12">
-                                            {{ melding.onderwerp }}
-                                        </dd>
                                     </dl>
                                 </td>
                                 <td class="va-top">
@@ -261,63 +281,28 @@
                                             <strong>Omschrijving</strong>
                                         </dt>
                                         <dd class="p-0-0-12">
-                                            {{ melding.omschrijving }}
+                                            {{ melding.signalen_voor_melding.0.omschrijving_melder }}
                                         </dd>
+                                        {% if melding.onderwerpen %}
+                                            <dt>
+                                                <strong>Onderwerp</strong>
+                                            </dt>
+                                            <dd class="p-0-0-12">
+                                                {% for onderwerp in melding.onderwerpen %}
+                                                    {% render_onderwerp onderwerp %}
+                                                    {% if not forloop.last %},{% endif %}
+                                                {% endfor %}
+                                            </dd>
+                                        {% endif %}
                                     </dl>
                                 </td>
                             </tr>
                             <tr>
                                 <td colspan="2">
-                                    <h2 class="p-50-0-0">
-                                        <img alt=""
-                                             src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjYiIHZpZXdCb3g9IjAgMCAyMCAyNiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICAgIDxwYXRoIGQ9Ik0xNy42MzQ5IDMuNjEyODFDMTYuNzA5IDIuNDgzNDIgMTUuNTQ0IDEuNTczNTUgMTQuMjI0IDAuOTQ4ODAyQzEyLjkwMzkgMC4zMjQwNTUgMTEuNDYxNyAwIDEwLjAwMTMgMEM4LjU0MDg0IDAgNy4wOTg2MSAwLjMyNDA1NSA1Ljc3ODU2IDAuOTQ4ODAyQzQuNDU4NSAxLjU3MzU1IDMuMjkzNTIgMi40ODM0MiAyLjM2NzYgMy42MTI4MUMwLjgzNzY3NyA1LjQ2ODM4IDAuMDAwOTc2NTYzIDcuNzk4NDIgMC4wMDA5NzY1NjIgMTAuMjAzNEMwLjAwMDk3NjU2MyAxMi42MDgzIDAuODM3Njc3IDE0LjkzODQgMi4zNjc2IDE2Ljc5MzlMMTAuMDAxMyAyNi4wMDAyTDE3LjYzNjEgMTYuNzkzOUMxOS4xNjUyIDE0LjkzOCAyMC4wMDEzIDEyLjYwOCAyMC4wMDExIDEwLjIwMzJDMjAuMDAwOSA3Ljc5ODM5IDE5LjE2NDQgNS40Njg1MyAxNy42MzQ5IDMuNjEyODFaTTEwLjAwMDEgMTMuOTk4OEM5LjExMDE2IDEzLjk5ODggOC4yNDAxNyAxMy43MzQ4IDcuNTAwMTcgMTMuMjQwNEM2Ljc2MDE4IDEyLjc0NiA2LjE4MzQzIDEyLjA0MzIgNS44NDI4NSAxMS4yMjA5QzUuNTAyMjcgMTAuMzk4NyA1LjQxMzE2IDkuNDkzOTQgNS41ODY3OCA4LjYyMTA2QzUuNzYwNDEgNy43NDgxOCA2LjE4ODk4IDYuOTQ2MzkgNi44MTgyOSA2LjMxNzA4QzcuNDQ3NiA1LjY4Nzc3IDguMjQ5MzkgNS4yNTkyIDkuMTIyMjcgNS4wODU1N0M5Ljk5NTE1IDQuOTExOTUgMTAuODk5OSA1LjAwMTA2IDExLjcyMjIgNS4zNDE2NEMxMi41NDQ0IDUuNjgyMjIgMTMuMjQ3MiA2LjI1ODk3IDEzLjc0MTYgNi45OTg5N0MxNC4yMzYxIDcuNzM4OTYgMTQuNSA4LjYwODk1IDE0LjUgOS40OTg5M0MxNC41IDEwLjY5MjUgMTQuMDI1OSAxMS44MzcxIDEzLjE4MjEgMTIuNjgxMkMxMi4zMzgyIDEzLjUyNTIgMTEuMTkzNyAxMy45OTk2IDEwLjAwMDEgMTMuOTk5OVYxMy45OTg4WiIgZmlsbD0iIzAwODExRiIvPgo8L3N2Zz4K" />
-                                        <span>Locatie</span>
-                                    </h2>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td colspan="2">
-                                    <hr>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="va-top">
-                                    <dl>
-                                        <dt>
-                                            <strong>Adres</strong>
-                                        </dt>
-                                        <dd class="p-0-0-12">
-                                            {{ taak.adres }}
-                                        </dd>
-                                        <dt>
-                                            <strong>Wijk</strong>
-                                        </dt>
-                                        <dd class="p-0-0-12">
-                                            {{ taak.taak_zoek_data.wijknaam }}
-                                        </dd>
-                                    </dl>
-                                </td>
-                                <td>
-                                    <dl>
-                                        <dt>
-                                            <strong>Buurt</strong>
-                                        </dt>
-                                        <dd class="p-0-0-12">
-                                            {{ taak.taak_zoek_data.buurtnaam }}
-                                        </dd>
-                                    </dl>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td colspan="2">Kaart hier</td>
-                            </tr>
-                            <tr>
-                                <td colspan="2">
-                                    <h2 class="p-50-0-0">
-                                        <img alt=""
-                                             src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAyMCAyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xMCAxOS43NUMxNS4zODQ4IDE5Ljc1IDE5Ljc1IDE1LjM4NDggMTkuNzUgMTBDMTkuNzUgNC42MTUyMiAxNS4zODQ4IDAuMjUgMTAgMC4yNUM0LjYxNTIyIDAuMjUgMC4yNSA0LjYxNTIyIDAuMjUgMTBDMC4yNSAxNS4zODQ4IDQuNjE1MjIgMTkuNzUgMTAgMTkuNzVaTTE2LjgyNjMgMTQuNjM0NEMxNy43MjQ4IDEzLjMxMzUgMTguMjUgMTEuNzE4MSAxOC4yNSAxMEMxOC4yNSA1LjQ0MzY1IDE0LjU1NjMgMS43NSAxMCAxLjc1QzUuNDQzNjUgMS43NSAxLjc1IDUuNDQzNjUgMS43NSAxMEMxLjc1IDExLjc0NDIgMi4yOTEyOSAxMy4zNjIgMy4yMTUwNSAxNC42OTQ2QzMuMjAxMTkgMTQuNjc0NiAzLjE4NzQxIDE0LjY1NDUgMy4xNzM3MyAxNC42MzQ0QzQuMjE3NzMgMTMuNDIwNSA1LjU3OTk2IDEyLjQ4ODIgNy4xMzA5OCAxMS45NjdDNi4xMzQ2NiAxMS4xNDE1IDUuNSA5Ljg5NDg5IDUuNSA4LjVDNS41IDYuMDE0NzIgNy41MTQ3MiA0IDEwIDRDMTIuNDg1MyA0IDE0LjUgNi4wMTQ3MiAxNC41IDguNUMxNC41IDkuODk0OSAxMy44NjUzIDExLjE0MTYgMTIuODY5IDExLjk2N0MxNC40MiAxMi40ODgzIDE1Ljc4MjMgMTMuNDIwNiAxNi44MjYzIDE0LjYzNDRaTTE1Ljg1NDkgMTUuODEyM0MxNC40ODA0IDE0LjA5NzggMTIuMzY4NCAxMyA5Ljk5OTk4IDEzQzcuNjMxNTkgMTMgNS41MTk2IDE0LjA5NzggNC4xNDUxMSAxNS44MTIzQzUuNjM5NzIgMTcuMzE3OCA3LjcxMDk5IDE4LjI1IDEwIDE4LjI1QzEyLjI4OSAxOC4yNSAxNC4zNjAzIDE3LjMxNzggMTUuODU0OSAxNS44MTIzWk0xMCA1LjVDOC4zNDMxNSA1LjUgNyA2Ljg0MzE1IDcgOC41QzcgMTAuMTU2OSA4LjM0MzE1IDExLjUgMTAgMTEuNUMxMS42NTY5IDExLjUgMTMgMTAuMTU2OSAxMyA4LjVDMTMgNi44NDMxNSAxMS42NTY5IDUuNSAxMCA1LjVaIiBmaWxsPSIjMDA4MTFGIi8+Cjwvc3ZnPgo=" />
+                                    <h3 class="p-50-0-0">
+                                        <img alt="" src="{{ url_basis }}/static/images/email-gebruiker.png" />
                                         <span>Melder</span>
-                                    </h2>
+                                    </h3>
                                 </td>
                             </tr>
                             <tr>
@@ -337,16 +322,16 @@
                                                         </dd>
                                                     {% else %}
                                                         <dd class="p-0-0-12">
-                                                            Geen naam opgegeven
+                                                            <small>Geen naam opgegeven</small>
                                                         </dd>
                                                     {% endif %}
                                                     {% if signaal.melder.telefoonnummer and signaal.melder.telefoonnummer != "Anoniem" %}
                                                         <dd class="p-0-0-12">
                                                             <a href="tel:{{ signaal.melder.telefoonnummer }}"
                                                                target="_blank"
-                                                               class="link link--phone">
-                                                                <img alt=""
-                                                                     src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTQiIGhlaWdodD0iMjIiIHZpZXdCb3g9IjAgMCAxNCAyMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xLjQzOTM0IDAuNUgxMi41NjA3TDEzLjc1IDEuNjg5MzRWMjAuMzEwN0wxMi41NjA3IDIxLjVIMS40MzkzNEwwLjI1IDIwLjMxMDdWMS42ODkzNEwxLjQzOTM0IDAuNVpNMi4wNjA2NiAyTDEuNzUgMi4zMTA2NlYxOS42ODkzTDIuMDYwNjYgMjBIMTEuOTM5M0wxMi4yNSAxOS42ODkzVjIuMzEwNjZMMTEuOTM5MyAySDEwTDkuMjUgMy41SDQuNzVMNCAySDIuMDYwNjZaTTcgMTYuMjVDNi4xNzE1NyAxNi4yNSA1LjUgMTYuOTIxNiA1LjUgMTcuNzVDNS41IDE4LjU3ODQgNi4xNzE1NyAxOS4yNSA3IDE5LjI1QzcuODI4NDMgMTkuMjUgOC41IDE4LjU3ODQgOC41IDE3Ljc1QzguNSAxNi45MjE2IDcuODI4NDMgMTYuMjUgNyAxNi4yNVoiIGZpbGw9IiMwMDgxMUYiLz4KPC9zdmc+Cg==" />
+                                                               class="link link--phone"
+                                                               style="color: #00811f">
+                                                                <img alt="" src="{{ url_basis }}/static/images/email-telefoon.png" />
                                                                 {{ signaal.melder.telefoonnummer }}
                                                             </a>
                                                         </dd>
@@ -359,23 +344,15 @@
                                                         <dd class="p-0-0-12">
                                                             <a href="mailto:{{ signaal.melder.email }}"
                                                                target="_blank"
-                                                               class="link link--email">
-                                                                <img alt=""
-                                                                     src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMTYiIHZpZXdCb3g9IjAgMCAyMCAxNiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xOS43NSAwLjVIMC4yNVYxNS41SDE5Ljc1VjAuNVpNMS43NSA0LjVWMkgxOC4yNVY0LjVMMTAgNy45Mzc1TDEuNzUgNC41Wk0xLjc1IDYuMTI1VjE0SDE4LjI1VjYuMTI1TDEwIDkuNTYyNUwxLjc1IDYuMTI1WiIgZmlsbD0iIzAwODExRiIvPgo8L3N2Zz4K" />
+                                                               class="link link--email"
+                                                               style="color: #00811f">
+                                                                <img alt="" src="{{ url_basis }}/static/images/email-mail.png" />
                                                                 {{ signaal.melder.email }}
                                                             </a>
                                                         </dd>
                                                     {% else %}
                                                         <dd class="p-0-0-12">
                                                             <small>Geen e-mailadres opgegeven</small>
-                                                        </dd>
-                                                    {% endif %}
-                                                    {% if signaal.bron %}
-                                                        <dt>
-                                                            <strong>Ingediend via</strong>
-                                                        </dt>
-                                                        <dd class="p-0-0-12">
-                                                            {{ signaal.bron }}
                                                         </dd>
                                                     {% endif %}
                                                 </div>
@@ -388,6 +365,88 @@
                                     </dl>
                                 </td>
                             </tr>
+                            <tr>
+                                <td colspan="2">
+                                    <h3 class="p-50-0-0">
+                                        <img alt="" src="{{ url_basis }}/static/images/email-gebruiker.png" />
+                                        <span>Taak aangemaakt door</span>
+                                    </h3>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">
+                                    <hr>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="va-top" colspan="2">
+                                    {% if taak.taakgebeurtenissen_voor_taak.exists %}
+                                        <dl>
+                                            <div class="margin-bottom">
+                                                {% with gebruiker=taak.taakgebeurtenissen_voor_taak.first.gebruiker|get_gebruiker_object_middels_email %}
+                                                    {% if gebruiker.first_name or gebruiker.last_name or gebruiker.rol %}
+                                                        <dd class="p-0-0-12">
+                                                            {% if gebruiker.first_name %}{{ gebruiker.first_name }}{% endif %}
+                                                            {% if gebruiker.last_name %}{{ gebruiker.last_name }}{% endif %}
+                                                        </dd>
+                                                        <dd class="p-0-0-12">
+                                                            Midoffice Gemeente Rotterdam
+                                                        </dd>
+                                                    {% endif %}
+                                                    {% if gebruiker.telefoonnummer %}
+                                                        <dd class="p-0-0-12">
+                                                            <a href="tel:{{ gebruiker.telefoonnummer }}"
+                                                               target="_blank"
+                                                               class="link link--phone"
+                                                               style="color: #00811f">
+                                                                <img alt="" src="{{ url_basis }}/static/images/email-telefoon.png" />
+                                                                {{ gebruiker.telefoonnummer }}
+                                                            </a>
+                                                        </dd>
+                                                    {% endif %}
+                                                    {% if gebruiker.email %}
+                                                        <dd class="p-0-0-12">
+                                                            <a href="mailto:{{ gebruiker.email }}"
+                                                               target="_blank"
+                                                               class="link link--email"
+                                                               style="color: #00811f">
+                                                                <img alt="" src="{{ url_basis }}/static/images/email-mail.png" />
+                                                                {{ gebruiker.email }}
+                                                            </a>
+                                                        </dd>
+                                                    {% endif %}
+                                                {% endwith %}
+                                            </div>
+                                        </dl>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% if bijlagen %}
+                                <tr>
+                                    <td colspan="2">
+                                        <h3 class="no-margin-bottom">
+                                            <img alt="" src="{{ url_basis }}/static/images/email-foto.png" />
+                                            <span>Foto's</span>
+                                        </h3>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2">
+                                        <hr>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="p-4-16 va-top" colspan="2">
+                                        {% for bijlage in bijlagen %}
+                                            <p>
+                                                <img src="cid:{{ bijlage }}"
+                                                     width="300"
+                                                     alt="bijlage bij {{ taaktype.omschrijving }}" />
+                                            </p>
+                                        {% endfor %}
+                                    </td>
+                                </tr>
+                            {% endif %}
                         </table>
                     </td>
                 </tr>

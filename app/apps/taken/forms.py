@@ -39,6 +39,9 @@ class TaaktypeAanpassenForm(forms.ModelForm):
             "omschrijving",
             "toelichting",
             "actief",
+            "externe_instantie",
+            "externe_instantie_email",
+            "externe_instantie_verantwoordelijke",
         )
 
 
@@ -49,6 +52,9 @@ class TaaktypeAanmakenForm(TaaktypeAanpassenForm):
             "omschrijving",
             "toelichting",
             "actief",
+            "externe_instantie",
+            "externe_instantie_email",
+            "externe_instantie_verantwoordelijke",
         )
 
     def __init__(self, *args, **kwargs):
@@ -59,32 +65,14 @@ class TaaktypeAanmakenForm(TaaktypeAanpassenForm):
 
 
 class TaakFeedbackHandleForm(forms.Form):
-    REDEN_CHOICES = (
-        ("1", "De taak valt niet onder onze verantwoordelijkheid."),
-        ("2", "We konden de locatie niet bereiken."),
-        ("3", "Andere reden."),
-    )
-    omschrijving_intern_opties = forms.ChoiceField(
-        label="Reden",
-        widget=forms.RadioSelect(
-            attrs={
-                "data-action": "change->feedback#onChangeReden",
-                "class": "list--form-radio-input",
-            }
-        ),
-        choices=REDEN_CHOICES,
-        required=True,
-    )
-
     omschrijving_intern = forms.CharField(
         label="Toelichting",
         widget=forms.Textarea(
             attrs={
-                "class": "hidden",
                 "data-testid": "information",
                 "rows": "4",
-                "placeholder": "Omschrijf hier de reden",
+                "placeholder": "Toelichting",
             }
         ),
-        required=True,
+        required=False,
     )

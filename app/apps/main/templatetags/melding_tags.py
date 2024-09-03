@@ -10,7 +10,8 @@ logger = logging.getLogger(__name__)
 @register.filter
 def taakopdracht(melding, taakopdracht_id):
     taakopdracht = {
-        to.get("id"): to for to in melding.get("taakopdrachten_voor_melding", [])
+        taakopdracht.get("id"): taakopdracht
+        for taakopdracht in melding.get("taakopdrachten_voor_melding", [])
     }.get(taakopdracht_id, {})
     return taakopdracht
 
@@ -125,6 +126,5 @@ def get_bijlagen(melding):
     alle_bijlagen_gesorteerd = sorted(
         alle_bijlagen, key=lambda b: b.get("aangemaakt_op")
     )
-
     # Return the sorted list of bijlagen
     return alle_bijlagen_gesorteerd

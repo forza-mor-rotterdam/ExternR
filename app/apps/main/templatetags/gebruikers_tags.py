@@ -71,3 +71,20 @@ def get_taakgebeurtenis_voor_taakstatus(taak_gebeurtenissen, taakstatus):
         return ""
 
     return taak_gebeurtenissen.filter(taakstatus__naam=taakstatus).first()
+
+
+@register.filter
+def get_laatste_taakgebeurtenis(taak_gebeurtenissen):
+    if not taak_gebeurtenissen:
+        return ""
+
+    # Filter and order by creation date
+    latest_taakgebeurtenis = (
+        taak_gebeurtenissen.filter(
+            taakstatus__naam__in=["voltooid", "voltooid_met_feedback"]
+        )
+        .order_by("-aangemaakt_op")
+        .first()
+    )
+
+    return latest_taakgebeurtenis

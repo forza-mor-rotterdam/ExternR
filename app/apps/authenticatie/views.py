@@ -6,8 +6,8 @@ from apps.authenticatie.forms import (
     GebruikerBulkImportForm,
     GebruikerProfielForm,
 )
+from apps.instellingen.models import Instelling
 from apps.meldingen.service import MeldingenService
-from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required, permission_required
@@ -127,8 +127,13 @@ class GebruikerProfielView(UpdateView):
     success_url = reverse_lazy("gebruiker_profiel")
 
     def get_context_data(self, **kwargs):
+        instelling = Instelling.actieve_instelling()
+        if not instelling or not instelling.email_beheer:
+            raise Exception(
+                "De beheer_email kan niet worden gevonden, er zijn nog geen instellingen voor aangemaakt"
+            )
         context = super().get_context_data(**kwargs)
-        context["email_beheer"] = settings.EMAIL_BEHEER
+        context["email_beheer"] = instelling.email_beheer
         return context
 
     def get_object(self, queryset=None):

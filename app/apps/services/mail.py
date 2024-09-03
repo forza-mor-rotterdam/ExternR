@@ -4,8 +4,10 @@ import os.path
 import re
 
 import magic
+from apps.main.templatetags.melding_tags import get_bijlagen
+from apps.meldingen.service import MeldingenService
 from django.conf import settings
-from django.core.files.storage import default_storage
+from django.contrib.sites.models import Site
 from django.core.mail import EmailMultiAlternatives, SafeMIMEMultipart
 from django.template.loader import get_template
 from django.urls import reverse
@@ -93,33 +95,43 @@ class MailService:
         meldingalias=None,
         template_stijl="html",
         verzenden=False,
-        bestanden=[],
         base_url=None,
     ):
         send_to = []
+
+        domain = Site.objects.get_current().domain
+        url_basis = f"{settings.PROTOCOL}://{domain}{settings.PORT}"
+        # @ TODO retrieve taaktype data from taakr
         taaktype = taak.taaktype
+
+        bijlagen = get_bijlagen(taak.melding.response_json)
+
+        bijlagen_flat = [
+            url
+            for url in reversed(
+                [b.get("afbeelding") for b in bijlagen if b.get("afbeelding")]
+            )
+        ]
 
         email_context = {
             "melding": meldingalias,
             "taak": taak,
             "taaktype": taaktype,
-            "bijlagen": bestanden,
+            "bijlagen": [b.split("/")[-1].replace(" ", "_") for b in bijlagen_flat],
+            "url_basis": url_basis,
         }
 
-        if taaktype.externe_instantie_feedback_vereist:
-            taak_id_hash = hashlib.sha256(
-                (str(taak.id) + settings.SECRET_HASH_KEY).encode()
-            ).hexdigest()
+        taak_id_hash = hashlib.sha256(
+            (str(taak.id) + settings.SECRET_HASH_KEY).encode()
+        ).hexdigest()
 
-            # Construct the feedback URLs using base_url
-            opgelost_url = f"{base_url}{reverse('feedback', kwargs={'taak_id': taak.id, 'email_hash': taak_id_hash, 'email_feedback_type': 1})}"
-            niet_opgelost_url = f"{base_url}{reverse('feedback', kwargs={'taak_id': taak.id, 'email_hash': taak_id_hash, 'email_feedback_type': 0})}"
-            email_context.update(
-                {
-                    "opgelost_url": opgelost_url,
-                    "niet_opgelost_url": niet_opgelost_url,
-                }
-            )
+        # Construct the feedback URLs using base_url
+        niet_opgelost_url = f"{base_url}{reverse('feedback', kwargs={'taak_id': taak.id, 'email_hash': taak_id_hash})}"
+        email_context.update(
+            {
+                "niet_opgelost_url": niet_opgelost_url,
+            }
+        )
 
         if taak.taaktype.externe_instantie_email:
             send_to.append(taak.taaktype.externe_instantie_email)
@@ -134,9 +146,17 @@ class MailService:
         )
         msg.attach_alternative(html_content, "text/html")
 
-        for f in bestanden:
-            attachment = default_storage.path(f)
-            msg.attach_related_file(attachment)
+        for bijlage in bijlagen_flat:
+            filename = bijlage.split("/")[-1].replace(
+                " ", "_"
+            )  # be careful with file names
+            file_path = os.path.join("/media/", filename)
+            bijlage_response = MeldingenService().afbeelding_ophalen(
+                bijlage, stream=True
+            )
+            with open(file_path, "wb") as f:
+                f.write(bijlage_response.content)
+            msg.attach_related_file(file_path)
 
         if send_to and not settings.DEBUG and verzenden:
             msg.send()
@@ -150,6 +170,17 @@ class MailService:
                 ],
             )
             msg.attach_alternative(html_content, "text/html")
+            for bijlage in bijlagen_flat:
+                filename = bijlage.split("/")[-1].replace(
+                    " ", "_"
+                )  # be careful with file names
+                file_path = os.path.join("/media/", filename)
+                bijlage_response = MeldingenService().afbeelding_ophalen(
+                    bijlage, stream=True
+                )
+                with open(file_path, "wb") as f:
+                    f.write(bijlage_response.content)
+                msg.attach_related_file(file_path)
             msg.send()
         if template_stijl == "html":
             return html_content

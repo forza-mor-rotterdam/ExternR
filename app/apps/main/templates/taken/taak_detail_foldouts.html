@@ -5,7 +5,7 @@
 {% load json_encode replace_n python_any from main_tags %}
 {% load mor_core_url mor_core_protected_url from main_tags %}
 {% load context_template from context_tags %}
-{% load get_gebruiker_object_middels_email get_taakgebeurtenis_voor_taakstatus from gebruikers_tags %}
+{% load get_gebruiker_object_middels_email get_taakgebeurtenis_voor_taakstatus get_laatste_taakgebeurtenis from gebruikers_tags %}
 <section data-testid="detailTaak" class="padding-bottom">
     <div class="container__details taak">
         <details>
@@ -55,7 +55,7 @@
                 <p>
                     {{ taak.afgesloten_op|to_datetime|date:'d-m-Y H:i' }}
                     <br>
-                    {% with taakgebeurtenis=taak.taakgebeurtenissen_voor_taak|get_taakgebeurtenis_voor_taakstatus:'voltooid' %}
+                    {% with taakgebeurtenis=taak.taakgebeurtenissen_voor_taak|get_laatste_taakgebeurtenis %}
                         {% include "incident/part_gebruiker_telefoon.html" with gebruiker=taakgebeurtenis.gebruiker|get_gebruiker_object_middels_email %}
                     {% endwith %}
                 </p>
@@ -111,17 +111,6 @@
                 <div>
                     <h3 class="h5">Ter hoogte van</h3>
                     <p>{{ taak.adres }}</p>
-                    {% if geometrie %}
-                        <a class="link link--navigate"
-                           href="#"
-                           data-modal-title-param="Navigeren"
-                           data-modal-url-param="{% url 'navigeer' geometrie.1|replace_comma_by_dot geometrie.0|replace_comma_by_dot %}"
-                           data-modal-id-param="navigeer"
-                           data-action="modal#openModal">
-                            {% include "icons/navigate.svg" %}
-                            Navigeren
-                        </a>
-                    {% endif %}
                 </div>
                 <div>
                     {% if taak_zoek_data.wijknaam %}

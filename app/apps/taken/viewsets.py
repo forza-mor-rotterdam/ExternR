@@ -71,16 +71,13 @@ class TaakViewSet(
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         taak = Taak.acties.aanmaken(serializer)
-
         base_url = request.build_absolute_uri("/")[:-1]  # Remove trailing slash
 
         chain_of_tasks = chain(
             task_update_melding_alias_data.si(taak.melding.id),
             send_taak_aangemaakt_email_task.si(taak.id, base_url=base_url),
+            taak_afsluiten_zonder_feedback_task.si(taak.id),
         )
-
-        if not taak.taaktype.externe_instantie_feedback_vereist:
-            chain_of_tasks |= taak_afsluiten_zonder_feedback_task.si(taak.id)
 
         chain_of_tasks.delay()
 
@@ -103,6 +100,7 @@ class TaakViewSet(
             data=data,
             context={"request": request},
         )
+
         if serializer.is_valid():
             Taak.acties.status_aanpassen(serializer, self.get_object())
 

@@ -932,3 +932,7 @@ body > .select2-container--default,
 .modal > .select2-container--default {
     margin-top: 0 !important;
 }
+
+.hidden-for-form {
+    display: none;
+}

@@ -82,8 +82,8 @@ class MeldingAliasAdmin(admin.ModelAdmin):
     search_fields = ("bron_url",)
     list_filter = (
         ResponseDataFilter,
-        # TakenAantalFilter,
-        # ZoekDataAantalFilter,
+        TakenAantalFilter,
+        ZoekDataAantalFilter,
     )
 
     def get_queryset(self, request):

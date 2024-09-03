@@ -29,6 +29,14 @@ DEPLOY_DATE = os.getenv("DEPLOY_DATE", "")
 ENVIRONMENT = os.getenv("ENVIRONMENT")
 APP_ENV = os.getenv("APP_ENV", PRODUCTIE)  # acceptatie/test/productie
 DEBUG = ENVIRONMENT == "development"
+PROTOCOL = "https" if not DEBUG else "http"
+PORT = "" if not DEBUG else ":8008"
+
+# Fernet Key
+FIELD_ENCRYPTION_KEY = os.getenv(
+    "FIELD_ENCRYPTION_KEY", "Fp9p5Ml9hK2BravAUDd4O4pn9_KcBTfFbh-QEuuBN0E="
+)
+
 
 ROOT_URLCONF = "config.urls"
 WSGI_APPLICATION = "config.wsgi.application"
@@ -43,46 +51,9 @@ LANGUAGES = [("nl", "Dutch")]
 DEFAULT_ALLOWED_HOSTS = ".forzamor.nl,localhost,127.0.0.1,.mor.local"
 ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", DEFAULT_ALLOWED_HOSTS).split(",")
 
-MELDINGEN_URL = os.getenv("MELDINGEN_URL", "https://mor-core-acc.forzamor.nl")
-MELDINGEN_API_URL = os.getenv("MELDINGEN_API_URL", f"{MELDINGEN_URL}/api/v1")
-MELDINGEN_API_HEALTH_CHECK_URL = os.getenv(
-    "MELDINGEN_API_HEALTH_CHECK_URL", f"{MELDINGEN_URL}/health/"
-)
-MELDINGEN_TOKEN_API = os.getenv(
-    "MELDINGEN_TOKEN_API", f"{MELDINGEN_URL}/api-token-auth/"
-)
-MELDINGEN_TOKEN_TIMEOUT = 60 * 60
-MELDINGEN_USERNAME = os.getenv("MELDINGEN_USERNAME")
-MELDINGEN_PASSWORD = os.getenv("MELDINGEN_PASSWORD")
-
 DEV_SOCKET_PORT = os.getenv("DEV_SOCKET_PORT", "9000")
 
 UI_SETTINGS = {"fontsizes": ["fz-medium", "fz-large", "fz-xlarge"]}
-
-onderwerpen_urls = {
-    PRODUCTIE: "https://onderwerpen.forzamor.nl",
-    ACCEPTATIE: "https://onderwerpen-acc.forzamor.nl",
-    TEST: "https://onderwerpen-test.forzamor.nl",
-}
-ONDERWERPEN_URL = (
-    "https://onderwerpen-acc.forzamor.nl"
-    if DEBUG
-    else os.getenv(
-        "ONDERWERPEN_URL", onderwerpen_urls.get(APP_ENV, onderwerpen_urls[ACCEPTATIE])
-    )
-)
-
-taakr_urls = {
-    PRODUCTIE: "https://taakr.forzamor.nl",
-    ACCEPTATIE: "https://taakr-acc.forzamor.nl",
-    TEST: "https://taakr-test.forzamor.nl",
-}
-TAAKR_URL = (
-    "http://taakr.mor.local:8009"
-    if DEBUG
-    else os.getenv("TAAKR_URL", taakr_urls.get(APP_ENV, taakr_urls[ACCEPTATIE]))
-)
-
 
 INSTALLED_APPS = (
     # templates override
@@ -123,6 +94,7 @@ INSTALLED_APPS = (
     "apps.rotterdam_formulier_html",
     "apps.context",
     "apps.beheer",
+    "apps.instellingen",
 )
 
 LOGIN_URL = "/login/"
@@ -210,6 +182,7 @@ CELERYBEAT_SCHEDULE = {
 CELERY_WORKER_CONCURRENCY = 2
 CELERY_WORKER_MAX_TASKS_PER_CHILD = 20
 CELERY_WORKER_MAX_MEMORY_PER_CHILD = 200000
+CELERY_WORKER_SEND_TASK_EVENTS = True
 
 SITE_ID = 1
 SITE_NAME = os.getenv("SITE_NAME", "ExternR")
@@ -326,7 +299,8 @@ CSP_IMG_SRC = (
     "cdn.jsdelivr.net",
     "ows.gis.rotterdam.nl",
     "www.gis.rotterdam.nl",
-    TAAKR_URL,
+    "forzamor.nl",
+    "mor.local",
 )
 CSP_STYLE_SRC = (
     "'self'",
@@ -381,6 +355,9 @@ CACHES = {
     }
 }
 
+WIJKEN_EN_BUURTEN_CACHE_KEY = "wijken_en_buurten_cache_key"
+WIJKEN_EN_BUURTEN_GEMEENTECODE = "0599"
+WIJKEN_EN_BUURTEN_CACHE_TIMEOUT = 60 * 60 * 24
 
 # Sessions are managed by django-session-timeout-joinup
 # Django session settings
@@ -514,8 +491,6 @@ if OPENID_CONFIG and OIDC_RP_CLIENT_ID:
     LOGIN_REDIRECT_URL_FAILURE = "/"
     LOGOUT_REDIRECT_URL = OIDC_OP_LOGOUT_ENDPOINT
     LOGIN_URL = "/oidc/authenticate/"
-
-EMAIL_BEHEER = os.getenv("EMAIL_BEHEER", "ForzaMOR@rotterdam.nl")
 
 APP_ENV = os.getenv("APP_ENV", "productie")  # acceptatie/test/productie
 

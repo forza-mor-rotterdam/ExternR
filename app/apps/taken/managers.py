@@ -31,6 +31,10 @@ class TaakManager(models.Manager):
             serializer.validated_data["melding"] = meldingalias
             serializer.validated_data["taak_zoek_data"] = taak_zoek_data_instance
             gebruiker = serializer.validated_data.pop("gebruiker", None)
+            omschrijving_intern = serializer.validated_data.pop(
+                "omschrijving_intern", None
+            )
+
             taak = serializer.save()
 
             taakstatus = Taakstatus.objects.create(
@@ -40,6 +44,7 @@ class TaakManager(models.Manager):
                 taak=taak,
                 taakstatus=taakstatus,
                 gebruiker=gebruiker,
+                omschrijving_intern=omschrijving_intern,
             )
             taak.taakstatus = taakstatus
             taak.save()
@@ -53,7 +58,7 @@ class TaakManager(models.Manager):
 
     def status_aanpassen(self, serializer, taak, db="default"):
         from apps.aliassen.tasks import task_maak_bijlagealias
-        from apps.taken.models import Taak
+        from apps.taken.models import Taak, Taakgebeurtenis, Taakstatus
 
         with transaction.atomic():
             try:
@@ -80,10 +85,18 @@ class TaakManager(models.Manager):
             locked_taak.taakstatus = taakgebeurtenis.taakstatus
             locked_taak.additionele_informatie["uitvoerder"] = uitvoerder
 
-            if not locked_taak.taakstatus.volgende_statussen():
+            if (
+                Taakstatus.NaamOpties.VOLTOOID_MET_FEEDBACK
+                in locked_taak.taakstatus.volgende_statussen()
+                or not locked_taak.taakstatus.volgende_statussen()
+            ):
                 locked_taak.afgesloten_op = timezone.now().isoformat()
-                if resolutie in [ro[0] for ro in Taak.ResolutieOpties.choices]:
+                if resolutie in [
+                    ro[0] for ro in Taakgebeurtenis.ResolutieOpties.choices
+                ]:
                     locked_taak.resolutie = resolutie
+                    taakgebeurtenis.resolutie = resolutie
+                    taakgebeurtenis.save()
             locked_taak.bezig_met_verwerken = False
             locked_taak.save()
 

@@ -1,6 +1,7 @@
 import hashlib
 import logging
 
+from apps.instellingen.models import Instelling
 from apps.meldingen.service import MeldingenService
 from apps.taken.forms import (
     TaakFeedbackHandleForm,
@@ -55,10 +56,18 @@ class TaaktypeAanpassenView(TaaktypeAanmakenAanpassenView, UpdateView):
     form_class = TaaktypeAanpassenForm
 
     def get_initial(self):
+        instelling = Instelling.actieve_instelling()
+        if not instelling:
+            raise Exception(
+                "De TaakR url kan niet worden gevonden, Er zijn nog geen instellingen aangemaakt"
+            )
+
         initial = self.initial.copy()
         initial["redirect_field"] = (
             self.request.GET.get("redirect_url", "")
-            if self.request.GET.get("redirect_url", "").startswith(settings.TAAKR_URL)
+            if self.request.GET.get("redirect_url", "").startswith(
+                instelling.taakr_basis_url
+            )
             else None
         )
         return initial
@@ -73,8 +82,16 @@ class TaaktypeAanpassenView(TaaktypeAanmakenAanpassenView, UpdateView):
         return context
 
     def form_valid(self, form):
+        instelling = Instelling.actieve_instelling()
+        if not instelling:
+            raise Exception(
+                "De TaakR url kan niet worden gevonden, Er zijn nog geen instellingen aangemaakt"
+            )
+
         response = super().form_valid(form)
-        if form.cleaned_data.get("redirect_field", "").startswith(settings.TAAKR_URL):
+        if form.cleaned_data.get("redirect_field", "").startswith(
+            instelling.taakr_basis_url
+        ):
             taaktype_url = drf_reverse(
                 "v1:taaktype-detail",
                 kwargs={"uuid": self.object.uuid},
@@ -102,17 +119,33 @@ class TaaktypeAanmakenView(TaaktypeAanmakenAanpassenView, CreateView):
         return super().get(request, *args, **kwargs)
 
     def get_initial(self):
+        instelling = Instelling.actieve_instelling()
+        if not instelling:
+            raise Exception(
+                "De TaakR url kan niet worden gevonden, Er zijn nog geen instellingen aangemaakt"
+            )
+
         initial = self.initial.copy()
         initial["redirect_field"] = (
             self.request.GET.get("redirect_url", "")
-            if self.request.GET.get("redirect_url", "").startswith(settings.TAAKR_URL)
+            if self.request.GET.get("redirect_url", "").startswith(
+                instelling.taakr_basis_url
+            )
             else None
         )
         return initial
 
     def form_valid(self, form):
+        instelling = Instelling.actieve_instelling()
+        if not instelling:
+            raise Exception(
+                "De TaakR url kan niet worden gevonden, Er zijn nog geen instellingen aangemaakt"
+            )
+
         response = super().form_valid(form)
-        if form.cleaned_data.get("redirect_field", "").startswith(settings.TAAKR_URL):
+        if form.cleaned_data.get("redirect_field", "").startswith(
+            instelling.taakr_basis_url
+        ):
             taaktype_url = drf_reverse(
                 "v1:taaktype-detail",
                 kwargs={"uuid": self.object.uuid},
@@ -122,9 +155,7 @@ class TaaktypeAanmakenView(TaaktypeAanmakenAanpassenView, CreateView):
         return response
 
 
-def taak_feedback_handle(
-    request, taak_id: int, email_hash: str, email_feedback_type: int
-):
+def taak_feedback_handle(request, taak_id: int, email_hash: str):
     taak = get_object_or_404(Taak, pk=taak_id)
     form = None
     try:
@@ -144,15 +175,8 @@ def taak_feedback_handle(
             "Er is een fout opgetreden bij het verwerken van uw verzoek.",
             status=500,
         )
-    # Geen valide feedback_type (opgelost of niet_opgelost)
-    if email_feedback_type not in [0, 1]:
-        logger.error(f"Incorrect value for email_feedback_type: {email_feedback_type}")
-        return HttpResponseServerError(
-            f"Ongeldige waarde voor email_feedback_type: {email_feedback_type}.",
-            status=500,
-        )
-    # Taak is reeds voltooid
-    if taak.taakstatus.naam == "voltooid":
+    # Taak is eerder veranderd naar niet_opgelost
+    if taak.resolutie == "niet_opgelost":
         return render(
             request,
             "taken/taak_externe_instantie_eerder_voltooid.html",
@@ -161,67 +185,35 @@ def taak_feedback_handle(
             },
         )
     # Feedback niet opgelost
-    if email_feedback_type == 0:
-        form = TaakFeedbackHandleForm()
-        if request.POST:
-            form = TaakFeedbackHandleForm(request.POST)
-            if form.is_valid():
-                taak_status_aanpassen_response = (
-                    MeldingenService().taak_status_aanpassen(
-                        taakopdracht_url=taak.taakopdracht,
-                        status="voltooid",
-                        resolutie="niet_opgelost",
-                        omschrijving_intern=form.cleaned_data.get(
-                            "omschrijving_intern"
-                        ),
-                        gebruiker=taak.taaktype.externe_instantie_email,
-                    )
+    form = TaakFeedbackHandleForm()
+    if request.POST:
+        form = TaakFeedbackHandleForm(request.POST)
+        if form.is_valid():
+            taak_status_aanpassen_response = MeldingenService().taak_status_aanpassen(
+                taakopdracht_url=taak.taakopdracht,
+                status="voltooid_met_feedback",
+                resolutie="niet_opgelost",
+                omschrijving_intern=form.cleaned_data.get("omschrijving_intern"),
+                gebruiker=taak.taaktype.externe_instantie_email,
+                naar_niet_opgelost=True,
+            )
+            if taak_status_aanpassen_response.status_code != 200:
+                logger.error(
+                    f"taak_feedback_handle taak_status_aanpassen: status_code={taak_status_aanpassen_response.status_code}, taak_id={id}, repsonse_text={taak_status_aanpassen_response.text}"
                 )
-                if taak_status_aanpassen_response.status_code != 200:
-                    logger.error(
-                        f"taak_feedback_handle taak_status_aanpassen: status_code={taak_status_aanpassen_response.status_code}, taak_id={id}, repsonse_text={taak_status_aanpassen_response.text}"
-                    )
-                if taak_status_aanpassen_response.status_code == 200:
-                    return render(
-                        request,
-                        "taken/taak_externe_instantie_bedankt.html",
-                        {
-                            "taak": taak,
-                        },
-                    )
-        return render(
-            request,
-            "taken/taak_externe_instantie_feedback.html",
-            {
-                "form": form,
-                "taak": taak,
-            },
-        )
-    # Feedback opgelost
-    elif email_feedback_type == 1:
-        taak_status_aanpassen_response = MeldingenService().taak_status_aanpassen(
-            taakopdracht_url=taak.taakopdracht,
-            status="voltooid",
-            resolutie="opgelost",
-            gebruiker=taak.taaktype.externe_instantie_email,
-        )
-        if taak_status_aanpassen_response.status_code != 200:
-            logger.error(
-                f"taak_feedback_handle taak_status_aanpassen: status_code={taak_status_aanpassen_response.status_code}, taak_id={id}, repsonse_text={taak_status_aanpassen_response.text}"
-            )
-        if taak_status_aanpassen_response.status_code == 200:
-            return render(
-                request,
-                "taken/taak_externe_instantie_bedankt.html",
-                {
-                    "taak": taak,
-                },
-            )
-
+            if taak_status_aanpassen_response.status_code == 200:
+                return render(
+                    request,
+                    "taken/taak_externe_instantie_bedankt.html",
+                    {
+                        "taak": taak,
+                    },
+                )
     return render(
         request,
-        "taken/taak_externe_instantie_bedankt.html",
+        "taken/taak_externe_instantie_feedback.html",
         {
+            "form": form,
             "taak": taak,
         },
     )
