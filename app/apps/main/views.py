@@ -541,6 +541,9 @@ def _meldingen_bestand(request, modified_path):
     return StreamingHttpResponse(
         response.raw,
         content_type=response.headers.get("content-type"),
+        headers={
+            "Content-Disposition": "inline",
+        },
         status=response.status_code,
         reason=response.reason,
     )
