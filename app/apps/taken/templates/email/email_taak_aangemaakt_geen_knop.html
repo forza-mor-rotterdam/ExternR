@@ -1,0 +1,458 @@
+{% load to_datetime from main_tags %}
+{% load render_onderwerp from melding_tags %}
+{% load replace_comma_by_dot from main_tags %}
+{% load get_gebruiker_object_middels_email from gebruikers_tags %}
+<!DOCTYPE html>
+<html lang="nl"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:o="urn:schemas-microsoft-com:office:office">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width,initial-scale=1">
+        <meta name="description" content="Taak aanvraag externe instantie">
+        <meta name="keywords"
+              content="MOR, Meldingen openbare ruimte, gemeente Rotterdam, Taak aanvraag externe instantie, ExternR">
+        <meta name="x-apple-disable-message-reformatting">
+        <title>Taak opdracht externe instantie</title>
+        <!--[if mso]>
+        <noscript>
+        <xml>
+        <o:OfficeDocumentSettings>
+        <o:PixelsPerInch>96</o:PixelsPerInch>
+        </o:OfficeDocumentSettings>
+        </xml>
+        </noscript>
+        <![endif]-->
+        <style>
+            table, td, div, h1, p {
+                font-family: Arial, sans-serif;
+                color: #404B4F;
+            }
+            table {width: 100%;}
+            table.email-presentation-table {
+                max-width: 800px;
+                margin: 0 auto;
+            }
+            h1, h2 {
+                font-size: 1.5rem;
+                margin-bottom: 0;
+            }
+            h3 img {
+                vertical-align: middle;
+            }
+            h3 {
+                font-size: 1.25rem;
+                margin-top: 2rem;
+                margin-bottom: 0.5rem;
+            }
+            p {
+                margin-top: 0.5rem;
+            }
+            dd {
+                margin-left: 0;
+            }
+
+            a {
+                color: #00811f;
+            }
+            .btn {
+                border: 1px solid #EAEAEA;
+                display: inline-block;
+                padding: 11px 32px 13px 32px;
+                line-height: 24px;
+                font-size: 1em;
+                font-weight: 400;
+                margin-bottom: 0.5em;
+                text-decoration: none;
+                color: #404B4F;
+            }
+
+            .btn:hover {
+                border-color: #000000;
+                text-decoration: none;
+            }
+            a img {
+                margin-right: 8px;
+                vertical-align: middle;
+            }
+            .p-20 {
+                padding: 20px;
+            }
+
+            .p-0-0-12 {
+                padding: 0 0 12px;
+            }
+
+            .p-0-20 {
+                padding: 0 20px;
+            }
+
+            .p-20-0 {
+                padding: 20px 0;
+            }
+            .p-20-0-0 {
+                padding: 20px 0 0;
+            }
+            .p-50-0-0 {
+                padding: 50px 0 0;
+            }
+            .p-8-0-4 {
+                padding: 8px 0 4px;
+            }
+
+            .p-4-16 {
+                padding: 4px 16px;
+            }
+
+            .p-50-20 {
+                padding: 50px 20px;
+            }
+
+            .p-50-20-20 {
+                padding: 50px 20px 20px;
+            }
+
+            .p-20-20-40 {
+                padding: 20px 20px 40px;
+            }
+
+            .p-40-0-20 {
+                padding: 40px 0 20px;
+            }
+            .va-top {
+                vertical-align: top;
+            }
+        </style>
+    </head>
+    <body class="no-margin no-padding">
+        <table role="presentation" class="email-presentation-table">
+            {% with melding=taak.melding.response_json %}
+                <tr>
+                    <td align="left" class="p-40-0-20">
+                        <img src="{{ url_basis }}/static/images/logo-organisatie.png"
+                             width="264"
+                             height="48"
+                             alt="Logo Gemeente Rotterdam" />
+                    </td>
+                </tr>
+                <tr>
+                    <td class="p-20">
+                        <div class="w-full email-border-top"></div>
+                    </td>
+                </tr>
+                <tr>
+                    <td align="left" class="p-0-20">
+                        <h1>De gemeente Rotterdam verzoekt uw organisatie om een taak op te pakken</h1>
+                    </td>
+                </tr>
+                <tr>
+                    <td align="left" class="p-0-20">
+                        <h4>Beste ketenpartner,</h4>
+                        <p>
+                            De gemeente Rotterdam heeft een melding ontvangen, waarvan de afhandeling (deels) onder de verantwoordelijkheid van uw organisatie valt. In deze mail vindt u alle informatie zoals deze door de melder is ingediend. Wij gaan ervan uit dat de werkzaamheden door uw organisatie worden opgepakt. De melder is door ons op de hoogte gebracht:
+                            <ol>
+                                <li>Dat we de melding naar u hebben doorgestuurd,</li>
+                                <li>van uw contactgegevens en</li>
+                                <li>dat we de melding administratief hebben afgesloten.</li>
+                            </ol>
+                        </p>
+                        <p>
+                            Heeft u vragen, behoefte aan collegiaal overleg of is dit bericht niet voor u bestemd? Neem dan contact op door te reageren op dit bericht.
+                        </p>
+                        {% if taaktype.omschrijving %}
+                            <h3>Omschrijving taak</h3>
+                            <p>{{ taaktype.omschrijving }}</p>
+                        {% endif %}
+                        {% if taaktype.toelichting %}
+                            <h3>Toelichting</h3>
+                            <p>{{ taaktype.toelichting }}</p>
+                        {% endif %}
+                        {% if taak.taakgebeurtenissen_voor_taak.exists %}
+                            <h3>Interne opmerking midoffice</h3>
+                            <p>{{ taak.taakgebeurtenissen_voor_taak.first.omschrijving_intern }}</p>
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <td class="p-20">
+                        <hr>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="p-0-20">
+                        <table class="email-table">
+                            <tr>
+                                <td colspan="2">
+                                    <h2 class="no-margin-bottom">Extra informatie</h2>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">
+                                    <h3 class="p-50-0-0">
+                                        <img alt="" src="{{ url_basis }}/static/images/email-pin.png" />
+                                        <span>Locatie</span>
+                                    </h3>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">
+                                    <hr>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="va-top">
+                                    <dl>
+                                        <dt>
+                                            <strong>Adres</strong>
+                                        </dt>
+                                        <dd class="p-0-0-12">
+                                            {{ taak.adres }}
+                                        </dd>
+                                    </dl>
+                                    <p>
+                                        <a href="https://www.google.com/maps/search/?api=1&query={{ taak.taak_zoek_data.geometrie.1|replace_comma_by_dot }},{{ taak.taak_zoek_data.geometrie.0|replace_comma_by_dot }}"
+                                           style="color: #00811f">
+                                            <img alt="" src="{{ url_basis }}/static/images/email-pin-open.png" />
+                                            Toon in Google Maps
+                                        </a>
+                                    </p>
+                                </td>
+                                <td>
+                                    <dl>
+                                        <dt>
+                                            <strong>Wijk</strong>
+                                        </dt>
+                                        <dd class="p-0-0-12">
+                                            {% if taak.taak_zoek_data.wijknaam %}
+                                                {{ taak.taak_zoek_data.wijknaam }}
+                                            {% else %}
+                                                -
+                                            {% endif %}
+                                        </dd>
+                                        <dt>
+                                            <strong>Buurt</strong>
+                                        </dt>
+                                        <dd class="p-0-0-12">
+                                            {% if taak.taak_zoek_data.buurtnaam %}
+                                                {{ taak.taak_zoek_data.buurtnaam }}
+                                            {% else %}
+                                                -
+                                            {% endif %}
+                                        </dd>
+                                    </dl>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">
+                                    <h3 class="p-50-0-0">
+                                        <img alt="" src="{{ url_basis }}/static/images/email-lijst.png" />
+                                        <span>Melding</span>
+                                    </h3>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">
+                                    <hr>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="va-top">
+                                    <dl>
+                                        <dt>
+                                            <strong>Nummer</strong>
+                                        </dt>
+                                        <dd class="p-0-0-12">
+                                            {{ melding.signalen_voor_melding.0.bron_signaal_id }}
+                                        </dd>
+                                        <dt>
+                                            <strong>Ingediend</strong>
+                                        </dt>
+                                        <dd class="p-0-0-12">
+                                            {{ melding.aangemaakt_op|to_datetime|date:'d-m-Y H:m' }}
+                                        </dd>
+                                    </dl>
+                                </td>
+                                <td class="va-top">
+                                    <dl>
+                                        <dt>
+                                            <strong>Omschrijving</strong>
+                                        </dt>
+                                        <dd class="p-0-0-12">
+                                            {{ melding.signalen_voor_melding.0.omschrijving_melder }}
+                                        </dd>
+                                        {% if melding.onderwerpen %}
+                                            <dt>
+                                                <strong>Onderwerp</strong>
+                                            </dt>
+                                            <dd class="p-0-0-12">
+                                                {% for onderwerp in melding.onderwerpen %}
+                                                    {% render_onderwerp onderwerp %}
+                                                    {% if not forloop.last %},{% endif %}
+                                                {% endfor %}
+                                            </dd>
+                                        {% endif %}
+                                    </dl>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">
+                                    <h3 class="p-50-0-0">
+                                        <img alt="" src="{{ url_basis }}/static/images/email-gebruiker.png" />
+                                        <span>Melder</span>
+                                    </h3>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">
+                                    <hr>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="va-top">
+                                    <dl>
+                                        {% if melding.signalen_voor_melding|length > 0 %}
+                                            {% for signaal in melding.signalen_voor_melding %}
+                                                <div class="margin-bottom">
+                                                    {% if signaal.melder.naam %}
+                                                        <dd class="p-0-0-12">
+                                                            {{ signaal.melder.naam }}
+                                                        </dd>
+                                                    {% else %}
+                                                        <dd class="p-0-0-12">
+                                                            <small>Geen naam opgegeven</small>
+                                                        </dd>
+                                                    {% endif %}
+                                                    {% if signaal.melder.telefoonnummer and signaal.melder.telefoonnummer != "Anoniem" %}
+                                                        <dd class="p-0-0-12">
+                                                            <a href="tel:{{ signaal.melder.telefoonnummer }}"
+                                                               target="_blank"
+                                                               class="link link--phone"
+                                                               style="color: #00811f">
+                                                                <img alt="" src="{{ url_basis }}/static/images/email-telefoon.png" />
+                                                                {{ signaal.melder.telefoonnummer }}
+                                                            </a>
+                                                        </dd>
+                                                    {% else %}
+                                                        <dd class="p-0-0-12">
+                                                            <small>Geen telefoonnummer opgegeven</small>
+                                                        </dd>
+                                                    {% endif %}
+                                                    {% if signaal.melder.email %}
+                                                        <dd class="p-0-0-12">
+                                                            <a href="mailto:{{ signaal.melder.email }}"
+                                                               target="_blank"
+                                                               class="link link--email"
+                                                               style="color: #00811f">
+                                                                <img alt="" src="{{ url_basis }}/static/images/email-mail.png" />
+                                                                {{ signaal.melder.email }}
+                                                            </a>
+                                                        </dd>
+                                                    {% else %}
+                                                        <dd class="p-0-0-12">
+                                                            <small>Geen e-mailadres opgegeven</small>
+                                                        </dd>
+                                                    {% endif %}
+                                                </div>
+                                            {% endfor %}
+                                        {% else %}
+                                            <dd class="p-0-0-12">
+                                                <small>Geen gegevens bekend</small>
+                                            </dd>
+                                        {% endif %}
+                                    </dl>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">
+                                    <h3 class="p-50-0-0">
+                                        <img alt="" src="{{ url_basis }}/static/images/email-gebruiker.png" />
+                                        <span>Taak aangemaakt door</span>
+                                    </h3>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">
+                                    <hr>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="va-top" colspan="2">
+                                    {% if taak.taakgebeurtenissen_voor_taak.exists %}
+                                        <dl>
+                                            <div class="margin-bottom">
+                                                {% with gebruiker=taak.taakgebeurtenissen_voor_taak.first.gebruiker|get_gebruiker_object_middels_email %}
+                                                    {% if gebruiker.first_name or gebruiker.last_name or gebruiker.rol %}
+                                                        <dd class="p-0-0-12">
+                                                            {% if gebruiker.first_name %}{{ gebruiker.first_name }}{% endif %}
+                                                            {% if gebruiker.last_name %}{{ gebruiker.last_name }}{% endif %}
+                                                        </dd>
+                                                        <dd class="p-0-0-12">
+                                                            Midoffice Gemeente Rotterdam
+                                                        </dd>
+                                                    {% endif %}
+                                                    {% if gebruiker.telefoonnummer %}
+                                                        <dd class="p-0-0-12">
+                                                            <a href="tel:{{ gebruiker.telefoonnummer }}"
+                                                               target="_blank"
+                                                               class="link link--phone"
+                                                               style="color: #00811f">
+                                                                <img alt="" src="{{ url_basis }}/static/images/email-telefoon.png" />
+                                                                {{ gebruiker.telefoonnummer }}
+                                                            </a>
+                                                        </dd>
+                                                    {% endif %}
+                                                    {% if gebruiker.email %}
+                                                        <dd class="p-0-0-12">
+                                                            <a href="mailto:{{ gebruiker.email }}"
+                                                               target="_blank"
+                                                               class="link link--email"
+                                                               style="color: #00811f">
+                                                                <img alt="" src="{{ url_basis }}/static/images/email-mail.png" />
+                                                                {{ gebruiker.email }}
+                                                            </a>
+                                                        </dd>
+                                                    {% endif %}
+                                                {% endwith %}
+                                            </div>
+                                        </dl>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% if bijlagen %}
+                                <tr>
+                                    <td colspan="2">
+                                        <h3 class="no-margin-bottom">
+                                            <img alt="" src="{{ url_basis }}/static/images/email-foto.png" />
+                                            <span>Foto's</span>
+                                        </h3>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2">
+                                        <hr>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="p-4-16 va-top" colspan="2">
+                                        {% for bijlage in bijlagen %}
+                                            <p>
+                                                <img src="cid:{{ bijlage }}"
+                                                     width="300"
+                                                     alt="bijlage bij {{ taaktype.omschrijving }}" />
+                                            </p>
+                                        {% endfor %}
+                                    </td>
+                                </tr>
+                            {% endif %}
+                        </table>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="p-20-20-40">
+                        <div class="w-full email-border-top"></div>
+                    </td>
+                </tr>
+            {% endwith %}
+        </table>
+    </body>
+</html>
