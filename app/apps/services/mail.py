@@ -134,7 +134,7 @@ class MailService:
         )
 
         if taak.taaktype.externe_instantie_email:
-            send_to.extend(taak.taaktype.externe_instantie_email)
+            send_to.append(taak.taaktype.externe_instantie_email)
 
         text_template = get_template("email/email_taak_aangemaakt_geen_knop.txt")
         html_template = get_template("email/email_taak_aangemaakt_geen_knop.html")
