@@ -74,6 +74,15 @@ jobs:
             type=raw,develop
             type=raw,test
 
+      - name: Extract metadata (tags, labels) for Docker nginx
+        id: meta_nginx
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-nginx
+          tags: |
+            type=raw,develop
+            type=raw,test
+
       - name: Build and push app Docker image
         uses: docker/build-push-action@v3
         with:
@@ -84,6 +93,14 @@ jobs:
           build-args: |
             GIT_SHA=${{ github.sha }}
             DEPLOY_DATE=${{ steps.get_date.outputs.DATE }}
+
+      - name: Build and push nginx Docker image
+        uses: docker/build-push-action@v3
+        with:
+          context: "{{defaultContext}}:nginx"
+          push: true
+          tags: ${{ steps.meta_nginx.outputs.tags }}
+          labels: ${{ steps.meta_nginx.outputs.labels }}
 
   deploy-acc:
     name: Acceptance release
