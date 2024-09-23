@@ -2,6 +2,7 @@ import logging
 from urllib.parse import urlencode, urlparse
 
 import requests
+import urllib3
 from apps.instellingen.models import Instelling
 from django.core.cache import cache
 from requests import Request, Response
@@ -62,6 +63,9 @@ class MeldingenService:
                     "username": instelling.mor_core_gebruiker_email,
                     "password": instelling.mor_core_gebruiker_wachtwoord,
                 },
+                headers={
+                    "user-agent": urllib3.util.SKIP_HEADER,
+                },
             )
             if token_response.status_code == 200:
                 meldingen_token = token_response.json().get("token")
@@ -75,7 +79,9 @@ class MeldingenService:
         return meldingen_token
 
     def get_headers(self):
-        headers = {}
+        headers = {
+            "user-agent": urllib3.util.SKIP_HEADER,
+        }
         if self._use_token:
             headers.update({"Authorization": f"Token {self.haal_token()}"})
         return headers
