@@ -36,6 +36,12 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-app
 
+      - name: Extract metadata (tags, labels) for Docker nginx
+        id: meta_nginx
+        uses: docker/metadata-action@98669ae865ea3cffbcbaa878cf57c20bbf1c6c38
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-nginx
+
       - name: Build and push backend Docker image
         uses: docker/build-push-action@v3
         with:
@@ -45,6 +51,14 @@ jobs:
           labels: ${{ steps.meta_app.outputs.labels }}
           build-args: |
             GIT_SHA=${{ github.sha }}
+
+      - name: Build and push nginx Docker image
+        uses: docker/build-push-action@v3
+        with:
+          context: "{{defaultContext}}:nginx"
+          push: true
+          tags: ${{ steps.meta_nginx.outputs.tags }}
+          labels: ${{ steps.meta_nginx.outputs.labels }}
 
       - name: Start rollout on k8s platform
         uses: actions-hub/kubectl@master
