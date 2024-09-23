@@ -5,6 +5,7 @@ import sys
 from os.path import join
 
 import requests
+import urllib3
 from celery.schedules import crontab
 
 locale.setlocale(locale.LC_ALL, "nl_NL.UTF-8")
@@ -443,7 +444,12 @@ OPENID_CONFIG_URI = os.getenv(
 )
 OPENID_CONFIG = {}
 try:
-    OPENID_CONFIG = requests.get(OPENID_CONFIG_URI).json()
+    OPENID_CONFIG = requests.get(
+        OPENID_CONFIG_URI,
+        headers={
+            "user-agent": urllib3.util.SKIP_HEADER,
+        },
+    ).json()
 except Exception as e:
     logger.error(f"OPENID_CONFIG FOUT, url: {OPENID_CONFIG_URI}, error: {e}")
 OIDC_ENABLED = False

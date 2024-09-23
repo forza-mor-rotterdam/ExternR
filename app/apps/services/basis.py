@@ -2,6 +2,7 @@ import logging
 from urllib.parse import urlencode
 
 import requests
+import urllib3
 from django.contrib import messages
 from django.core.cache import cache
 from requests import Request, Response
@@ -35,7 +36,9 @@ class BasisService:
         return url
 
     def get_headers(self):
-        return {}
+        return {
+            "user-agent": urllib3.util.SKIP_HEADER,
+        }
 
     def naar_json(self, response):
         try:
