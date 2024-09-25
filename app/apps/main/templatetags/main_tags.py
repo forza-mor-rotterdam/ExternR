@@ -3,6 +3,7 @@ import logging
 import os
 
 import requests
+import urllib3
 from django import template
 from django.conf import settings
 from django.contrib.gis.geos import Point
@@ -105,7 +106,7 @@ def startswith(text, starts):
 
 
 @register.filter("get_svg_path")
-def get_svg_pathl(url):
+def get_svg_path(url):
     method = "get"
     action: Request = getattr(requests, method)
     cache_timeout = 60 * 60
@@ -113,7 +114,12 @@ def get_svg_pathl(url):
         cache_key = url
         response = cache.get(url)
         if not response:
-            response: Response = action(url=url)
+            response: Response = action(
+                url=url,
+                headers={
+                    "user-agent": urllib3.util.SKIP_HEADER,
+                },
+            )
 
             if int(response.status_code) == 200:
                 cache.set(cache_key, response, cache_timeout)

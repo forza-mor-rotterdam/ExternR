@@ -5,6 +5,7 @@ import sys
 from os.path import join
 
 import requests
+import urllib3
 from celery.schedules import crontab
 
 locale.setlocale(locale.LC_ALL, "nl_NL.UTF-8")
@@ -269,8 +270,8 @@ SESSION_COOKIE_HTTPONLY = True
 CSRF_COOKIE_HTTPONLY = True
 SESSION_COOKIE_SECURE = not DEBUG
 CSRF_COOKIE_SECURE = not DEBUG
-SESSION_COOKIE_NAME = "__Secure-sessionid" if not DEBUG else "sessionid"
-CSRF_COOKIE_NAME = "__Secure-csrftoken" if not DEBUG else "csrftoken"
+SESSION_COOKIE_NAME = "__Host-sessionid" if not DEBUG else "sessionid"
+CSRF_COOKIE_NAME = "__Host-csrftoken" if not DEBUG else "csrftoken"
 SESSION_COOKIE_SAMESITE = "Lax"  # Strict does not work well together with OIDC
 CSRF_COOKIE_SAMESITE = "Lax"  # Strict does not work well together with OIDC
 
@@ -443,7 +444,12 @@ OPENID_CONFIG_URI = os.getenv(
 )
 OPENID_CONFIG = {}
 try:
-    OPENID_CONFIG = requests.get(OPENID_CONFIG_URI).json()
+    OPENID_CONFIG = requests.get(
+        OPENID_CONFIG_URI,
+        headers={
+            "user-agent": urllib3.util.SKIP_HEADER,
+        },
+    ).json()
 except Exception as e:
     logger.error(f"OPENID_CONFIG FOUT, url: {OPENID_CONFIG_URI}, error: {e}")
 OIDC_ENABLED = False

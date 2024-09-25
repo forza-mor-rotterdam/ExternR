@@ -1,0 +1,29 @@
+Taak opdracht externe instantie
+
+Beste
+{% if taaktype.externe_instantie_naam_verantwoordelijke %}
+    {{ taaktype.externe_instantie_naam_verantwoordelijke }},
+{% else %}
+    {{ taaktype.externe_instantie_naam }}
+{% endif %}
+Via MeldR heeft de gemeente Rotterdam een melding binnengekregen, waarvan 1 of meer taken onder de verantwoordelijkheid van {{ taaktype.externe_instantie_naam }} vallen.
+
+Taak gegevens
+Datum ingediend:                                        {% if taak.aangemaakt_op %}{{ taak.aangemaakt_op }}{% else %}-{% endif %}
+Taaktype omschrijving:                                  {% if taak.taaktype.omschrijving %}{{ taak.taaktype.omschrijving }}{% else %}-{% endif %}
+Taaktype aanvullende informatie:                        {% if taak.taaktype.aanvullende_informatie %}{{ taak.taaktype.aanvullende_informatie }}{% else %}-{% endif %}
+MeldR nummer:                                           {% if melding.signalen_voor_melding.0.bron_signaal_id != None %}{{ melding.signalen_voor_melding.0.bron_signaal_id }}{% else %}-{% endif %}
+Locatie ter hoogte van:                                 {% if taak.adres %}{{ taak.adres }}{% else %}-{% endif %}
+Interne opmerking gemeente:                             {% if taak.bericht %}{{ taak.bericht }}{% else %}-{% endif %}
+
+Melder gegevens:
+{% if melding.signalen_voor_melding.0 %}
+{% if melding.signalen_voor_melding.0.melder.naam %}{{ melding.signalen_voor_melding.0.melder.naam }}{% else %}-{% endif %}
+{% if melding.signalen_voor_melding.0.melder.telefoonnummer %}{{ melding.signalen_voor_melding.0.melder.telefoonnummer }}{% else %}-{% endif %}
+{% if melding.signalen_voor_melding.0.melder.email %}{{ melding.signalen_voor_melding.0.melder.email }}{% else %}-{% endif %}
+{% endif %}
+
+
+De gemeente heeft de melding in haar systemen afgesloten en de melder op de hoogte gesteld dat [externe instantie] de melder op de hoogte stelt van de afhandeling hiervan.
+Met vriendelijke groet,
+Gemeent Rotterdam

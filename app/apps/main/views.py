@@ -536,11 +536,13 @@ def _meldingen_bestand(request, modified_path):
             "De MOR-Core url kan niet worden gevonden, Er zijn nog geen instellingen aangemaakt"
         )
     url = f"{instelling.mor_core_basis_url}{modified_path}"
-    headers = {"Authorization": f"Token {MeldingenService().haal_token()}"}
-    response = requests.get(url, stream=True, headers=headers)
+    response = requests.get(url, stream=True, headers=MeldingenService().get_headers())
     return StreamingHttpResponse(
         response.raw,
         content_type=response.headers.get("content-type"),
+        headers={
+            "Content-Disposition": "inline",
+        },
         status=response.status_code,
         reason=response.reason,
     )

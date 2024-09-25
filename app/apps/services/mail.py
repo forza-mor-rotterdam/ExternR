@@ -136,11 +136,11 @@ class MailService:
         if taak.taaktype.externe_instantie_email:
             send_to.append(taak.taaktype.externe_instantie_email)
 
-        text_template = get_template("email/email_taak_aangemaakt.txt")
-        html_template = get_template("email/email_taak_aangemaakt.html")
+        text_template = get_template("email/email_taak_aangemaakt_geen_knop.txt")
+        html_template = get_template("email/email_taak_aangemaakt_geen_knop.html")
         text_content = text_template.render(email_context)
         html_content = html_template.render(email_context)
-        subject = "De gemeente Rotterdam heeft een melding van een bewoner ontvangen waarvan de taakafhandeling onder de verantwoordelijkheid valt van uw organisatie."
+        subject = f"De gemeente Rotterdam heeft een melding met nummer {taak.taak_zoek_data.bron_signaal_ids[0] if taak.taak_zoek_data.bron_signaal_ids else ''} van een bewoner ontvangen waarvan de taakafhandeling onder de verantwoordelijkheid valt van uw organisatie."
         msg = EmailMultiRelated(
             subject, text_content, settings.DEFAULT_FROM_EMAIL, send_to
         )
