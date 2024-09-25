@@ -392,24 +392,18 @@
                                                     {% endif %}
                                                     {% if gebruiker.telefoonnummer %}
                                                         <dd class="p-0-0-12">
-                                                            <a href="tel:{{ gebruiker.telefoonnummer }}"
-                                                               target="_blank"
-                                                               class="link link--phone"
-                                                               style="color: #00811f">
+                                                            <p>
                                                                 <img alt="" src="{{ url_basis }}/static/images/email-telefoon.png" />
                                                                 {{ gebruiker.telefoonnummer }}
-                                                            </a>
+                                                            </p>
                                                         </dd>
                                                     {% endif %}
                                                     {% if gebruiker.email %}
                                                         <dd class="p-0-0-12">
-                                                            <a href="mailto:{{ gebruiker.email }}"
-                                                               target="_blank"
-                                                               class="link link--email"
-                                                               style="color: #00811f">
+                                                            <p>
                                                                 <img alt="" src="{{ url_basis }}/static/images/email-mail.png" />
                                                                 {{ gebruiker.email }}
-                                                            </a>
+                                                            </p>
                                                         </dd>
                                                     {% endif %}
                                                 {% endwith %}

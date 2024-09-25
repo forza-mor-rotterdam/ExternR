@@ -147,16 +147,17 @@
                 </tr>
                 <tr>
                     <td align="left" class="p-0-20">
+                        <h4>Beste ketenpartner,</h4>
                         <p>
-                            Beste
-                            {% if taaktype.externe_instantie_naam_verantwoordelijke %}
-                                {{ taaktype.externe_instantie_naam_verantwoordelijke }},
-                            {% else %}
-                                {{ taaktype.externe_instantie }},
-                            {% endif %}
+                            De gemeente Rotterdam heeft een melding ontvangen, waarvan de afhandeling (deels) onder de verantwoordelijkheid van uw organisatie valt. In deze mail vindt u alle informatie zoals deze door de melder is ingediend. Wij gaan ervan uit dat de werkzaamheden door uw organisatie worden opgepakt. De melder is door ons op de hoogte gebracht:
+                            <ol>
+                                <li>Dat we de melding naar u hebben doorgestuurd,</li>
+                                <li>van uw contactgegevens en</li>
+                                <li>dat we de melding administratief hebben afgesloten.</li>
+                            </ol>
                         </p>
                         <p>
-                            De gemeente Rotterdam heeft een melding ontvangen, waarvan de afhandeling (deels) onder de verantwoordelijkheid van uw organisatie valt. In deze mail vindt u alle informatie zoals deze door de melder is ingediend. Wij gaan ervan uit dat de taak door uw organisatie wordt opgepakt. Daarom handelen we de taak bij deze af in ons systeem.
+                            Heeft u vragen, behoefte aan collegiaal overleg of is dit bericht niet voor u bestemd? Neem dan contact op door te reageren op dit bericht.
                         </p>
                         {% if taaktype.omschrijving %}
                             <h3>Omschrijving taak</h3>
@@ -395,24 +396,18 @@
                                                     {% endif %}
                                                     {% if gebruiker.telefoonnummer %}
                                                         <dd class="p-0-0-12">
-                                                            <a href="tel:{{ gebruiker.telefoonnummer }}"
-                                                               target="_blank"
-                                                               class="link link--phone"
-                                                               style="color: #00811f">
+                                                            <p>
                                                                 <img alt="" src="{{ url_basis }}/static/images/email-telefoon.png" />
                                                                 {{ gebruiker.telefoonnummer }}
-                                                            </a>
+                                                            </p>
                                                         </dd>
                                                     {% endif %}
                                                     {% if gebruiker.email %}
                                                         <dd class="p-0-0-12">
-                                                            <a href="mailto:{{ gebruiker.email }}"
-                                                               target="_blank"
-                                                               class="link link--email"
-                                                               style="color: #00811f">
+                                                            <p>
                                                                 <img alt="" src="{{ url_basis }}/static/images/email-mail.png" />
                                                                 {{ gebruiker.email }}
-                                                            </a>
+                                                            </p>
                                                         </dd>
                                                     {% endif %}
                                                 {% endwith %}
