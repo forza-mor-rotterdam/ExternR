@@ -157,6 +157,10 @@ h2,
 h3,
 .h3 {
     font-size: $h3-font-size;
+
+    img {
+        vertical-align: middle;
+    }
 }
 h4,
 .h4 {
@@ -306,6 +310,9 @@ a,
                 fill: $green-tint01;
             }
         }
+    }
+    img {
+        vertical-align: middle;
     }
 }
 
