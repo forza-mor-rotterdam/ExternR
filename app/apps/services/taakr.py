@@ -87,6 +87,16 @@ class TaakRService(BasisService):
 
         return taaktype
 
+    def vernieuw_taaktypes(self, taaktype_url):
+        url = f"{self._base_url}/api/v1/taaktype/vernieuw"
+        taaktypes = self.do_request(
+            url,
+            params={"taakapplicatie_taaktype_url": taaktype_url},
+            cache_timeout=0,
+            raw_response=False,
+        )
+        return taaktypes
+
     def get_taaktype_by_url(self, taaktype_url, force_cache=False):
         taaktype = self.do_request(
             taaktype_url,

@@ -1,7 +1,9 @@
+from apps.instellingen.models import Instelling
 from apps.taken.models import Taak, Taakgebeurtenis, Taakstatus, Taaktype
 from drf_writable_nested.serializers import WritableNestedModelSerializer
 from rest_framework import serializers
 from rest_framework.reverse import reverse
+from utils.exceptions import UrlFout
 
 
 class TaakstatusSerializer(serializers.ModelSerializer):
@@ -85,6 +87,22 @@ class TaakSerializer(serializers.ModelSerializer):
     omschrijving_intern = serializers.CharField(
         required=False, allow_null=True, allow_blank=True
     )
+
+    def validate_melding(self, data):
+        is_url_valide = Instelling.actieve_instelling().valideer_url(
+            "mor_core_basis_url", data
+        )
+        if not is_url_valide:
+            raise UrlFout("melding")
+        return data
+
+    def validate_taakopdracht(self, data):
+        is_url_valide = Instelling.actieve_instelling().valideer_url(
+            "mor_core_basis_url", data
+        )
+        if not is_url_valide:
+            raise UrlFout("taakopdracht")
+        return data
 
     class Meta:
         model = Taak
