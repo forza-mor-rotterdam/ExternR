@@ -15,3 +15,12 @@ class Instelling(BasisModel):
     @classmethod
     def actieve_instelling(cls):
         return cls.objects.first()
+
+    def valideer_url(self, veld, url):
+        if veld not in (
+            "mor_core_basis_url",
+            "taakr_basis_url",
+            "onderwerpen_basis_url",
+        ):
+            return False
+        return url.startswith(getattr(self, veld))

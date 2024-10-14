@@ -11,7 +11,10 @@ logger = logging.getLogger(__name__)
 def api_exception_handler(exc, context):
     exception_class = exc.__class__.__name__
 
-    handlers = {"TaakInGebruik": [str(exc), status.HTTP_423_LOCKED]}
+    handlers = {
+        "TaakInGebruik": [str(exc), status.HTTP_423_LOCKED],
+        "UrlFout": [str(exc), status.HTTP_406_NOT_ACCEPTABLE],
+    }
     custom_handler = handlers.get(
         exception_class, ["Er ging iets mis", status.HTTP_500_INTERNAL_SERVER_ERROR]
     )
