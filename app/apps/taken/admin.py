@@ -9,7 +9,7 @@ from apps.taken.admin_filters import (
     TitelFilter,
 )
 from apps.taken.models import Taak, Taakgebeurtenis, Taakstatus, Taaktype, TaakZoekData
-from apps.taken.tasks import _send_taak_aangemaakt_email_task, compare_and_update_status
+from apps.taken.tasks import _send_taak_aangemaakt_email_task
 from django.contrib import admin, messages
 from django.db.models import Count
 from django.utils.safestring import mark_safe
@@ -161,20 +161,6 @@ class TaakAdmin(admin.ModelAdmin):
             "taakstatus",
             "taak_zoek_data",
         ).prefetch_related("taakgebeurtenissen_voor_taak")
-
-    def compare_taakopdracht_status(self, request, queryset):
-        voltooid_taak_ids = queryset.filter(
-            taakstatus__naam__in=["voltooid", "voltooid_met_feedback"]
-        ).values_list("id", flat=True)
-        for taak_id in voltooid_taak_ids:
-            compare_and_update_status.delay(taak_id)
-        self.message_user(
-            request, f"Updating taakopdracht for {len(voltooid_taak_ids)} taken!"
-        )
-
-    compare_taakopdracht_status.short_description = (
-        "Compare taak and taakopdracht status"
-    )
 
 
 class TaaktypeAdmin(admin.ModelAdmin):

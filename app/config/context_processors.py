@@ -2,7 +2,6 @@ import logging
 
 from apps.instellingen.models import Instelling
 from django.conf import settings
-from django.urls import reverse
 from django.utils import timezone
 from utils.diversen import absolute
 
@@ -42,8 +41,8 @@ def general_settings(context):
         "SESSION_EXPIRY_MAX_TIMESTAMP": session_expiry_max_timestamp,
         "SESSION_EXPIRY_TIMESTAMP": session_expiry_timestamp,
         "SESSION_CHECK_INTERVAL_SECONDS": settings.SESSION_CHECK_INTERVAL_SECONDS,
-        "LOGOUT_URL": reverse("oidc_logout"),
-        "LOGIN_URL": f"{reverse('oidc_authentication_init')}?next={absolute(context).get('FULL_URL')}",
+        "LOGOUT_URL": settings.LOGOUT_URL,
+        "LOGIN_URL": settings.LOGIN_URL,
         "GIT_SHA": settings.GIT_SHA,
         "APP_ENV": settings.APP_ENV,
         "TAAKR_URL": taakr_basis_url,

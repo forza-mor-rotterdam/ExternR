@@ -1,15 +1,12 @@
 from apps.aliassen.tasks import task_update_melding_alias_data
 from apps.taken.models import Taak, Taaktype
-from apps.taken.serializers import (
-    TaakgebeurtenisStatusSerializer,
-    TaakSerializer,
-    TaaktypeSerializer,
-)
+from apps.taken.serializers import TaakSerializer, TaaktypeSerializer
 from apps.taken.tasks import (
     send_taak_aangemaakt_email_task,
     taak_afsluiten_zonder_feedback_task,
 )
 from celery import chain
+from django.utils import timezone
 from drf_spectacular.utils import extend_schema
 from rest_framework import mixins, status, viewsets
 from rest_framework.decorators import action
@@ -84,29 +81,11 @@ class TaakViewSet(
         serializer = self.get_serializer(taak, context={"request": request})
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-    @extend_schema(
-        description="Verander de status van een taak",
-        request=TaakgebeurtenisStatusSerializer,
-        responses={status.HTTP_200_OK: TaakSerializer},
-        parameters=None,
-    )
-    @action(detail=True, methods=["patch"], url_path="status-aanpassen")
-    def status_aanpassen(self, request, uuid):
+    def destroy(self, request, *args, **kwargs):
         taak = self.get_object()
-        data = {}
-        data.update(request.data)
-        data["taakstatus"]["taak"] = taak.id
-        serializer = TaakgebeurtenisStatusSerializer(
-            data=data,
-            context={"request": request},
-        )
-
-        if serializer.is_valid():
-            Taak.acties.status_aanpassen(serializer, self.get_object())
-
-            serializer = TaakSerializer(self.get_object(), context={"request": request})
-            return Response(serializer.data)
+        taak.verwijderd_op = timezone.now()
+        taak.save()
         return Response(
-            data=serializer.errors,
-            status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            data={},
+            status=status.HTTP_204_NO_CONTENT,
         )

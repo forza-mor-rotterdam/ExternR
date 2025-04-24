@@ -39,6 +39,7 @@ class Taakgebeurtenis(BasisModel):
         blank=True,
         null=True,
     )
+    notificatie_verstuurd = models.BooleanField(default=True)
 
     class Meta:
         ordering = ("-aangemaakt_op",)

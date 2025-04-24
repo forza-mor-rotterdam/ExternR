@@ -52,6 +52,11 @@ LANGUAGES = [("nl", "Dutch")]
 DEFAULT_ALLOWED_HOSTS = ".forzamor.nl,localhost,127.0.0.1,.mor.local"
 ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", DEFAULT_ALLOWED_HOSTS).split(",")
 
+ENABLE_DJANGO_ADMIN_LOGIN = os.getenv("ENABLE_DJANGO_ADMIN_LOGIN", False) in TRUE_VALUES
+
+LOGIN_URL = "login"
+LOGOUT_URL = "logout"
+
 DEV_SOCKET_PORT = os.getenv("DEV_SOCKET_PORT", "9000")
 
 UI_SETTINGS = {"fontsizes": ["fz-medium", "fz-large", "fz-xlarge"]}
@@ -97,8 +102,6 @@ INSTALLED_APPS = (
     "apps.beheer",
     "apps.instellingen",
 )
-
-LOGIN_URL = "/login/"
 
 MIDDLEWARE = (
     "corsheaders.middleware.CorsMiddleware",
@@ -436,22 +439,22 @@ AUTHENTICATION_BACKENDS = [
 OIDC_RP_CLIENT_ID = os.getenv("OIDC_RP_CLIENT_ID")
 OIDC_RP_CLIENT_SECRET = os.getenv("OIDC_RP_CLIENT_SECRET")
 
-OIDC_REALM = os.getenv("OIDC_REALM")
-AUTH_BASE_URL = os.getenv("AUTH_BASE_URL")
 OPENID_CONFIG_URI = os.getenv(
     "OPENID_CONFIG_URI",
-    f"{AUTH_BASE_URL}/realms/{OIDC_REALM}/.well-known/openid-configuration",
 )
 OPENID_CONFIG = {}
-try:
-    OPENID_CONFIG = requests.get(
-        OPENID_CONFIG_URI,
-        headers={
-            "user-agent": urllib3.util.SKIP_HEADER,
-        },
-    ).json()
-except Exception as e:
-    logger.error(f"OPENID_CONFIG FOUT, url: {OPENID_CONFIG_URI}, error: {e}")
+
+if OPENID_CONFIG_URI:
+    try:
+        OPENID_CONFIG = requests.get(
+            OPENID_CONFIG_URI,
+            headers={
+                "user-agent": urllib3.util.SKIP_HEADER,
+            },
+        ).json()
+    except Exception as e:
+        raise Exception(f"OPENID_CONFIG FOUT, url: {OPENID_CONFIG_URI}, error: {e}")
+
 OIDC_ENABLED = False
 if OPENID_CONFIG and OIDC_RP_CLIENT_ID:
     OIDC_ENABLED = True
@@ -496,7 +499,6 @@ if OPENID_CONFIG and OIDC_RP_CLIENT_ID:
     LOGIN_REDIRECT_URL = "/"
     LOGIN_REDIRECT_URL_FAILURE = "/"
     LOGOUT_REDIRECT_URL = OIDC_OP_LOGOUT_ENDPOINT
-    LOGIN_URL = "/oidc/authenticate/"
 
 APP_ENV = os.getenv("APP_ENV", "productie")  # acceptatie/test/productie
 

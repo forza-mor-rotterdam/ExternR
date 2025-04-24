@@ -48,17 +48,6 @@
                 </div>
                 <div class="modal-body">
                     {% if request.user.is_authenticated %}
-                        <ul class="list-clean list-nav--tertiary">
-                            {% comment %}
-                        Disabled until new homepage design has been made
-                        <li class="wrapper-horizontal">
-                            <a href="{% url 'home' %}">Homepagina</a>
-                        </li>
-                            {% endcomment %}
-                            <li class="wrapper-horizontal">
-                                <a href="{% url 'taken' %}">Taken</a>
-                            </li>
-                        </ul>
                         {% include "snippets/form_pageheader.html" %}
                     {% else %}
                         <ul class="list-clean list-nav--tertiary">
