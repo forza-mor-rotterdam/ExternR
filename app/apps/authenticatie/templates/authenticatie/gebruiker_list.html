@@ -1,9 +1,11 @@
 {% extends "base_beheer.html" %}
 {% block title %}
-    Gebruikerslijst | Beheer | ExternR
+    Gebruikerslijst | Beheer | FixeR
 {% endblock title %}
 {% block body %}
-    <div class="page__beheer" data-controller="row-search">
+    <div class="page__beheer"
+         data-controller="row-search"
+         data-row-search-disable-result-highlight-value="true">
         <div>
             <a href="{% url 'beheer' %}" class="link--back">
                 <svg width="25"
@@ -19,16 +21,6 @@
         <div class="container__flex">
             <h1>Gebruikerslijst</h1>
             <div class="container__flex flex--end">
-                <a class="btn btn-tertiary" href="{% url 'gebruiker_bulk_import' %}">
-                    <svg width="24"
-                         height="24"
-                         viewBox="0 0 32 32"
-                         fill="none"
-                         xmlns="http://www.w3.org/2000/svg">
-                        <path fill-rule="evenodd" clip-rule="evenodd" d="M17 6H15V15H6V17H15V26H17V17H26V15H17V6Z" fill="#00811f"></path>
-                    </svg>
-                    Bulk import
-                </a>
                 <a class="btn btn-action" href="{% url 'gebruiker_aanmaken' %}">
                     <svg width="24"
                          height="24"
@@ -50,13 +42,20 @@
                            name="zoeken"
                            class="form-control "
                            data-action="row-search#search">
+                    <span data-row-search-target="resultCount"></span>
                 </div>
             </div>
         </form>
-        {% if ongeauthoriseerde_gebruikers %}
-            <h2>Niet geauthoriseerde gebruikers</h2>
+        {% comment %} {% if ongeauthoriseerde_gebruikers %} {% endcomment %}
+        <details>
+            <summary>
+                <h2>
+                    Niet geauthoriseerde gebruikers(<span data-row-search-target="resultCount"
+      data-container-id="ongeauthoriseerde_gebruikers_container"></span>)
+                </h2>
+            </summary>
             <div class="container__table">
-                <table>
+                <table data-testid="niet-auth-gebruikers-tabel">
                     <thead>
                         <tr>
                             <th>E-mailadres</th>
@@ -66,9 +65,10 @@
                             <th>Rol</th>
                             <th>Rechtengroep</th>
                             <th></th>
+                            <th></th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody id="ongeauthoriseerde_gebruikers_container">
                         {% for object in ongeauthoriseerde_gebruikers %}
                             <tr data-row-search-target="row">
                                 <td data-row-search-target="searchable">{{ object.email }}</td>
@@ -111,6 +111,11 @@
                                     <a href="{% url 'gebruiker_aanpassen' object.pk %}"
                                        aria-label="Aanpassen">{% include "icons/edit.svg" %}</a>
                                 </td>
+                                <td>
+                                    <a href="{% url 'gebruiker_verwijderen' object.pk %}"
+                                       aria-label="Verwijderen"
+                                       onclick="return confirm('Weet je zeker dat je deze gebruiker wil verwijderen?')">verwijderen</a>
+                                </td>
                             </tr>
                         {% endfor %}
                     </tbody>
@@ -120,68 +125,136 @@
             <br>
             <br>
             <br>
-        {% endif %}
-        <h2>Geauthoriseerde gebruikers</h2>
-        <div class="container__table">
-            <table>
-                <thead>
-                    <tr>
-                        <th>E-mailadres</th>
-                        <th>Telefoonnummer</th>
-                        <th>Voornaam</th>
-                        <th>Achternaam</th>
-                        <th>Rol</th>
-                        <th>Rechtengroep</th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for object in geauthoriseerde_gebruikers %}
-                        <tr data-row-search-target="row">
-                            <td data-row-search-target="searchable">{{ object.email }}</td>
-                            <td data-row-search-target="searchable">
-                                {% if object.telefoonnummer %}
-                                    {{ object.telefoonnummer }}
-                                {% else %}
-                                    -
-                                {% endif %}
-                            </td>
-                            <td data-row-search-target="searchable">
-                                {% if object.first_name %}
-                                    {{ object.first_name }}
-                                {% else %}
-                                    -
-                                {% endif %}
-                            </td>
-                            <td data-row-search-target="searchable">
-                                {% if object.last_name %}
-                                    {{ object.last_name }}
-                                {% else %}
-                                    -
-                                {% endif %}
-                            </td>
-                            <td data-row-search-target="searchable">
-                                {% if object.profiel.context %}
-                                    {{ object.profiel.context }}
-                                {% else %}
-                                    -
-                                {% endif %}
-                            </td>
-                            <td data-row-search-target="searchable">
-                                {% if object.groups.all %}
-                                    {{ object.groups.all.0 }}
-                                {% else %}
-                                    -
-                                {% endif %}
-                            </td>
-                            <td>
-                                <a href="{% url 'gebruiker_aanpassen' object.pk %}"
-                                   aria-label="Aanpassen">{% include "icons/edit.svg" %}</a>
-                            </td>
+        </details>
+        {% comment %} {% endif %} {% endcomment %}
+        <details>
+            <summary>
+                <h2>
+                    Geauthoriseerde gebruikers(<span data-row-search-target="resultCount"
+      data-container-id="geauthoriseerde_gebruikers_container"></span>)
+                </h2>
+            </summary>
+            <div class="container__table">
+                <table data-testid="auth-gebruikers-tabel">
+                    <thead>
+                        <tr>
+                            <th>E-mailadres</th>
+                            <th>Telefoonnummer</th>
+                            <th>Voornaam</th>
+                            <th>Achternaam</th>
+                            <th>Rol</th>
+                            <th>Rechtengroep</th>
+                            <th></th>
+                            <th></th>
                         </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
+                    </thead>
+                    <tbody id="geauthoriseerde_gebruikers_container">
+                        {% for object in geauthoriseerde_gebruikers %}
+                            <tr data-row-search-target="row">
+                                <td data-row-search-target="searchable">{{ object.email }}</td>
+                                <td data-row-search-target="searchable">
+                                    {% if object.telefoonnummer %}
+                                        {{ object.telefoonnummer }}
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
+                                <td data-row-search-target="searchable">
+                                    {% if object.first_name %}
+                                        {{ object.first_name }}
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
+                                <td data-row-search-target="searchable">
+                                    {% if object.last_name %}
+                                        {{ object.last_name }}
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
+                                <td data-row-search-target="searchable">
+                                    {% if object.profiel.context %}
+                                        {{ object.profiel.context }}
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
+                                <td data-row-search-target="searchable">
+                                    {% if object.groups.all %}
+                                        {{ object.groups.all.0 }}
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <a href="{% url 'gebruiker_aanpassen' object.pk %}"
+                                       aria-label="Aanpassen">{% include "icons/edit.svg" %}</a>
+                                </td>
+                                <td>
+                                    <a href="{% url 'gebruiker_verwijderen' object.pk %}"
+                                       aria-label="Verwijderen"
+                                       onclick="return confirm('Weet je zeker dat je deze gebruiker wil verwijderen?')">verwijderen</a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </details>
+        <details>
+            <summary>
+                <h2>
+                    Verwijderde gebruikers(<span data-row-search-target="resultCount"
+      data-container-id="verwijderde_gebruikers_container"></span>)
+                </h2>
+            </summary>
+            <div class="container__table">
+                <table data-testid="verw-gebruikers-tabel">
+                    <thead>
+                        <tr>
+                            <th>E-mailadres</th>
+                            <th>Telefoonnummer</th>
+                            <th>Voornaam</th>
+                            <th>Achternaam</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody id="verwijderde_gebruikers_container">
+                        {% for object in verwijderde_gebruikers %}
+                            <tr data-row-search-target="row">
+                                <td data-row-search-target="searchable">{{ object.email }}</td>
+                                <td data-row-search-target="searchable">
+                                    {% if object.telefoonnummer %}
+                                        {{ object.telefoonnummer }}
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
+                                <td data-row-search-target="searchable">
+                                    {% if object.first_name %}
+                                        {{ object.first_name }}
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
+                                <td data-row-search-target="searchable">
+                                    {% if object.last_name %}
+                                        {{ object.last_name }}
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <a href="{% url 'gebruiker_terughalen' object.pk %}"
+                                       aria-label="Terughalen"
+                                       onclick="return confirm('Weet je zeker dat je deze gebruiker wil terughalen?')">terughalen</a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </details>
     </div>
 {% endblock body %}

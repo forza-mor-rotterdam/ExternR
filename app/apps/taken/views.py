@@ -2,16 +2,16 @@ import hashlib
 import logging
 
 from apps.instellingen.models import Instelling
-from apps.meldingen.service import MeldingenService
-from apps.services.taakr import TaakRService
+from apps.main.services import TaakRService
 from apps.taken.forms import (
     TaakFeedbackHandleForm,
     TaaktypeAanmakenForm,
     TaaktypeAanpassenForm,
 )
-from apps.taken.models import Taak, Taaktype
+from apps.taken.models import Taak, Taakstatus, Taaktype
 from django.conf import settings
 from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.messages.views import SuccessMessageMixin
 from django.http import HttpResponseServerError
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse, reverse_lazy
@@ -54,8 +54,11 @@ class TaaktypeAanmakenAanpassenView(TaaktypeView):
     permission_required("authorisatie.taaktype_aanpassen", raise_exception=True),
     name="dispatch",
 )
-class TaaktypeAanpassenView(TaaktypeAanmakenAanpassenView, UpdateView):
+class TaaktypeAanpassenView(
+    SuccessMessageMixin, TaaktypeAanmakenAanpassenView, UpdateView
+):
     form_class = TaaktypeAanpassenForm
+    success_message = "Het taaktype '%(omschrijving)s' is aangepast"
 
     def get_initial(self):
         instelling = Instelling.actieve_instelling()
@@ -63,7 +66,6 @@ class TaaktypeAanpassenView(TaaktypeAanmakenAanpassenView, UpdateView):
             raise Exception(
                 "De TaakR url kan niet worden gevonden, Er zijn nog geen instellingen aangemaakt"
             )
-
         initial = self.initial.copy()
         initial["redirect_field"] = (
             self.request.GET.get("redirect_url", "")
@@ -89,7 +91,6 @@ class TaaktypeAanpassenView(TaaktypeAanmakenAanpassenView, UpdateView):
             raise Exception(
                 "De TaakR url kan niet worden gevonden, Er zijn nog geen instellingen aangemaakt"
             )
-
         response = super().form_valid(form)
         taaktype_url = drf_reverse(
             "v1:taaktype-detail",
@@ -109,8 +110,11 @@ class TaaktypeAanpassenView(TaaktypeAanmakenAanpassenView, UpdateView):
     permission_required("authorisatie.taaktype_aanmaken", raise_exception=True),
     name="dispatch",
 )
-class TaaktypeAanmakenView(TaaktypeAanmakenAanpassenView, CreateView):
+class TaaktypeAanmakenView(
+    SuccessMessageMixin, TaaktypeAanmakenAanpassenView, CreateView
+):
     form_class = TaaktypeAanmakenForm
+    success_message = "Het taaktype '%(omschrijving)s' is aangemaakt"
 
     def get(self, request, *args, **kwargs):
         taaktype_url = request.GET.get("taaktype_url", "")
@@ -193,26 +197,21 @@ def taak_feedback_handle(request, taak_id: int, email_hash: str):
     if request.POST:
         form = TaakFeedbackHandleForm(request.POST)
         if form.is_valid():
-            taak_status_aanpassen_response = MeldingenService().taak_status_aanpassen(
-                taakopdracht_url=taak.taakopdracht,
-                status="voltooid_met_feedback",
-                resolutie="niet_opgelost",
+            taak = Taak.acties.status_aanpassen(
+                taak=taak,
+                status=Taakstatus.NaamOpties.VOLTOOID_MET_FEEDBACK,
+                resolutie=Taak.ResolutieOpties.NIET_OPGELOST,
                 omschrijving_intern=form.cleaned_data.get("omschrijving_intern"),
                 gebruiker=taak.taaktype.externe_instantie_email,
                 naar_niet_opgelost=True,
             )
-            if taak_status_aanpassen_response.status_code != 200:
-                logger.error(
-                    f"taak_feedback_handle taak_status_aanpassen: status_code={taak_status_aanpassen_response.status_code}, taak_id={id}, repsonse_text={taak_status_aanpassen_response.text}"
-                )
-            if taak_status_aanpassen_response.status_code == 200:
-                return render(
-                    request,
-                    "taken/taak_externe_instantie_bedankt.html",
-                    {
-                        "taak": taak,
-                    },
-                )
+            return render(
+                request,
+                "taken/taak_externe_instantie_bedankt.html",
+                {
+                    "taak": taak,
+                },
+            )
     return render(
         request,
         "taken/taak_externe_instantie_feedback.html",

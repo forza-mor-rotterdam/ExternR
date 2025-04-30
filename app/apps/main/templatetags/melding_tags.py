@@ -1,6 +1,6 @@
 import logging
 
-from apps.services.onderwerpen import render_onderwerp as render_onderwerp_service
+from apps.main.services import render_onderwerp as render_onderwerp_service
 from django import template
 
 register = template.Library()

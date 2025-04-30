@@ -12,6 +12,7 @@ class Gebruiker(AbstractUser):
     username = None
     email = models.EmailField(unique=True)
     telefoonnummer = models.CharField(max_length=17, blank=True, null=True)
+    verwijderd_op = models.DateTimeField(null=True, blank=True)
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []
@@ -22,16 +23,6 @@ class Gebruiker(AbstractUser):
         if self.first_name:
             return f"{self.first_name}{' ' if self.last_name else ''}{self.last_name}"
         return self.email
-
-    def rollen_verbose(self):
-        return mark_safe(
-            f"rol: <strong>{self.profiel.context.naam if self.profiel.context else '- geen rol - '}</strong>"
-        )
-
-    def rechten_verbose(self):
-        return mark_safe(
-            f"rechten: <strong>{self.groups.all().first().name if self.groups.all() else '- geen rechten - '}</strong>"
-        )
 
     @property
     def rechtengroep(self):
