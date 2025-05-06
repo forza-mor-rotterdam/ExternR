@@ -255,9 +255,9 @@ class Taak(BasisModel):
         blank=True,
         null=True,
     )
-    titel = models.CharField(max_length=100)
+    titel = models.CharField(max_length=200)
     bericht = models.CharField(
-        max_length=500,
+        max_length=5000,
         blank=True,
         null=True,
     )
