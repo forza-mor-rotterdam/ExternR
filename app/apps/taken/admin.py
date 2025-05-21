@@ -61,6 +61,7 @@ class TaakAdmin(admin.ModelAdmin):
         "resolutie",
         "aangemaakt_op",
         "aangepast_op",
+        "verwijderd_op",
         "taakopdracht",
         "taak_zoek_data",
     )

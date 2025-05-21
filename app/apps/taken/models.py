@@ -229,6 +229,7 @@ class Taak(BasisModel):
         NIET_GEVONDEN = "niet_gevonden", "Niets aangetroffen"
 
     afgesloten_op = models.DateTimeField(null=True, blank=True)
+    verwijderd_op = models.DateTimeField(null=True, blank=True)
     melding = models.ForeignKey(
         to="aliassen.MeldingAlias",
         related_name="taken_voor_meldingalias",
