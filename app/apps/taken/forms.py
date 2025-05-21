@@ -1,4 +1,4 @@
-from apps.taken.models import Taaktype
+from apps.taken.models import AfzenderEmailadres, Taaktype
 from django import forms
 
 
@@ -76,3 +76,9 @@ class TaakFeedbackHandleForm(forms.Form):
         ),
         required=False,
     )
+
+
+class AfzenderEmailadresForm(forms.ModelForm):
+    class Meta:
+        model = AfzenderEmailadres
+        fields = ("email",)

@@ -4,20 +4,23 @@ import logging
 from apps.instellingen.models import Instelling
 from apps.main.services import TaakRService
 from apps.taken.forms import (
+    AfzenderEmailadresForm,
     TaakFeedbackHandleForm,
     TaaktypeAanmakenForm,
     TaaktypeAanpassenForm,
 )
-from apps.taken.models import Taak, Taakstatus, Taaktype
+from apps.taken.models import AfzenderEmailadres, Taak, Taakstatus, Taaktype
 from django.conf import settings
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.http import HttpResponseServerError
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
 from django.views import View
-from django.views.generic.edit import CreateView, UpdateView
+from django.views.generic.edit import CreateView, DeleteView, UpdateView
 from django.views.generic.list import ListView
 from rest_framework.reverse import reverse as drf_reverse
 from utils.diversen import absolute
@@ -220,3 +223,55 @@ def taak_feedback_handle(request, taak_id: int, email_hash: str):
             "taak": taak,
         },
     )
+
+
+class AfzenderEmailadresView(View):
+    model = AfzenderEmailadres
+    success_url = reverse_lazy("afzender_emailadres_lijst")
+
+
+class AfzenderEmailadresLijstView(
+    PermissionRequiredMixin, AfzenderEmailadresView, ListView
+):
+    permission_required = "authorisatie.afzender_emailadres_lijst_bekijken"
+
+
+class AfzenderEmailadresAanmakenAanpassenView(AfzenderEmailadresView):
+    def get_success_url(self):
+        return reverse("afzender_emailadres_aanpassen", kwargs={"pk": self.object.id})
+
+
+class AfzenderEmailadresAanpassenView(
+    PermissionRequiredMixin,
+    SuccessMessageMixin,
+    AfzenderEmailadresAanmakenAanpassenView,
+    UpdateView,
+):
+    form_class = AfzenderEmailadresForm
+    success_message = "Het afzender emailadres '%(omschrijving)s' is aangepast"
+    permission_required = "authorisatie.afzender_emailadres_aanpassen"
+
+
+class AfzenderEmailadresAanmakenView(
+    PermissionRequiredMixin,
+    SuccessMessageMixin,
+    AfzenderEmailadresAanmakenAanpassenView,
+    CreateView,
+):
+    form_class = TaaktypeAanmakenForm
+    success_message = "Het afzender emailadres '%(omschrijving)s' is aangemaakt"
+    permission_required = "authorisatie.afzender_emailadres_aanmaken"
+
+
+class AfzenderEmailadresVerwijderenView(
+    PermissionRequiredMixin, AfzenderEmailadresView, DeleteView
+):
+    permission_required = "authorisatie.afzender_emailadres_verwijderen"
+
+    def get(self, request, *args, **kwargs):
+        object = self.get_object()
+        response = self.delete(request, *args, **kwargs)
+        messages.success(
+            request, f"Het afzender emailadres '{object.email}' is verwijderd"
+        )
+        return response

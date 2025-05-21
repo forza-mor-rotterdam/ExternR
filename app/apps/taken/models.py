@@ -69,6 +69,12 @@ class Taaktype(BasisModel):
     externe_instantie_verantwoordelijke = models.CharField(
         max_length=200, blank=True, null=True
     )
+    afzender_email = models.ForeignKey(
+        to="taken.AfzenderEmailadres",
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+    )
 
     def taaktype_url(self, request):
         return drf_reverse(
@@ -312,3 +318,7 @@ class Taak(BasisModel):
         ordering = ("-aangemaakt_op",)
         verbose_name = "Taak"
         verbose_name_plural = "Taken"
+
+
+class AfzenderEmailadres(models.Model):
+    email = models.EmailField(unique=True)
