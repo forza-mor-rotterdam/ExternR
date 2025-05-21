@@ -189,6 +189,11 @@ def taak_afsluiten_zonder_feedback_task(self, taak_id):
 
     taak = Taak.objects.get(id=taak_id)
 
+    if taak.verwijderd_op:
+        return (
+            "De taak is ondertussen verwijderd, dus het afhandelen is niet meer nodig."
+        )
+
     taak = Taak.acties.status_aanpassen(
         taak=taak,
         status=Taakstatus.NaamOpties.VOLTOOID,
@@ -203,7 +208,7 @@ def send_taak_aangemaakt_email_task(self, taak_id, base_url=None):
     taak = Taak.objects.get(id=taak_id)
 
     if taak.verwijderd_op:
-        return "De taak is afgehandeld, maar ook ondertussen verwijderd, dus de mail versturen is niet meer nodig."
+        return "De taak is ondertussen verwijderd, dus de mail versturen is niet meer nodig."
 
     MailService().taak_aangemaakt_email(
         taak,
