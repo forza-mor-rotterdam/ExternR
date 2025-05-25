@@ -1,7 +1,6 @@
 {% load to_datetime from main_tags %}
 {% load render_onderwerp from melding_tags %}
 {% load replace_comma_by_dot from main_tags %}
-{% load get_gebruiker_object_middels_email from gebruikers_tags %}
 <!DOCTYPE html>
 <html lang="nl"
       xmlns="http://www.w3.org/1999/xhtml"
@@ -380,33 +379,9 @@
                                     {% if taak.taakgebeurtenissen_voor_taak.exists %}
                                         <dl>
                                             <div class="margin-bottom">
-                                                {% with gebruiker=taak.taakgebeurtenissen_voor_taak.first.gebruiker|get_gebruiker_object_middels_email %}
-                                                    {% if gebruiker.first_name or gebruiker.last_name or gebruiker.rol %}
-                                                        <dd class="p-0-0-12">
-                                                            {% if gebruiker.first_name %}{{ gebruiker.first_name }}{% endif %}
-                                                            {% if gebruiker.last_name %}{{ gebruiker.last_name }}{% endif %}
-                                                        </dd>
-                                                        <dd class="p-0-0-12">
-                                                            Midoffice Gemeente Rotterdam
-                                                        </dd>
-                                                    {% endif %}
-                                                    {% if gebruiker.telefoonnummer %}
-                                                        <dd class="p-0-0-12">
-                                                            <p>
-                                                                <img alt="" src="{{ url_basis }}/static/images/email-telefoon.png" />
-                                                                {{ gebruiker.telefoonnummer }}
-                                                            </p>
-                                                        </dd>
-                                                    {% endif %}
-                                                    {% if gebruiker.email %}
-                                                        <dd class="p-0-0-12">
-                                                            <p>
-                                                                <img alt="" src="{{ url_basis }}/static/images/email-mail.png" />
-                                                                {{ gebruiker.email }}
-                                                            </p>
-                                                        </dd>
-                                                    {% endif %}
-                                                {% endwith %}
+                                                <dd class="p-0-0-12">
+                                                    Midoffice Gemeente Rotterdam
+                                                </dd>
                                             </div>
                                         </dl>
                                     {% endif %}

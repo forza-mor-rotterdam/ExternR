@@ -4,8 +4,8 @@ import os.path
 import re
 
 import magic
+from apps.main.services import MORCoreService
 from apps.main.templatetags.melding_tags import get_bijlagen
-from apps.meldingen.service import MeldingenService
 from django.conf import settings
 from django.contrib.sites.models import Site
 from django.core.mail import EmailMultiAlternatives, SafeMIMEMultipart
@@ -151,9 +151,7 @@ class MailService:
                 " ", "_"
             )  # be careful with file names
             file_path = os.path.join("/media/", filename)
-            bijlage_response = MeldingenService().afbeelding_ophalen(
-                bijlage, stream=True
-            )
+            bijlage_response = MORCoreService().bestand_halen(bijlage)
             with open(file_path, "wb") as f:
                 f.write(bijlage_response.content)
             msg.attach_related_file(file_path)
@@ -175,9 +173,7 @@ class MailService:
                     " ", "_"
                 )  # be careful with file names
                 file_path = os.path.join("/media/", filename)
-                bijlage_response = MeldingenService().afbeelding_ophalen(
-                    bijlage, stream=True
-                )
+                bijlage_response = MORCoreService().bestand_halen(bijlage)
                 with open(file_path, "wb") as f:
                     f.write(bijlage_response.content)
                 msg.attach_related_file(file_path)

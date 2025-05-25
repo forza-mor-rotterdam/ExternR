@@ -1,66 +1,159 @@
 import celery
-from apps.meldingen.service import MeldingenService
+from apps.main.services import MORCoreService
 from apps.services.mail import MailService
 from apps.taken.models import Taak
-from celery import shared_task
+from celery import chord, group, shared_task
 from celery.utils.log import get_task_logger
+from django.core.cache import cache
 
 logger = get_task_logger(__name__)
 
 DEFAULT_RETRY_DELAY = 2
 MAX_RETRIES = 6
+RETRY_BACKOFF_MAX = 60 * 30
+RETRY_BACKOFF = 120
 
-LOCK_EXPIRE = 5
+TASK_LOCK_KEY_NOTFICATIES_VOOR_TAKEN = "task_taakopdracht_notificatie_voor_taken_lijst"
 
 
 class BaseTaskWithRetry(celery.Task):
     autoretry_for = (Exception,)
     max_retries = MAX_RETRIES
     default_retry_delay = DEFAULT_RETRY_DELAY
+    retry_backoff_max = RETRY_BACKOFF_MAX
+    retry_backoff = RETRY_BACKOFF
+    retry_jitter = True
+
+
+@shared_task(bind=True)
+def task_taakopdracht_notificatie_voor_taakgebeurtenissen(self, taakgebeurtenis_ids):
+    from apps.taken.models import Taakgebeurtenis
+
+    if not isinstance(taakgebeurtenis_ids, list):
+        return "taakgebeurtenis_ids is geen list"
+
+    task_lock_key = TASK_LOCK_KEY_NOTFICATIES_VOOR_TAKEN
+    if cache.get(task_lock_key):
+        return "task_taakopdracht_notificatie_voor_taken_lijst is nog bezig"
+    else:
+        cache.set(task_lock_key, True, 60)
+
+    taakgebeurtenis_ids = list(
+        Taakgebeurtenis.objects.filter(
+            id__in=taakgebeurtenis_ids,
+            notificatie_verstuurd=False,
+        ).values_list("id", flat=True)
+    )
+
+    taakgebeurtenissen_group = group(
+        task_taakopdracht_notificatie.si(taakgebeurtenis_id)
+        for taakgebeurtenis_id in taakgebeurtenis_ids
+    )
+    taakgebeurtenissen_group()
+    cache.delete(task_lock_key)
+    return f"Bezig met het versturen van notificaties voor taakgebeurtenissen={taakgebeurtenis_ids}"
+
+
+@shared_task(bind=True)
+def task_taakopdracht_notificatie_voor_taakgebeurtenissen_voltooid(
+    self, taakgebeurtenis_ids, task_lock_key
+):
+    if not isinstance(taakgebeurtenis_ids, list):
+        return "taakgebeurtenis_ids is geen list"
+    cache.delete(task_lock_key)
+    return f"Klaar met het versturen van notificaties voor taakgebeurtenissen={taakgebeurtenis_ids}"
+
+
+@shared_task(bind=True)
+def task_taakopdracht_notificatie_voor_taak(self, taak_id):
+    from apps.taken.models import Taak
+
+    task_lock_key = (
+        f"task_lock_task_taakopdracht_notificatie_voor_taak_taak_id_{taak_id}"
+    )
+    if cache.get(task_lock_key):
+        return "task_taakopdracht_notificatie_voor_taak is nog bezig"
+    else:
+        cache.set(task_lock_key, True, 60)
+
+    taak = Taak.objects.filter(id=taak_id).first()
+    if not taak:
+        return f"Taak met taak_id {taak_id}, is niet gevonden"
+
+    # selecteer alle taakgebeurtenissen voor deze taak die nog niet gesynced zijn met mor-core en orden deze, zodat de eerst aangemaakte het eerst in de rij staat
+    taakgebeurtenissen_voor_taak = list(
+        taak.taakgebeurtenissen_voor_taak.filter(notificatie_verstuurd=False)
+        .order_by("aangemaakt_op")
+        .values_list("id", flat=True)
+    )
+
+    # happy, deze taak heeft al zijn taakgebeurtenissen gestuurd
+    if not taakgebeurtenissen_voor_taak:
+        return f"Alle notificaties voor taak met taak_id {taak_id}, notificaties zijn al verstuurd"
+
+    # Er moeten nog taakgebeurtenis notifificaties gestuurd worden. In een normale situatie wordt er na een status wijziging in FixeR, 1 notificatie verstuurd.
+    # Als mor-core niet beschikbaar was om notificaties te verwerken stapelen de taakgebeurtenissen zich op, en moeten ze achteraf gestuurd worden, het aantal taakgebeurtenissen hieronder is dan meer dan 1.
+    taakgebeurtenissen_chord = chord(
+        (
+            task_taakopdracht_notificatie.si(taakgebeurtenis_id)
+            for taakgebeurtenis_id in taakgebeurtenissen_voor_taak
+        ),
+        task_taakopdracht_notificatie_voor_taak_voltooid.si(
+            taak_id, len(taakgebeurtenissen_voor_taak), task_lock_key
+        ),
+    )
+    taakgebeurtenissen_chord()
+    return f"Bezig met het verturen van {len(taakgebeurtenissen_voor_taak)} notificaties voor taak met taak_id {taak_id}"
+
+
+@shared_task(bind=True)
+def task_taakopdracht_notificatie_voor_taak_voltooid(
+    self, taak_id, notificatie_aantal, task_lock_key
+):
+    cache.delete(task_lock_key)
+    return f"Klaar met het verturen van {notificatie_aantal} notificaties voor taak met taak_id {taak_id}"
 
 
 @shared_task(bind=True, base=BaseTaskWithRetry)
-def task_taak_status_voltooid(
+def task_taakopdracht_notificatie(
     self,
-    taak_id,
-    resolutie,
-    gebruiker_email,
-    omschrijving_intern="",
-    bijlage_paden=[],
-    vervolg_taaktypes=[],
-    vervolg_taak_bericht="",
+    taakgebeurtenis_id,
 ):
-    from apps.main.utils import to_base64
+    from apps.taken.models import Taakgebeurtenis
 
-    taak = Taak.objects.get(id=taak_id)
-    taak.bezig_met_verwerken = True
-    taak.save(update_fields=["bezig_met_verwerken"])
+    task_lock_key = f"task_lock_task_taakopdracht_notificatie_taakgebeurtenis_id_{taakgebeurtenis_id}"
+    if cache.get(task_lock_key):
+        return "task_taakopdracht_notificatie is nog bezig"
+    else:
+        cache.set(task_lock_key, True, 60)
 
-    bijlagen = [{"bestand": to_base64(b)} for b in bijlage_paden]
+    taakgebeurtenis = Taakgebeurtenis.objects.get(id=taakgebeurtenis_id)
+    taak = taakgebeurtenis.taak
 
-    taak_status_aanpassen_response = MeldingenService().taak_status_aanpassen(
+    if taakgebeurtenis.notificatie_verstuurd:
+        return "De notificatie voor deze taakgebeurtenis is al verstuurd"
+
+    taak_status_aanpassen_response = MORCoreService().taakopdracht_notificatie(
+        melding_url=taak.melding.bron_url,
         taakopdracht_url=taak.taakopdracht,
-        status="voltooid",
-        resolutie=resolutie,
-        gebruiker=gebruiker_email,
-        omschrijving_intern=omschrijving_intern,
-        bijlagen=bijlagen,
+        status=taakgebeurtenis.taakstatus.naam if taakgebeurtenis.taakstatus else None,
+        resolutie=taakgebeurtenis.resolutie,
+        gebruiker=taakgebeurtenis.gebruiker,
+        omschrijving_intern=taakgebeurtenis.omschrijving_intern,
+        aangemaakt_op=taakgebeurtenis.aangemaakt_op.isoformat(),
     )
-    if taak_status_aanpassen_response.status_code != 200:
+    if taak_status_aanpassen_response.get("error"):
+        cache.delete(task_lock_key)
         raise Exception(
-            f"task taak_status_aanpassen: status_code={taak_status_aanpassen_response.status_code}, taak_id={taak_id}, taakopdracht_url={taak.taakopdracht}, taakopdracht_url={taak.taakopdracht}, repsonse_text={taak_status_aanpassen_response.text}"
+            f"task taakopdracht_notificatie: fout={taak_status_aanpassen_response.get('error')}, taak_id={taak.id}, taakopdracht_url={taak.taakopdracht}"
         )
 
-    for vervolg_taaktype in vervolg_taaktypes:
-        task_taak_aanmaken.delay(
-            melding_uuid=taak.melding.response_json.get("uuid"),
-            taaktype_url=vervolg_taaktype.get("taaktype_url"),
-            titel=vervolg_taaktype.get("omschrijving"),
-            bericht=vervolg_taak_bericht,
-            gebruiker_email=gebruiker_email,
-        )
+    taakgebeurtenis.notificatie_verstuurd = True
+    taakgebeurtenis.save(update_fields=["notificatie_verstuurd"])
+
+    cache.delete(task_lock_key)
     return {
-        "taak_id": taak_id,
+        "taak_id": taak.id,
         "taakopdracht_url": taak.taakopdracht,
         "melding_uuid": taak.melding.response_json.get("uuid"),
     }
@@ -70,17 +163,20 @@ def task_taak_status_voltooid(
 def task_taak_aanmaken(
     self, melding_uuid, taaktype_url, titel, bericht, gebruiker_email
 ):
-    taak_aanmaken_response = MeldingenService().taak_aanmaken(
+    taak_aanmaken_response = MORCoreService().taak_aanmaken(
         melding_uuid=melding_uuid,
-        taaktype_url=taaktype_url,
+        taakapplicatie_taaktype_url=taaktype_url,
         titel=titel,
         bericht=bericht,
         gebruiker=gebruiker_email,
     )
-    if taak_aanmaken_response.status_code != 200:
-        raise Exception(
-            f"task taak_aanmaken: status_code={taak_aanmaken_response.status_code}, taaktype_url={taaktype_url}, melding_uuid={melding_uuid}, repsonse_text={taak_aanmaken_response.text}"
-        )
+
+    if isinstance(taak_aanmaken_response, dict) and taak_aanmaken_response.get("error"):
+        error = taak_aanmaken_response.get("error", {})
+        log_entry = f'task taak_aanmaken: status_code={error.get("status_code")}, taaktype_url={taaktype_url}, melding_uuid={melding_uuid}, bericht={error.get("bericht")}'
+        logger.error(log_entry)
+        raise Exception(log_entry)
+
     return {
         "taaktype_url": taaktype_url,
         "melding_uuid": melding_uuid,
@@ -88,85 +184,31 @@ def task_taak_aanmaken(
 
 
 @shared_task(bind=True, base=BaseTaskWithRetry)
-def compare_and_update_status(self, taak_id):
-    taak = Taak.objects.get(id=taak_id)
-    get_taakopdracht_response = MeldingenService().get_taakopdracht_data(
-        taak.taakopdracht
-    )
-    if get_taakopdracht_response.status_code == 200:
-        taakopdracht = get_taakopdracht_response.json()
-
-        if taak.taakstatus.naam != taakopdracht.get("status").get("naam"):
-            taakgebeurtenis = (
-                taak.taakgebeurtenissen_voor_taak.filter(taakstatus=taak.taakstatus)
-                .order_by("-aangemaakt_op")
-                .first()
-            )
-            if taakgebeurtenis:
-                update_data = {
-                    "taakopdracht_url": taak.taakopdracht,
-                    "status": {"naam": taak.taakstatus.naam},
-                    "resolutie": taak.resolutie,
-                    "omschrijving_intern": taakgebeurtenis.omschrijving_intern,
-                    "gebruiker": taakgebeurtenis.gebruiker,
-                    "bijlagen": [],
-                }
-                taak_status_aanpassen_response = (
-                    MeldingenService().taak_status_aanpassen(
-                        **update_data,
-                    )
-                )
-                if taak_status_aanpassen_response.status_code != 200:
-                    logger.error(
-                        f"Celery compare and update status error, taak_status_aanpassen_response: status_code={taak_status_aanpassen_response.status_code}, taak_id={taak_id}, taakopdracht_id={taakopdracht.get('id')}, update_data={update_data}"
-                    )
-                    return {
-                        "taak.id": taak_id,
-                        "taakopdracht.id": taakopdracht.get("id"),
-                        "taak_status_aanpassen_response.error_code": taak_status_aanpassen_response.status_code,
-                    }
-
-                else:
-                    logger.warning(
-                        f"Taakopdracht in Mor-Core updated successfully for ExternR taak_id: {taak_id} and MOR-Core taakopdracht_id: {taakopdracht.get('id')}."
-                    )
-                    return {
-                        "taak.id": taak_id,
-                        "taakopdracht.id": taakopdracht.get("id"),
-                    }
-
-    else:
-        logger.error(
-            f"Celery compare and update status error, get_taakopdracht_response: status_code={get_taakopdracht_response.status_code}, taak_id={taak_id}"
-        )
-        return {
-            "taak.id": taak_id,
-            "get_taakopdracht_response.error_code": get_taakopdracht_response.status_code,
-        }
-
-
-@shared_task(bind=True, base=BaseTaskWithRetry)
 def taak_afsluiten_zonder_feedback_task(self, taak_id):
+    from apps.taken.models import Taakstatus
+
     taak = Taak.objects.get(id=taak_id)
-    taak_status_aanpassen_response = MeldingenService().taak_status_aanpassen(
-        taakopdracht_url=taak.taakopdracht,
-        status="voltooid",
-        resolutie="opgelost",
+
+    if taak.verwijderd_op:
+        return (
+            "De taak is ondertussen verwijderd, dus het afhandelen is niet meer nodig."
+        )
+
+    taak = Taak.acties.status_aanpassen(
+        taak=taak,
+        status=Taakstatus.NaamOpties.VOLTOOID,
+        resolutie=Taak.ResolutieOpties.OPGELOST,
+        omschrijving_intern="Automatich voltooid door ExternR",
         gebruiker=taak.taaktype.externe_instantie_email,
     )
-    if taak_status_aanpassen_response.status_code != 200:
-        logger.error(
-            f"close_task_no_feedback_required: status_code={taak_status_aanpassen_response.status_code}, taak_id={taak_id}, repsonse_text={taak_status_aanpassen_response.text}"
-        )
-        # Raise an exception to trigger retry
-        raise Exception(
-            f"Task status code is not 200: {taak_status_aanpassen_response.status_code}"
-        )
 
 
 @shared_task(bind=True, base=BaseTaskWithRetry)
 def send_taak_aangemaakt_email_task(self, taak_id, base_url=None):
     taak = Taak.objects.get(id=taak_id)
+
+    if taak.verwijderd_op:
+        return "De taak is ondertussen verwijderd, dus de mail versturen is niet meer nodig."
 
     MailService().taak_aangemaakt_email(
         taak,

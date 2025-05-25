@@ -56,8 +56,16 @@ class TaakManager(models.Manager):
             )
         return taak
 
-    def status_aanpassen(self, serializer, taak, db="default"):
-        from apps.aliassen.tasks import task_maak_bijlagealias
+    def status_aanpassen(
+        self,
+        taak,
+        status,
+        resolutie,
+        omschrijving_intern,
+        gebruiker,
+        naar_niet_opgelost=False,
+        db="default",
+    ):
         from apps.taken.models import Taak, Taakgebeurtenis, Taakstatus
 
         with transaction.atomic():
@@ -71,19 +79,23 @@ class TaakManager(models.Manager):
                 raise TaakManager.TaakInGebruik(
                     f"De taak is op dit moment in gebruik, probeer het later nog eens. taak nummer: {taak.id}, taak uuid: {taak.uuid}"
                 )
-
             vorige_status = locked_taak.taakstatus
-            resolutie = serializer.validated_data.pop("resolutie", None)
-            bijlagen = serializer.validated_data.pop("bijlagen", None)
-            uitvoerder = serializer.validated_data.pop("uitvoerder", None)
-            taakgebeurtenis = serializer.save(
+
+            taakstatus_instance = Taakstatus.objects.create(
                 taak=locked_taak,
+                naam=status,
             )
-            for bijlage in bijlagen:
-                task_maak_bijlagealias.delay(bijlage, taakgebeurtenis.pk)
+            taakgebeurtenis = Taakgebeurtenis.objects.create(
+                taak=locked_taak,
+                taakstatus=taakstatus_instance,
+                omschrijving_intern=omschrijving_intern,
+                gebruiker=gebruiker,
+                notificatie_verstuurd=False,
+            )
 
             locked_taak.taakstatus = taakgebeurtenis.taakstatus
-            locked_taak.additionele_informatie["uitvoerder"] = uitvoerder
+
+            locked_taak.taakstatus = taakgebeurtenis.taakstatus
 
             if (
                 Taakstatus.NaamOpties.VOLTOOID_MET_FEEDBACK

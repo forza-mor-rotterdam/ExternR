@@ -1,5 +1,5 @@
 from apps.context.models import Context
-from apps.services.pdok import PDOKService
+from apps.main.services import PDOKService
 from apps.taken.models import Taaktype
 from django.conf import settings
 from django.db.models import Q
