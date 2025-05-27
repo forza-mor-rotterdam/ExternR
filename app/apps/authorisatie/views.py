@@ -1,6 +1,7 @@
 from apps.authorisatie.forms import RechtengroepAanmakenForm, RechtengroepAanpassenForm
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.models import Group
+from django.http import HttpResponse
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.views import View
@@ -8,11 +9,6 @@ from django.views.generic.edit import CreateView, DeleteView, UpdateView
 from django.views.generic.list import ListView
 
 
-@method_decorator(login_required, name="dispatch")
-@method_decorator(
-    permission_required("authorisatie.rechtengroep_bekijken", raise_exception=True),
-    name="dispatch",
-)
 class RechtengroepView(View):
     model = Group
     success_url = reverse_lazy("rechtengroep_lijst")
@@ -58,4 +54,8 @@ class RechtengroepAanmakenView(RechtengroepAanmakenAanpassenView, CreateView):
 )
 class RechtengroepVerwijderenView(RechtengroepView, DeleteView):
     def get(self, request, *args, **kwargs):
-        return self.post(request, *args, **kwargs)
+        object = self.get_object()
+        if not object.user_set.all():
+            response = self.delete(request, *args, **kwargs)
+            return response
+        return HttpResponse("Verwijderen is niet mogelijk")

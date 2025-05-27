@@ -19,17 +19,19 @@
         </div>
         <div class="container__flex">
             <h1>Afzender e-mailadressen</h1>
-            <a class="btn btn-action"
-               href="{% url 'afzender_emailadres_aanmaken' %}">
-                <svg width="24"
-                     height="24"
-                     viewBox="0 0 32 32"
-                     fill="none"
-                     xmlns="http://www.w3.org/2000/svg">
-                    <path fill-rule="evenodd" clip-rule="evenodd" d="M17 6H15V15H6V17H15V26H17V17H26V15H17V6Z" fill="#ffffff"></path>
-                </svg>
-                Nieuw afzender
-            </a>
+            {% if perms.authorisatie.afzender_emailadres_aanmaken %}
+                <a class="btn btn-action"
+                   href="{% url 'afzender_emailadres_aanmaken' %}">
+                    <svg width="24"
+                         height="24"
+                         viewBox="0 0 32 32"
+                         fill="none"
+                         xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd" clip-rule="evenodd" d="M17 6H15V15H6V17H15V26H17V17H26V15H17V6Z" fill="#ffffff"></path>
+                    </svg>
+                    Nieuw afzender
+                </a>
+            {% endif %}
         </div>
         <div class="container__table">
             <table>
@@ -37,8 +39,8 @@
                     <tr>
                         <th>E-mailadres</th>
                         <th>Wijken</th>
-                        <th></th>
-                        <th></th>
+                        {% if perms.authorisatie.afzender_emailadres_aanpassen %}<th></th>{% endif %}
+                        {% if perms.authorisatie.afzender_emailadres_verwijderen %}<th></th>{% endif %}
                     </tr>
                 </thead>
                 <tbody>
@@ -46,15 +48,19 @@
                         <tr data-row-search-target="row">
                             <td>{{ object.email }}</td>
                             <td>{{ object.wijken|join:", " }}</td>
-                            <td>
-                                <a href="{% url 'afzender_emailadres_aanpassen' object.pk %}"
-                                   aria-label="Aanpassen">{% include "icons/edit.svg" %}</a>
-                            </td>
-                            <td>
-                                <a href="{% url 'afzender_emailadres_verwijderen' object.pk %}"
-                                   aria-label="Verwijderen"
-                                   onclick="return confirm('Weet je zeker dat je dit afzender emailadres wil verwijderen?')">verwijderen</a>
-                            </td>
+                            {% if perms.authorisatie.afzender_emailadres_aanpassen %}
+                                <td>
+                                    <a href="{% url 'afzender_emailadres_aanpassen' object.pk %}"
+                                       aria-label="Aanpassen">{% include "icons/edit.svg" %}</a>
+                                </td>
+                            {% endif %}
+                            {% if perms.authorisatie.afzender_emailadres_verwijderen %}
+                                <td>
+                                    <a href="{% url 'afzender_emailadres_verwijderen' object.pk %}"
+                                       aria-label="Verwijderen"
+                                       onclick="return confirm('Weet je zeker dat je dit afzender emailadres wil verwijderen?')">verwijderen</a>
+                                </td>
+                            {% endif %}
                         </tr>
                     {% endfor %}
                 </tbody>

@@ -20,18 +20,20 @@
         </div>
         <div class="container__flex">
             <h1>Gebruikerslijst</h1>
-            <div class="container__flex flex--end">
-                <a class="btn btn-action" href="{% url 'gebruiker_aanmaken' %}">
-                    <svg width="24"
-                         height="24"
-                         viewBox="0 0 32 32"
-                         fill="none"
-                         xmlns="http://www.w3.org/2000/svg">
-                        <path fill-rule="evenodd" clip-rule="evenodd" d="M17 6H15V15H6V17H15V26H17V17H26V15H17V6Z" fill="#ffffff"></path>
-                    </svg>
-                    Nieuwe gebruiker
-                </a>
-            </div>
+            {% if perms.authorisatie.gebruiker_aanmaken %}
+                <div class="container__flex flex--end">
+                    <a class="btn btn-action" href="{% url 'gebruiker_aanmaken' %}">
+                        <svg width="24"
+                             height="24"
+                             viewBox="0 0 32 32"
+                             fill="none"
+                             xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd" clip-rule="evenodd" d="M17 6H15V15H6V17H15V26H17V17H26V15H17V6Z" fill="#ffffff"></path>
+                        </svg>
+                        Nieuwe gebruiker
+                    </a>
+                </div>
+            {% endif %}
         </div>
         <form>
             <div class="form-row">
@@ -62,10 +64,9 @@
                             <th>Telefoonnummer</th>
                             <th>Voornaam</th>
                             <th>Achternaam</th>
-                            <th>Rol</th>
                             <th>Rechtengroep</th>
-                            <th></th>
-                            <th></th>
+                            {% if perms.authorisatie.gebruiker_aanpassen %}<th></th>{% endif %}
+                            {% if perms.authorisatie.gebruiker_verwijderen %}<th></th>{% endif %}
                         </tr>
                     </thead>
                     <tbody id="ongeauthoriseerde_gebruikers_container">
@@ -94,28 +95,25 @@
                                     {% endif %}
                                 </td>
                                 <td data-row-search-target="searchable">
-                                    {% if object.profiel.context %}
-                                        {{ object.profiel.context }}
-                                    {% else %}
-                                        -
-                                    {% endif %}
-                                </td>
-                                <td data-row-search-target="searchable">
                                     {% if object.groups.all %}
                                         {{ object.groups.all.0 }}
                                     {% else %}
                                         -
                                     {% endif %}
                                 </td>
-                                <td>
-                                    <a href="{% url 'gebruiker_aanpassen' object.pk %}"
-                                       aria-label="Aanpassen">{% include "icons/edit.svg" %}</a>
-                                </td>
-                                <td>
-                                    <a href="{% url 'gebruiker_verwijderen' object.pk %}"
-                                       aria-label="Verwijderen"
-                                       onclick="return confirm('Weet je zeker dat je deze gebruiker wil verwijderen?')">verwijderen</a>
-                                </td>
+                                {% if perms.authorisatie.gebruiker_aanpassen %}
+                                    <td>
+                                        <a href="{% url 'gebruiker_aanpassen' object.pk %}"
+                                           aria-label="Aanpassen">{% include "icons/edit.svg" %}</a>
+                                    </td>
+                                {% endif %}
+                                {% if perms.authorisatie.gebruiker_verwijderen %}
+                                    <td>
+                                        <a href="{% url 'gebruiker_verwijderen' object.pk %}"
+                                           aria-label="Verwijderen"
+                                           onclick="return confirm('Weet je zeker dat je deze gebruiker wil verwijderen?')">verwijderen</a>
+                                    </td>
+                                {% endif %}
                             </tr>
                         {% endfor %}
                     </tbody>
@@ -144,8 +142,8 @@
                             <th>Achternaam</th>
                             <th>Rol</th>
                             <th>Rechtengroep</th>
-                            <th></th>
-                            <th></th>
+                            {% if perms.authorisatie.gebruiker_aanpassen %}<th></th>{% endif %}
+                            {% if perms.authorisatie.gebruiker_verwijderen %}<th></th>{% endif %}
                         </tr>
                     </thead>
                     <tbody id="geauthoriseerde_gebruikers_container">
@@ -187,15 +185,19 @@
                                         -
                                     {% endif %}
                                 </td>
-                                <td>
-                                    <a href="{% url 'gebruiker_aanpassen' object.pk %}"
-                                       aria-label="Aanpassen">{% include "icons/edit.svg" %}</a>
-                                </td>
-                                <td>
-                                    <a href="{% url 'gebruiker_verwijderen' object.pk %}"
-                                       aria-label="Verwijderen"
-                                       onclick="return confirm('Weet je zeker dat je deze gebruiker wil verwijderen?')">verwijderen</a>
-                                </td>
+                                {% if perms.authorisatie.gebruiker_aanpassen %}
+                                    <td>
+                                        <a href="{% url 'gebruiker_aanpassen' object.pk %}"
+                                           aria-label="Aanpassen">{% include "icons/edit.svg" %}</a>
+                                    </td>
+                                {% endif %}
+                                {% if perms.authorisatie.gebruiker_verwijderen %}
+                                    <td>
+                                        <a href="{% url 'gebruiker_verwijderen' object.pk %}"
+                                           aria-label="Verwijderen"
+                                           onclick="return confirm('Weet je zeker dat je deze gebruiker wil verwijderen?')">verwijderen</a>
+                                    </td>
+                                {% endif %}
                             </tr>
                         {% endfor %}
                     </tbody>
@@ -217,7 +219,7 @@
                             <th>Telefoonnummer</th>
                             <th>Voornaam</th>
                             <th>Achternaam</th>
-                            <th></th>
+                            {% if perms.authorisatie.gebruiker_terughalen %}<th></th>{% endif %}
                         </tr>
                     </thead>
                     <tbody id="verwijderde_gebruikers_container">
@@ -245,11 +247,13 @@
                                         -
                                     {% endif %}
                                 </td>
-                                <td>
-                                    <a href="{% url 'gebruiker_terughalen' object.pk %}"
-                                       aria-label="Terughalen"
-                                       onclick="return confirm('Weet je zeker dat je deze gebruiker wil terughalen?')">terughalen</a>
-                                </td>
+                                {% if perms.authorisatie.gebruiker_terughalen %}
+                                    <td>
+                                        <a href="{% url 'gebruiker_terughalen' object.pk %}"
+                                           aria-label="Terughalen"
+                                           onclick="return confirm('Weet je zeker dat je deze gebruiker wil terughalen?')">terughalen</a>
+                                    </td>
+                                {% endif %}
                             </tr>
                         {% endfor %}
                     </tbody>
