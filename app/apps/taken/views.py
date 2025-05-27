@@ -28,11 +28,6 @@ from utils.diversen import absolute
 logger = logging.getLogger(__name__)
 
 
-@method_decorator(login_required, name="dispatch")
-@method_decorator(
-    permission_required("authorisatie.taaktype_bekijken", raise_exception=True),
-    name="dispatch",
-)
 class TaaktypeView(View):
     model = Taaktype
     success_url = reverse_lazy("taaktype_lijst")

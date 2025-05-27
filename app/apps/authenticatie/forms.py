@@ -1,4 +1,3 @@
-from apps.context.models import Context
 from django import forms
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
@@ -7,11 +6,6 @@ Gebruiker = get_user_model()
 
 
 class GebruikerAanpassenForm(forms.ModelForm):
-    context = forms.ModelChoiceField(
-        queryset=Context.objects.all(),
-        label="Rol",
-        required=True,
-    )
     group = forms.ModelChoiceField(
         queryset=Group.objects.all(),
         label="Rechtengroep",
@@ -20,7 +14,7 @@ class GebruikerAanpassenForm(forms.ModelForm):
 
     class Meta:
         model = Gebruiker
-        fields = ("telefoonnummer", "first_name", "last_name", "group", "context")
+        fields = ("telefoonnummer", "first_name", "last_name", "group")
 
 
 class GebruikerAanmakenForm(GebruikerAanpassenForm):
@@ -32,7 +26,6 @@ class GebruikerAanmakenForm(GebruikerAanpassenForm):
             "first_name",
             "last_name",
             "group",
-            "context",
         )
 
     def __init__(self, *args, **kwargs):
@@ -40,11 +33,6 @@ class GebruikerAanmakenForm(GebruikerAanpassenForm):
         self.fields[
             "email"
         ].help_text = "Gebruik altijd het e-mailadres van de gemeente."
-        self.fields[
-            "context"
-        ].help_text = (
-            "Bestaat de juiste rol voor deze gebruiker niet, maak deze eerst aan."
-        )
         self.fields[
             "group"
         ].help_text = "Bestaat de juiste rechtengroep voor deze gebruiker niet, maak deze eerst aan."
