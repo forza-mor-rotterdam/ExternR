@@ -19,6 +19,10 @@ from apps.context.views import (
     ContextVerwijderenView,
 )
 from apps.taken.views import (
+    AfzenderEmailadresAanmakenView,
+    AfzenderEmailadresAanpassenView,
+    AfzenderEmailadresLijstView,
+    AfzenderEmailadresVerwijderenView,
     TaaktypeAanmakenView,
     TaaktypeAanpassenView,
     TaaktypeLijstView,
@@ -79,6 +83,26 @@ urlpatterns = [
         "taaktype/<int:pk>/aanpassen/",
         TaaktypeAanpassenView.as_view(),
         name="taaktype_aanpassen",
+    ),
+    path(
+        "afzender-emailadres/",
+        AfzenderEmailadresLijstView.as_view(),
+        name="afzender_emailadres_lijst",
+    ),
+    path(
+        "afzender-emailadres/aanmaken/",
+        AfzenderEmailadresAanmakenView.as_view(),
+        name="afzender_emailadres_aanmaken",
+    ),
+    path(
+        "afzender-emailadres/<int:pk>/aanpassen/",
+        AfzenderEmailadresAanpassenView.as_view(),
+        name="afzender_emailadres_aanpassen",
+    ),
+    path(
+        "afzender-emailadres/<int:pk>/verwijderen/",
+        AfzenderEmailadresVerwijderenView.as_view(),
+        name="afzender_emailadres_verwijderen",
     ),
     path(
         "rechtengroep/",

@@ -76,6 +76,26 @@ class TaaktypeAanpassenPermissie(BasisPermissie):
     codenaam = "taaktype_aanpassen"
 
 
+class AfzenderEmailadresLijstBekijkenPermissie(BasisPermissie):
+    naam = "Afzender emailadres lijst bekijken"
+    codenaam = "afzender_emailadres_lijst_bekijken"
+
+
+class AfzenderEmailadresAanmakenPermissie(BasisPermissie):
+    naam = "Afzender emailadres aanmaken"
+    codenaam = "afzender_emailadres_aanmaken"
+
+
+class AfzenderEmailadresAanpassenPermissie(BasisPermissie):
+    naam = "Afzender emailadres aanpassen"
+    codenaam = "afzender_emailadres_aanpassen"
+
+
+class AfzenderEmailadresVerwijderenPermissie(BasisPermissie):
+    naam = "Afzender emailadres verwijderen"
+    codenaam = "afzender_emailadres_verwijderen"
+
+
 class ContextLijstBekijkenPermissie(BasisPermissie):
     naam = "Rol lijst bekijken"
     codenaam = "context_lijst_bekijken"
@@ -147,6 +167,10 @@ gebruikersgroep_permissies = (
     TaaktypeAanmakenPermissie,
     TaaktypeBekijkenPermissie,
     TaaktypeAanpassenPermissie,
+    AfzenderEmailadresLijstBekijkenPermissie,
+    AfzenderEmailadresAanmakenPermissie,
+    AfzenderEmailadresAanpassenPermissie,
+    AfzenderEmailadresVerwijderenPermissie,
     ContextLijstBekijkenPermissie,
     ContextAanmakenPermissie,
     ContextBekijkenPermissie,

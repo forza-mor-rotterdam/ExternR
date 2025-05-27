@@ -1,4 +1,4 @@
-from apps.taken.models import Taaktype
+from apps.taken.models import AfzenderEmailadres, Taaktype
 from django import forms
 
 
@@ -42,6 +42,7 @@ class TaaktypeAanpassenForm(forms.ModelForm):
             "externe_instantie",
             "externe_instantie_email",
             "externe_instantie_verantwoordelijke",
+            # "afzender_email",
         )
 
 
@@ -55,6 +56,7 @@ class TaaktypeAanmakenForm(TaaktypeAanpassenForm):
             "externe_instantie",
             "externe_instantie_email",
             "externe_instantie_verantwoordelijke",
+            # "afzender_email",
         )
 
     def __init__(self, *args, **kwargs):
@@ -76,3 +78,19 @@ class TaakFeedbackHandleForm(forms.Form):
         ),
         required=False,
     )
+
+
+class AfzenderEmailadresForm(forms.ModelForm):
+    wijken = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple())
+
+    def __init__(self, *args, **kwargs):
+        wijk_opties = kwargs.pop("wijk_opties", [])
+        super().__init__(*args, **kwargs)
+        self.fields["wijken"].choices = wijk_opties
+
+    class Meta:
+        model = AfzenderEmailadres
+        fields = (
+            "email",
+            "wijken",
+        )
