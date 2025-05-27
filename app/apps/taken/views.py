@@ -2,7 +2,7 @@ import hashlib
 import logging
 
 from apps.instellingen.models import Instelling
-from apps.main.services import TaakRService
+from apps.main.services import PDOKService, TaakRService
 from apps.taken.forms import (
     AfzenderEmailadresForm,
     TaakFeedbackHandleForm,
@@ -233,12 +233,51 @@ class AfzenderEmailadresView(View):
 class AfzenderEmailadresLijstView(
     PermissionRequiredMixin, AfzenderEmailadresView, ListView
 ):
+    queryset = AfzenderEmailadres.objects.order_by("email")
     permission_required = "authorisatie.afzender_emailadres_lijst_bekijken"
 
 
 class AfzenderEmailadresAanmakenAanpassenView(AfzenderEmailadresView):
-    def get_success_url(self):
-        return reverse("afzender_emailadres_aanpassen", kwargs={"pk": self.object.id})
+    def get_wijknamen(self):
+        pdok_service = PDOKService()
+        response = pdok_service.get_buurten_middels_gemeentecode()
+        wijknamen = sorted(
+            [wijk.get("wijknaam") for wijk in response.get("wijken", [])]
+        )
+        return wijknamen
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        afzender_emailadressen = AfzenderEmailadres.objects.all()
+        if self.kwargs.get("pk"):
+            afzender_emailadressen = AfzenderEmailadres.objects.exclude(
+                id=self.get_object().id
+            )
+
+        gebruikte_wijknamen = list(
+            set(
+                [
+                    wijk
+                    for wijk_list in afzender_emailadressen.values_list(
+                        "wijken", flat=True
+                    )
+                    for wijk in wijk_list
+                ]
+            )
+        )
+        kwargs.update(
+            {
+                "wijk_opties": [
+                    (wijknaam, wijknaam)
+                    for wijknaam in self.get_wijknamen()
+                    if wijknaam not in gebruikte_wijknamen
+                ]
+            }
+        )
+        return kwargs
+
+    # def get_success_url(self):
+    #     return reverse("afzender_emailadres_aanpassen", kwargs={"pk": self.object.id})
 
 
 class AfzenderEmailadresAanpassenView(
@@ -248,7 +287,7 @@ class AfzenderEmailadresAanpassenView(
     UpdateView,
 ):
     form_class = AfzenderEmailadresForm
-    success_message = "Het afzender emailadres '%(omschrijving)s' is aangepast"
+    success_message = "Het afzender emailadres '%(email)s' is aangepast"
     permission_required = "authorisatie.afzender_emailadres_aanpassen"
 
 
@@ -258,8 +297,8 @@ class AfzenderEmailadresAanmakenView(
     AfzenderEmailadresAanmakenAanpassenView,
     CreateView,
 ):
-    form_class = TaaktypeAanmakenForm
-    success_message = "Het afzender emailadres '%(omschrijving)s' is aangemaakt"
+    form_class = AfzenderEmailadresForm
+    success_message = "Het afzender emailadres '%(email)s' is aangemaakt"
     permission_required = "authorisatie.afzender_emailadres_aanmaken"
 
 

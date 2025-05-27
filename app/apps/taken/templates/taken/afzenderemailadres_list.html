@@ -28,7 +28,7 @@
                      xmlns="http://www.w3.org/2000/svg">
                     <path fill-rule="evenodd" clip-rule="evenodd" d="M17 6H15V15H6V17H15V26H17V17H26V15H17V6Z" fill="#ffffff"></path>
                 </svg>
-                Nieuw afzender e-mailadres
+                Nieuw afzender
             </a>
         </div>
         <div class="container__table">
@@ -36,6 +36,7 @@
                 <thead>
                     <tr>
                         <th>E-mailadres</th>
+                        <th>Wijken</th>
                         <th></th>
                         <th></th>
                     </tr>
@@ -44,6 +45,7 @@
                     {% for object in object_list %}
                         <tr data-row-search-target="row">
                             <td>{{ object.email }}</td>
+                            <td>{{ object.wijken|join:", " }}</td>
                             <td>
                                 <a href="{% url 'afzender_emailadres_aanpassen' object.pk %}"
                                    aria-label="Aanpassen">{% include "icons/edit.svg" %}</a>

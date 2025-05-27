@@ -72,6 +72,7 @@ class Taaktype(BasisModel):
     afzender_email = models.ForeignKey(
         to="taken.AfzenderEmailadres",
         on_delete=models.SET_NULL,
+        related_name="taaktypes_voor_afzenderemailadres",
         blank=True,
         null=True,
     )
@@ -322,3 +323,7 @@ class Taak(BasisModel):
 
 class AfzenderEmailadres(models.Model):
     email = models.EmailField(unique=True)
+    wijken = ArrayField(base_field=models.CharField(max_length=100), default=list)
+
+    def __str__(self) -> str:
+        return f"{self.email}"
