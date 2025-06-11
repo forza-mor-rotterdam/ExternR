@@ -43,11 +43,6 @@ class Gebruiker(AbstractUser):
         dict_instance.update(
             {
                 "naam": self.__str__(),
-                "rol": self.profiel.context.naam
-                if hasattr(self, "profiel")
-                and hasattr(self.profiel, "context")
-                and hasattr(self.profiel.context, "naam")
-                else None,
                 "rechten": (
                     self.groups.all().first().name if self.groups.all() else None
                 ),

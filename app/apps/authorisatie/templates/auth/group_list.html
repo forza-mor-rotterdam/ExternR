@@ -18,16 +18,18 @@
         </div>
         <div class="container__flex">
             <h1>Rechtengroepen</h1>
-            <a class="btn btn-action" href="{% url 'rechtengroep_aanmaken' %}">
-                <svg width="24"
-                     height="24"
-                     viewBox="0 0 32 32"
-                     fill="none"
-                     xmlns="http://www.w3.org/2000/svg">
-                    <path fill-rule="evenodd" clip-rule="evenodd" d="M17 6H15V15H6V17H15V26H17V17H26V15H17V6Z" fill="#ffffff"></path>
-                </svg>
-                Nieuwe groep
-            </a>
+            {% if perms.authorisatie.rechtengroep_aanmaken %}
+                <a class="btn btn-action" href="{% url 'rechtengroep_aanmaken' %}">
+                    <svg width="24"
+                         height="24"
+                         viewBox="0 0 32 32"
+                         fill="none"
+                         xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd" clip-rule="evenodd" d="M17 6H15V15H6V17H15V26H17V17H26V15H17V6Z" fill="#ffffff"></path>
+                    </svg>
+                    Nieuwe groep
+                </a>
+            {% endif %}
         </div>
         <div class="alert alert--info">
             <span>
@@ -58,8 +60,8 @@
                         <th>Naam</th>
                         <th>Aantal rechten</th>
                         <th>Aantal gebruikers</th>
-                        <th></th>
-                        <th></th>
+                        {% if perms.authorisatie.rechtengroep_aanpassen %}<th></th>{% endif %}
+                        {% if perms.authorisatie.rechtengroep_verwijderen %}<th></th>{% endif %}
                     </tr>
                 </thead>
                 <tbody>
@@ -74,16 +76,20 @@
                                 {% endif %}
                             </td>
                             <td data-row-search-target="searchable">{{ object.user_set.all|length }}</td>
-                            <td>
-                                <a href="{% url 'rechtengroep_aanpassen' object.pk %}"
-                                   aria-label="Aanpassen">{% include "icons/edit.svg" %}</a>
-                            </td>
-                            <td>
-                                {% if not object.user_set.all %}
+                            {% if perms.authorisatie.rechtengroep_aanpassen %}
+                                <td>
                                     <a href="{% url 'rechtengroep_aanpassen' object.pk %}"
-                                       onclick="return confirm('Weet je zeker dat je deze rechtengroep wil verwijderen?')">Verwijderen</a>
-                                {% endif %}
-                            </td>
+                                       aria-label="Aanpassen">{% include "icons/edit.svg" %}</a>
+                                </td>
+                            {% endif %}
+                            {% if perms.authorisatie.rechtengroep_verwijderen %}
+                                <td>
+                                    {% if not object.user_set.all %}
+                                        <a href="{% url 'rechtengroep_verwijderen' object.pk %}"
+                                           onclick="return confirm('Weet je zeker dat je deze rechtengroep wil verwijderen?')">Verwijderen</a>
+                                    {% endif %}
+                                </td>
+                            {% endif %}
                         </tr>
                     {% endfor %}
                 </tbody>

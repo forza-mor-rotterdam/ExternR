@@ -5,20 +5,30 @@
 {% block body %}
     <h1>Beheer</h1>
     <ul class="list--blocks-horizontal">
-        <li>
-            <a href="{% url 'gebruiker_lijst' %}">Gebruikers</a>
-        </li>
-        <li>
-            <a href="{% url 'context_lijst' %}">Rollen</a>
-        </li>
-        <li>
-            <a href="{% url 'taaktype_lijst' %}">Taaktypes</a>
-        </li>
-        <li>
-            <a href="{% url 'rechtengroep_lijst' %}">Rechtengroepen</a>
-        </li>
-        <li>
-            <a href="{% url 'notificatie_status_overzicht' %}">Notificatie status</a>
-        </li>
+        {% if perms.authorisatie.gebruiker_lijst_bekijken %}
+            <li>
+                <a href="{% url 'gebruiker_lijst' %}">Gebruikers</a>
+            </li>
+        {% endif %}
+        {% if perms.authorisatie.taaktype_lijst_bekijken %}
+            <li>
+                <a href="{% url 'taaktype_lijst' %}">Taaktypes</a>
+            </li>
+        {% endif %}
+        {% if perms.authorisatie.afzender_emailadres_lijst_bekijken %}
+            <li>
+                <a href="{% url 'afzender_emailadres_lijst' %}">Afzender e-mailadressen</a>
+            </li>
+        {% endif %}
+        {% if perms.authorisatie.rechtengroep_lijst_bekijken %}
+            <li>
+                <a href="{% url 'rechtengroep_lijst' %}">Rechtengroepen</a>
+            </li>
+        {% endif %}
+        {% if perms.authorisatie.beheer_bekijken %}
+            <li>
+                <a href="{% url 'notificatie_status_overzicht' %}">Notificatie status</a>
+            </li>
+        {% endif %}
     </ul>
 {% endblock body %}

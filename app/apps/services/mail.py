@@ -6,6 +6,7 @@ import re
 import magic
 from apps.main.services import MORCoreService
 from apps.main.templatetags.melding_tags import get_bijlagen
+from apps.taken.models import AfzenderEmailadres
 from django.conf import settings
 from django.contrib.sites.models import Site
 from django.core.mail import EmailMultiAlternatives, SafeMIMEMultipart
@@ -104,7 +105,17 @@ class MailService:
         # @ TODO retrieve taaktype data from taakr
         taaktype = taak.taaktype
 
-        bijlagen = get_bijlagen(taak.melding.response_json)
+        melding = taak.melding.response_json
+        bijlagen = get_bijlagen(melding)
+        wijknaam = melding.get("referentie_locatie", {}).get("wijknaam")
+        afzender_emailadres = AfzenderEmailadres.objects.filter(
+            wijken__contains=[wijknaam]
+        ).first()
+        from_email = (
+            afzender_emailadres.email
+            if afzender_emailadres
+            else settings.DEFAULT_FROM_EMAIL
+        )
 
         bijlagen_flat = [
             url
@@ -141,9 +152,7 @@ class MailService:
         text_content = text_template.render(email_context)
         html_content = html_template.render(email_context)
         subject = f"De gemeente Rotterdam heeft een melding met nummer {taak.taak_zoek_data.bron_signaal_ids[0] if taak.taak_zoek_data.bron_signaal_ids else ''} van een bewoner ontvangen waarvan de taakafhandeling onder de verantwoordelijkheid valt van uw organisatie."
-        msg = EmailMultiRelated(
-            subject, text_content, settings.DEFAULT_FROM_EMAIL, send_to
-        )
+        msg = EmailMultiRelated(subject, text_content, from_email, send_to)
         msg.attach_alternative(html_content, "text/html")
 
         for bijlage in bijlagen_flat:

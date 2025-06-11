@@ -2,12 +2,17 @@
 {% load rotterdam_formulier_html %}
 {% load json_encode from main_tags %}
 {% block title %}
-    Gebruiker wijzigen | Beheer | ExternR
+    {% if object %}
+        Wijzig afzender e-mailadres '{{ object.email }}'
+    {% else %}
+        Afzender e-mailadres aanmaken
+    {% endif %}
+    | Beheer | ExternR
 {% endblock title %}
 {% block body %}
     <div class="page__beheer">
         <div>
-            <a href="{% url 'gebruiker_lijst' %}"
+            <a href="{% url 'afzender_emailadres_lijst' %}"
                data-turbo-action='advance'
                class="link--back">
                 <svg width="25"
@@ -17,23 +22,21 @@
                      xmlns="http://www.w3.org/2000/svg">
                     <path d="M9.15173 1.73256L7.73753 0.318359L1.44704 6.60885L1.4142 6.576L0 7.9902L1.4115 9.4017L1.37867 9.43453L7.67186 15.7277L9.08606 14.3135L3.7726 9.00006H24.0098V7.00006H3.88423L9.15173 1.73256Z" fill="#404B4F" />
                 </svg>
-                Gebruikerslijst
+                Afzender e-mailadressen
             </a>
         </div>
-        <h1>Wijzig gebruiker</h1>
+        {% if object %}
+            <h1>Wijzig afzender e-mailadres '{{ object.email }}'</h1>
+        {% else %}
+            <h1>Afzender e-mailadres aanmaken</h1>
+        {% endif %}
         <div class="grid-container">
             <div class="grid-item">
-                <form action="." method="post">
+                <form action="." method="post" class="form--beheer">
                     {% csrf_token %}
-                    <div>
-                        <h2 class="h5 no-margin-bottom">E-mailadres</h2>
-                        <p class="no-margin-top">{{ object.email }}</p>
-                    </div>
                     <fieldset>
-                        {{ form.telefoonnummer|render_rotterdam_formulier }}
-                        {{ form.first_name|render_rotterdam_formulier }}
-                        {{ form.last_name|render_rotterdam_formulier }}
-                        {{ form.group|render_rotterdam_formulier }}
+                        {{ form.email|render_rotterdam_formulier }}
+                        {{ form.wijken|render_rotterdam_formulier }}
                     </fieldset>
                     <div class="form-row container__button">
                         <div class="form-row btn-row">
@@ -41,17 +44,22 @@
                                     class="btn btn-tertiary"
                                     data-controller="utils"
                                     data-action="utils#goToUrl"
-                                    data-utils-url-param="{% url 'gebruiker_lijst' %}">
+                                    data-utils-url-param="{% url 'afzender_emailadres_lijst' %}">
                                 <span>Annuleren</span>
                             </button>
                             <button type="submit" class="btn btn-action">
-                                <span>Aanpassen</span>
+                                <span>
+                                    {% if object %}
+                                        Aanpassen
+                                    {% else %}
+                                        Aanmaken
+                                    {% endif %}
+                                </span>
                             </button>
                         </div>
                     </div>
                 </form>
             </div>
-            <div class="grid-item"></div>
         </div>
     </div>
 {% endblock body %}

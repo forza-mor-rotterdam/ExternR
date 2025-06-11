@@ -52,11 +52,6 @@ class LogoutView(View):
         return HttpResponse("Er is geen logout ingesteld")
 
 
-@method_decorator(login_required, name="dispatch")
-@method_decorator(
-    permission_required("authorisatie.gebruiker_bekijken", raise_exception=True),
-    name="dispatch",
-)
 class GebruikerView(View):
     model = Gebruiker
     success_url = reverse_lazy("gebruiker_lijst")

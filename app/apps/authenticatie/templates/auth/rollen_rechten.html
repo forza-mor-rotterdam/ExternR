@@ -1,17 +1,7 @@
-<h3>Rol & rechten</h3>
+<h3>Rechten</h3>
 Hieronder vind je de instellingen waarmee je bij ons bekend bent.
 <div>
     <dl class="dl--horizontal">
-        <div>
-            <dt>Rol</dt>
-            <dd>
-                {% if request.user.profiel.context %}
-                    {{ request.user.profiel.context.naam }}
-                {% else %}
-                    - geen rol -
-                {% endif %}
-            </dd>
-        </div>
         <div>
             <dt>Rechten</dt>
             <dd>
