@@ -439,11 +439,18 @@ AUTHENTICATION_BACKENDS = [
 OIDC_RP_CLIENT_ID = os.getenv("OIDC_RP_CLIENT_ID")
 OIDC_RP_CLIENT_SECRET = os.getenv("OIDC_RP_CLIENT_SECRET")
 
+OIDC_REALM = os.getenv("OIDC_REALM")
+AUTH_BASE_URL = os.getenv("AUTH_BASE_URL")
+OPENID_CONFIG = {}
+OPENID_CONFIG_URI_DEFAULT = (
+    f"{AUTH_BASE_URL}/realms/{OIDC_REALM}/.well-known/openid-configuration"
+    if AUTH_BASE_URL and OIDC_REALM
+    else None
+)
 OPENID_CONFIG_URI = os.getenv(
     "OPENID_CONFIG_URI",
+    OPENID_CONFIG_URI_DEFAULT,
 )
-OPENID_CONFIG = {}
-
 if OPENID_CONFIG_URI:
     try:
         OPENID_CONFIG = requests.get(
@@ -455,9 +462,8 @@ if OPENID_CONFIG_URI:
     except Exception as e:
         raise Exception(f"OPENID_CONFIG FOUT, url: {OPENID_CONFIG_URI}, error: {e}")
 
-OIDC_ENABLED = False
-if OPENID_CONFIG and OIDC_RP_CLIENT_ID:
-    OIDC_ENABLED = True
+OIDC_ENABLED = OPENID_CONFIG and OIDC_RP_CLIENT_ID
+if OIDC_ENABLED:
     OIDC_VERIFY_SSL = os.getenv("OIDC_VERIFY_SSL", True) in TRUE_VALUES
     OIDC_USE_NONCE = os.getenv("OIDC_USE_NONCE", True) in TRUE_VALUES
 
