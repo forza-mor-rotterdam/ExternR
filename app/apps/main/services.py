@@ -42,6 +42,7 @@ class MORCoreService(BasisMORCoreService):
         instellingen = Instelling.actieve_instelling()
         kwargs.update(
             {
+                "client_name": "ExternR",
                 "basis_url": instellingen.mor_core_basis_url,
                 "gebruikersnaam": instellingen.mor_core_gebruiker_email,
                 "wachtwoord": instellingen.mor_core_gebruiker_wachtwoord,
