@@ -82,6 +82,7 @@ INSTALLED_APPS = (
     "webpack_loader",
     "corsheaders",
     "debug_toolbar",
+    "django_prometheus",
     "mozilla_django_oidc",
     "health_check",
     "health_check.cache",
