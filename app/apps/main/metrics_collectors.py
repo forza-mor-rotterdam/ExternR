@@ -15,7 +15,7 @@ class CustomCollector(object):
 
     def collect_celery_task_results(self):
         c = CounterMetricFamily(
-            "morcore_celery_task_results_issues_total",
+            "externr_celery_task_results_issues_total",
             "Aantallen van Celery TaskResult instanties per task_name en status, met status FAILED of RETRY",
             labels=[
                 "task_name",
