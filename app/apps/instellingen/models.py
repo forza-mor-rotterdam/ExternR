@@ -10,17 +10,22 @@ class Instelling(BasisModel):
     mor_core_token_timeout = models.PositiveIntegerField(default=0)
     taakr_basis_url = models.URLField(default="http://taakr.mor.local:8009")
     onderwerpen_basis_url = models.URLField(default="http://onderwerpen.mor.local:8006")
+    locaties_basis_url = models.URLField(default="http://locaties.mor.local:8010")
     email_beheer = models.EmailField()
 
     @classmethod
     def actieve_instelling(cls):
-        return cls.objects.first()
+        actieve_instellingen = cls.objects.all()
+        if not actieve_instellingen:
+            raise Exception("Er zijn nog geen instellingen aangemaakt")
+        return actieve_instellingen[0]
 
     def valideer_url(self, veld, url):
         if veld not in (
             "mor_core_basis_url",
             "taakr_basis_url",
             "onderwerpen_basis_url",
+            "locaties_basis_url",
         ):
             return False
         return url.startswith(getattr(self, veld))

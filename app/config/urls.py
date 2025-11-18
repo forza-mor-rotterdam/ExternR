@@ -1,7 +1,14 @@
 from apps.aliassen.views import MeldingNotificatieAPIView
 from apps.authenticatie.views import GebruikerProfielView, LoginView, LogoutView
 from apps.health.views import healthz
-from apps.main.views import http_403, http_404, http_500, root, ui_settings_handler
+from apps.main.views import (
+    http_403,
+    http_404,
+    http_500,
+    prometheus_django_metrics,
+    root,
+    ui_settings_handler,
+)
 from apps.taken.views import taak_feedback_handle
 from apps.taken.viewsets import TaaktypeViewSet, TaakViewSet
 from django.conf import settings
@@ -72,6 +79,7 @@ urlpatterns = [
         SpectacularRedocView.as_view(url_name="schema"),
         name="redoc",
     ),
+    path("metrics", prometheus_django_metrics, name="prometheus_django_metrics"),
 ]
 
 if not settings.ENABLE_DJANGO_ADMIN_LOGIN:

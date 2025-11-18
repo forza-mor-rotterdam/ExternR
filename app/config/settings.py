@@ -6,7 +6,6 @@ from os.path import join
 
 import requests
 import urllib3
-from celery.schedules import crontab
 
 locale.setlocale(locale.LC_ALL, "nl_NL.UTF-8")
 logger = logging.getLogger(__name__)
@@ -83,6 +82,7 @@ INSTALLED_APPS = (
     "webpack_loader",
     "corsheaders",
     "debug_toolbar",
+    "django_prometheus",
     "mozilla_django_oidc",
     "health_check",
     "health_check.cache",
@@ -170,23 +170,46 @@ AUTH_USER_MODEL = "authenticatie.Gebruiker"
 
 CELERY_TASK_TRACK_STARTED = True
 CELERY_TASK_TIME_LIMIT = 30 * 60
-CELERY_BROKER_URL = "redis://redis:6379/0"
 
+CELERY_BROKER_URL = "redis://redis:6379/0"
 BROKER_URL = CELERY_BROKER_URL
-CELERY_TASK_TRACK_STARTED = True
+
 CELERY_RESULT_BACKEND = "django-db"
 CELERY_RESULT_EXTENDED = True
-CELERY_TASK_TIME_LIMIT = 30 * 60
-CELERYBEAT_SCHEDULE = {
-    "queue_every_five_mins": {
-        "task": "apps.health.tasks.query_every_five_mins",
-        "schedule": crontab(minute=5),
-    },
-}
+
 CELERY_WORKER_CONCURRENCY = 2
 CELERY_WORKER_MAX_TASKS_PER_CHILD = 20
 CELERY_WORKER_MAX_MEMORY_PER_CHILD = 200000
 CELERY_WORKER_SEND_TASK_EVENTS = True
+
+TASK_LOW_PRIORITY_QUEUE_NAME = "low_priority"
+TASK_DEFAULT_PRIORITY_QUEUE_NAME = "default_priority"
+TASK_HIGH_PRIORITY_QUEUE_NAME = "high_priority"
+TASK_HIGHEST_PRIORITY_QUEUE_NAME = "highest_priority"
+
+TASK_QUEUES = (
+    (TASK_HIGHEST_PRIORITY_QUEUE_NAME, 0),
+    (TASK_HIGH_PRIORITY_QUEUE_NAME, 3),
+    (TASK_DEFAULT_PRIORITY_QUEUE_NAME, 6),
+    (TASK_LOW_PRIORITY_QUEUE_NAME, 9),
+)
+CELERY_TASK_DEFAULT_QUEUE = TASK_HIGH_PRIORITY_QUEUE_NAME
+
+HIGHEST_PRIORITY_TASKS = [
+    "config.celery.test_critical_task",
+]
+HIGH_PRIORITY_TASKS = [
+    "config.celery.test_urgent_task",
+]
+DEFAULT_PRIORITY_TASKS = [
+    "config.celery.test_regular_task",
+    "apps.aliassen.tasks.task_update_melding_alias_data",
+    "apps.taken.tasks.task_taakopdracht_notificatie_voor_taak",
+    "apps.taken.tasks.send_taak_aangemaakt_email_task",
+    "apps.taken.tasks.taak_afsluiten_zonder_feedback_task",
+]
+LOW_PRIORITY_TASKS = []
+CELERY_TASK_ROUTES = "config.celery.task_router"
 
 SITE_ID = 1
 SITE_NAME = os.getenv("SITE_NAME", "ExternR")
@@ -439,11 +462,18 @@ AUTHENTICATION_BACKENDS = [
 OIDC_RP_CLIENT_ID = os.getenv("OIDC_RP_CLIENT_ID")
 OIDC_RP_CLIENT_SECRET = os.getenv("OIDC_RP_CLIENT_SECRET")
 
+OIDC_REALM = os.getenv("OIDC_REALM")
+AUTH_BASE_URL = os.getenv("AUTH_BASE_URL")
+OPENID_CONFIG = {}
+OPENID_CONFIG_URI_DEFAULT = (
+    f"{AUTH_BASE_URL}/realms/{OIDC_REALM}/.well-known/openid-configuration"
+    if AUTH_BASE_URL and OIDC_REALM
+    else None
+)
 OPENID_CONFIG_URI = os.getenv(
     "OPENID_CONFIG_URI",
+    OPENID_CONFIG_URI_DEFAULT,
 )
-OPENID_CONFIG = {}
-
 if OPENID_CONFIG_URI:
     try:
         OPENID_CONFIG = requests.get(
@@ -455,9 +485,8 @@ if OPENID_CONFIG_URI:
     except Exception as e:
         raise Exception(f"OPENID_CONFIG FOUT, url: {OPENID_CONFIG_URI}, error: {e}")
 
-OIDC_ENABLED = False
-if OPENID_CONFIG and OIDC_RP_CLIENT_ID:
-    OIDC_ENABLED = True
+OIDC_ENABLED = OPENID_CONFIG and OIDC_RP_CLIENT_ID
+if OIDC_ENABLED:
     OIDC_VERIFY_SSL = os.getenv("OIDC_VERIFY_SSL", True) in TRUE_VALUES
     OIDC_USE_NONCE = os.getenv("OIDC_USE_NONCE", True) in TRUE_VALUES
 

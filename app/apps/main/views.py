@@ -1,6 +1,9 @@
 import logging
 
+import prometheus_client
+from apps.main.metrics_collectors import CustomCollector
 from django.contrib.auth.decorators import login_required
+from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse
 
@@ -58,4 +61,13 @@ def ui_settings_handler(request):
         request,
         "snippets/form_pageheader.html",
         {"profile": profiel},
+    )
+
+
+def prometheus_django_metrics(request):
+    registry = prometheus_client.CollectorRegistry()
+    registry.register(CustomCollector())
+    metrics_page = prometheus_client.generate_latest(registry)
+    return HttpResponse(
+        metrics_page, content_type=prometheus_client.CONTENT_TYPE_LATEST
     )
