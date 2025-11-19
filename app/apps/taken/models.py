@@ -76,6 +76,12 @@ class Taaktype(BasisModel):
         blank=True,
         null=True,
     )
+    standaard_omschrijving_intern = models.CharField(
+        max_length=5000,
+        default="Automatich voltooid door ExternR",
+        blank=True,
+        null=True,
+    )
 
     def taaktype_url(self, request):
         return drf_reverse(
