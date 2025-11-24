@@ -78,7 +78,7 @@ class Taaktype(BasisModel):
     )
     standaard_omschrijving_intern = models.CharField(
         max_length=5000,
-        default="Automatich voltooid door ExternR",
+        default="Automatisch voltooid door ExternR",
         blank=True,
         null=True,
     )

@@ -31,7 +31,7 @@ class TaaktypeAanpassenForm(forms.ModelForm):
                 "rows": "4",
             }
         ),
-        initial="Automatich voltooid door ExternR",
+        initial="Automatisch voltooid door ExternR",
         required=False,
     )
     actief = forms.BooleanField(
