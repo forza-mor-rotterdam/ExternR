@@ -144,6 +144,7 @@ class TaaktypeAdmin(admin.ModelAdmin):
         "uuid",
         "omschrijving",
         "aangemaakt_op",
+        "standaard_omschrijving_intern",
     )
     readonly_fields = ("uuid",)
 
