@@ -23,6 +23,17 @@ class TaaktypeAanpassenForm(forms.ModelForm):
         ),
         required=False,
     )
+    # standaard_omschrijving_intern = forms.CharField(
+    #     label="Standaard omschrijving intern",
+    #     widget=forms.Textarea(
+    #         attrs={
+    #             "data-testid": "standaard_omschrijving_intern",
+    #             "rows": "4",
+    #         }
+    #     ),
+    #     initial="Automatisch voltooid door ExternR",
+    #     required=False,
+    # )
     actief = forms.BooleanField(
         widget=forms.CheckboxInput(attrs={"class": "form-check-input"}),
         label="Actief",
@@ -42,6 +53,7 @@ class TaaktypeAanpassenForm(forms.ModelForm):
             "externe_instantie",
             "externe_instantie_email",
             "externe_instantie_verantwoordelijke",
+            "standaard_omschrijving_intern",
             # "afzender_email",
         )
 
@@ -56,6 +68,7 @@ class TaaktypeAanmakenForm(TaaktypeAanpassenForm):
             "externe_instantie",
             "externe_instantie_email",
             "externe_instantie_verantwoordelijke",
+            "standaard_omschrijving_intern",
             # "afzender_email",
         )
 

@@ -198,7 +198,7 @@ def taak_afsluiten_zonder_feedback_task(self, taak_id):
         taak=taak,
         status=Taakstatus.NaamOpties.VOLTOOID,
         resolutie=Taak.ResolutieOpties.OPGELOST,
-        omschrijving_intern="Automatich voltooid door ExternR",
+        omschrijving_intern=taak.taaktype.standaard_omschrijving_intern,
         gebruiker=taak.taaktype.externe_instantie_email,
     )
 
