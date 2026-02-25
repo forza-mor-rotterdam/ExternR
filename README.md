@@ -1,6 +1,13 @@
 # ExternR
 Taakapplicatie voor het versturen van mails naar externe partijen op de MOR-keten
 
+## Meer in-depth documentatie
+**Architectuur:** ...
+
+**Back-end:** ...
+
+**Front-end:** [frontend/README.md](https://github.com/forza-mor-rotterdam/ExternR/blob/documentatie-frontend/docs/frontend/README.md)
+
 ## Tech Stack
 
 [Django](https://www.djangoproject.com/start/), [Turbo JS](https://turbo.hotwired.dev/), [SCSS](https://sass-lang.com/)
