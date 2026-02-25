@@ -1,0 +1,17 @@
+[
+    {
+        "model": "instellingen.instelling",
+        "id": 1,
+        "fields": {
+            "aangemaakt_op": "2024-04-15T13:44:05.829Z",
+            "aangepast_op": "2024-04-15T16:27:22.681Z",
+            "mor_core_basis_url": "http://core.mor.local:8002",
+            "mor_core_gebruiker_email": "externr@forzamor.nl",
+            "mor_core_gebruiker_wachtwoord": "insecure",
+            "mor_core_token_timeout": 1200,
+            "taakr_basis_url": "http://taakr.mor.local:8009",
+            "onderwerpen_basis_url": "http://onderwerpen.mor.local:8006",
+            "locaties_basis_url": "http://locatieservice.mor.local:8010"
+        }
+    }
+]

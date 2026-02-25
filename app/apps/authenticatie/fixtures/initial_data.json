@@ -1,0 +1,40 @@
+[
+    {
+        "model": "authenticatie.gebruiker",
+        "pk": 1,
+        "fields": {
+            "password": "insecure",
+            "last_login": "2026-02-09T09:00:01.433Z",
+            "is_superuser": true,
+            "first_name": "Admin",
+            "last_name": "Dev",
+            "is_staff": true,
+            "is_active": true,
+            "date_joined": "2023-10-25T08:28:32.728Z",
+            "email": "admin@forzamor.nl",
+            "telefoonnummer": null,
+            "verwijderd_op": null,
+            "groups": [],
+            "user_permissions": []
+        }
+    },
+    {
+        "model": "authenticatie.gebruiker",
+        "pk": 2,
+        "fields": {
+            "password": "insecure",
+            "last_login": "2026-02-09T09:00:01.433Z",
+            "is_superuser": false,
+            "first_name": "Core",
+            "last_name": "Dev",
+            "is_staff": false,
+            "is_active": true,
+            "date_joined": "2023-10-25T08:28:32.728Z",
+            "email": "mor-core@forzamor.nl",
+            "telefoonnummer": null,
+            "verwijderd_op": null,
+            "groups": [],
+            "user_permissions": []
+        }
+    }
+]
