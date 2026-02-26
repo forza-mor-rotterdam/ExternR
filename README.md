@@ -6,7 +6,7 @@ Taakapplicatie voor het versturen van mails naar externe partijen op de MOR-kete
 
 **Back-end:** ...
 
-**Front-end:** [frontend/README.md](https://github.com/forza-mor-rotterdam/ExternR/blob/documentatie-frontend/docs/frontend/README.md)
+**Front-end:** [frontend/README.md](docs/frontend/README.md)
 
 ## Tech Stack
 
