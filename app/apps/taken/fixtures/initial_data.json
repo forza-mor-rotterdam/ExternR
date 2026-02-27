@@ -1,0 +1,14 @@
+[
+    {
+        "model": "taken.taaktype",
+        "pk": 1,
+        "fields": {
+            "aangemaakt_op": "2024-04-15T13:44:05.829Z",
+            "aangepast_op": "2024-04-15T16:27:22.681Z",
+            "uuid": "5b02f44e-6c60-4180-a0a6-021489b19598",
+            "omschrijving": "Taak voor Havenbedrijf Rotterdam",
+            "toelichting": "Alle taken voor Havenbedrijf Rotterdam",
+            "actief": true
+        }
+    }
+]
